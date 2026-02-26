@@ -1,24 +1,20 @@
 import { useState } from "react";
+import { useBrandData } from "@/context/BrandDataContext";
 import SectionHeader from "./SectionHeader";
 import { Pencil } from "lucide-react";
 
-const swatchDefaults = [
-  { hex: "#2D4A3E", light: false },
-  { hex: "#F2C4A0", light: true },
-  { hex: "#E8DDD0", light: true },
-  { hex: "#111111", light: false },
-];
-
 const BrandIdentity = () => {
-  const [swatches, setSwatches] = useState(swatchDefaults);
+  const data = useBrandData();
+
+  const [swatches, setSwatches] = useState(data.colors);
   const [showColors, setShowColors] = useState(false);
   const [showTags, setShowTags] = useState(false);
   const [showFonts, setShowFonts] = useState(false);
-  const [values, setValues] = useState(["Authentisch", "Nachhaltig", "Lokal"]);
-  const [tones, setTones] = useState(["Persönlich", "Einladend"]);
+  const [values, setValues] = useState(data.values);
+  const [tones, setTones] = useState(data.tones);
   const [newValue, setNewValue] = useState("");
   const [newTone, setNewTone] = useState("");
-  const [selectedFont, setSelectedFont] = useState("Instrument Serif");
+  const [selectedFont, setSelectedFont] = useState(data.fonts.display);
 
   const updateSwatch = (i: number, hex: string) => {
     setSwatches((s) => s.map((sw, idx) => (idx === i ? { ...sw, hex } : sw)));
@@ -33,6 +29,9 @@ const BrandIdentity = () => {
     </button>
   );
 
+  /* Split brand essence into parts around the first "quoted" or italic phrase */
+  const essenceParts = data.brandEssence.split(/(<em>.*?<\/em>)/);
+
   return (
     <section className="mb-16">
       <SectionHeader
@@ -46,8 +45,12 @@ const BrandIdentity = () => {
         <div className="col-span-12 md:col-span-5 bg-foreground text-background rounded-lg p-6 min-h-[220px] flex flex-col animate-fade-up hover:-translate-y-0.5 hover:shadow-lg transition-all">
           <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-background/40 mb-3.5">Marke</div>
           <div className="mt-auto">
-            <div className="font-serif italic text-[44px] leading-none">Blumenhaus<br />Martina</div>
-            <div className="font-mono text-[11px] text-background/40 mt-2">blumenhaus-martina.de</div>
+            <div className="font-serif italic text-[44px] leading-none">
+              {data.brandName.split(" ").map((word, i, arr) => (
+                <span key={i}>{word}{i < arr.length - 1 ? <br /> : null}</span>
+              ))}
+            </div>
+            <div className="font-mono text-[11px] text-background/40 mt-2">{data.website}</div>
           </div>
         </div>
 
@@ -55,7 +58,7 @@ const BrandIdentity = () => {
         <div className="col-span-12 md:col-span-7 bg-card rounded-lg p-6 min-h-[220px] flex flex-col animate-fade-up [animation-delay:0.09s] hover:-translate-y-0.5 hover:shadow-lg transition-all">
           <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-muted-foreground mb-3.5">Brand Essence</div>
           <div className="mt-auto font-serif italic text-[34px] leading-[1.15]">
-            Wo jede Blume<br /><em className="text-primary">eine Geschichte</em> erzählt.
+            {data.brandEssence}
           </div>
         </div>
 
@@ -81,12 +84,12 @@ const BrandIdentity = () => {
           <EditBtn onClick={() => setShowFonts(!showFonts)} />
           <div className="text-center">
             <div className="font-serif italic text-[68px] leading-none">Aa</div>
-            <div className="text-[10px] text-muted-foreground mt-1.5">Instrument Serif<br />Italic</div>
+            <div className="text-[10px] text-muted-foreground mt-1.5">{data.fonts.display}<br />Italic</div>
           </div>
           <div className="w-px h-[72px] bg-border" />
           <div className="text-center">
             <div className="text-[68px] font-semibold leading-none">Aa</div>
-            <div className="text-[10px] text-muted-foreground mt-1.5">DM Sans<br />Regular / Medium</div>
+            <div className="text-[10px] text-muted-foreground mt-1.5">{data.fonts.body}<br />Regular / Medium</div>
           </div>
         </div>
 
@@ -106,7 +109,7 @@ const BrandIdentity = () => {
           <div className="mb-3.5">
             <div className="text-[10px] uppercase tracking-[0.08em] font-bold text-muted-foreground mb-1.5">Aesthetic</div>
             <div className="flex flex-wrap gap-1.5">
-              {["Natural", "Warm", "Artisanal"].map((a) => (
+              {data.aesthetic.map((a) => (
                 <span key={a} className="px-3 py-1 rounded-pill text-xs font-medium border-[1.5px] border-border">{a}</span>
               ))}
             </div>
@@ -192,13 +195,13 @@ const BrandIdentity = () => {
             <button onClick={() => setShowFonts(false)} className="bg-surface rounded-pill px-3 py-1 text-xs font-bold text-muted-foreground hover:bg-border transition-all">Fertig ✓</button>
           </div>
           <div className="grid grid-cols-3 gap-2.5">
-            {["Instrument Serif", "Playfair Display", "DM Serif Display"].map((f) => (
+            {[data.fonts.display, "Playfair Display", "DM Serif Display"].map((f) => (
               <button
                 key={f}
                 onClick={() => setSelectedFont(f)}
                 className={`p-4 rounded-xl border-2 text-center transition-all ${selectedFont === f ? "border-primary bg-primary/5" : "border-border hover:border-primary"}`}
               >
-                <div className="text-[32px] leading-none mb-1.5 font-serif italic">{f === "Instrument Serif" ? "Aa" : "Aa"}</div>
+                <div className="text-[32px] leading-none mb-1.5 font-serif italic">Aa</div>
                 <div className="text-[11px] text-muted-foreground font-semibold">{f}</div>
               </button>
             ))}
