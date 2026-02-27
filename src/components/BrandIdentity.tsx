@@ -50,7 +50,7 @@ const BrandIdentity = () => {
                 <span key={i}>{word}{i < arr.length - 1 ? <br /> : null}</span>
               ))}
             </div>
-            <div className="font-mono text-[11px] text-background/40 mt-2">{data.website}</div>
+            <div className="font-mono text-[11px] text-background/40 mt-2">{data.website.replace(/^https?:\/\/(www\.)?/, "")}</div>
           </div>
         </div>
 
