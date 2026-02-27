@@ -3,7 +3,25 @@ import SectionHeader from "./SectionHeader";
 import AddonCard from "./AddonCard";
 
 const Packages = () => {
-  const { packages, recommendedExplain } = useBrandData();
+  const { packages, recommendedExplain, chatId, brandName, website } = useBrandData();
+
+  const handlePackageClick = async (pkg: { name: string; price: string; recommended: boolean }) => {
+    try {
+      await fetch("https://lagosito.app.n8n.cloud/webhook/elk-pkg", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chatId,
+          package: pkg.name,
+          price: pkg.price,
+          brandName,
+          websiteUrl: website,
+        }),
+      });
+    } catch (e) {
+      console.error("Failed to send package selection:", e);
+    }
+  };
 
   return (
     <section className="mb-16">
@@ -31,6 +49,7 @@ const Packages = () => {
               {pkg.price}<span className="font-sans text-sm text-muted-foreground">/Monat</span>
             </div>
             <button
+              onClick={() => handlePackageClick(pkg)}
               className={`block w-full py-3 rounded-pill text-sm font-bold my-5 transition-all ${
                 pkg.recommended
                   ? "bg-primary text-primary-foreground hover:brightness-90"
