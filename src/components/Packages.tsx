@@ -1,11 +1,17 @@
+import { useState } from "react";
 import { useBrandData } from "@/context/BrandDataContext";
 import SectionHeader from "./SectionHeader";
 import AddonCard from "./AddonCard";
+import { Loader2, Check } from "lucide-react";
 
 const Packages = () => {
   const { packages, recommendedExplain, chatId, brandName, website } = useBrandData();
+  const [buttonStates, setButtonStates] = useState<Record<string, "idle" | "loading" | "success">>({});
 
   const handlePackageClick = async (pkg: { name: string; price: string; recommended: boolean }) => {
+    if (buttonStates[pkg.name] === "loading" || buttonStates[pkg.name] === "success") return;
+
+    setButtonStates((s) => ({ ...s, [pkg.name]: "loading" }));
     try {
       await fetch("https://lagosito.app.n8n.cloud/webhook/elk-pkg", {
         method: "POST",
@@ -18,9 +24,19 @@ const Packages = () => {
           websiteUrl: website,
         }),
       });
+      setButtonStates((s) => ({ ...s, [pkg.name]: "success" }));
+      setTimeout(() => setButtonStates((s) => ({ ...s, [pkg.name]: "idle" })), 3000);
     } catch (e) {
       console.error("Failed to send package selection:", e);
+      setButtonStates((s) => ({ ...s, [pkg.name]: "idle" }));
     }
+  };
+
+  const getButtonContent = (pkg: { name: string; recommended: boolean }) => {
+    const state = buttonStates[pkg.name] || "idle";
+    if (state === "loading") return <Loader2 className="w-4 h-4 animate-spin mx-auto" />;
+    if (state === "success") return <span className="flex items-center justify-center gap-1.5"><Check className="w-4 h-4" /> Gesendet!</span>;
+    return pkg.recommended ? "Jetzt starten ↗" : "Paket wählen";
   };
 
   return (
@@ -50,13 +66,16 @@ const Packages = () => {
             </div>
             <button
               onClick={() => handlePackageClick(pkg)}
+              disabled={buttonStates[pkg.name] === "loading"}
               className={`block w-full py-3 rounded-pill text-sm font-bold my-5 transition-all ${
-                pkg.recommended
-                  ? "bg-primary text-primary-foreground hover:brightness-90"
-                  : "bg-transparent border-[1.5px] border-border text-foreground hover:border-primary hover:text-primary"
+                buttonStates[pkg.name] === "success"
+                  ? "bg-green-500 text-primary-foreground"
+                  : pkg.recommended
+                    ? "bg-primary text-primary-foreground hover:brightness-90"
+                    : "bg-transparent border-[1.5px] border-border text-foreground hover:border-primary hover:text-primary"
               }`}
             >
-              {pkg.recommended ? "Jetzt starten ↗" : "Paket wählen"}
+              {getButtonContent(pkg)}
             </button>
             <div className="flex flex-col gap-2">
               {pkg.features.map((f, i) => (
