@@ -1,7 +1,7 @@
 import { createContext, useContext, useMemo, type ReactNode } from "react";
 import { useSearchParams } from "react-router-dom";
 
-/* ─── Data shape ─── */
+/* ─── Internal data shape (used by components) ─── */
 
 export interface BrandColors {
   hex: string;
@@ -38,6 +38,8 @@ export interface BrandData {
   brandName: string;
   website: string;
   brandEssence: string;
+  firstName: string;
+  chatId: string;
 
   /* Identity */
   colors: BrandColors[];
@@ -49,6 +51,10 @@ export interface BrandData {
   /* Briefing */
   businessOverview: string;
   aiBriefing: string;
+  targetAudience: string;
+  contentOpportunities: string;
+  positioning: string;
+  platforms: string;
 
   /* Instagram */
   instagramHandle: string;
@@ -65,12 +71,48 @@ export interface BrandData {
   recommendedExplain: string;
 }
 
+/* ─── Incoming JSON shape from ?d= param ─── */
+
+interface IncomingData {
+  brandName?: string;
+  tagline?: string;
+  websiteUrl?: string;
+  primaryColor?: string;
+  secondaryColor?: string;
+  accentColor?: string;
+  darkColor?: string;
+  fontName?: string;
+  brandValues?: string[];
+  aesthetic?: string[];
+  toneOfVoice?: string[];
+  overview?: string;
+  targetAudience?: string;
+  contentOpportunities?: string;
+  positioning?: string;
+  platforms?: string;
+  contentStrategy?: string;
+  chatId?: string;
+  firstName?: string;
+}
+
+/* ─── Helper: determine if a hex color is "light" ─── */
+
+function isLightColor(hex: string): boolean {
+  const c = hex.replace("#", "");
+  const r = parseInt(c.substring(0, 2), 16);
+  const g = parseInt(c.substring(2, 4), 16);
+  const b = parseInt(c.substring(4, 6), 16);
+  return (r * 299 + g * 587 + b * 114) / 1000 > 150;
+}
+
 /* ─── Default / fallback data (Blumenhaus Martina) ─── */
 
 const defaultData: BrandData = {
   brandName: "Blumenhaus Martina",
   website: "blumenhaus-martina.de",
   brandEssence: "Wo jede Blume eine Geschichte erzählt.",
+  firstName: "",
+  chatId: "",
 
   colors: [
     { hex: "#2D4A3E", light: false },
@@ -87,6 +129,10 @@ const defaultData: BrandData = {
     "Blumenhaus Martina ist ein inhabergeführtes Blumengeschäft in Hamburg-Altona, das seit 2015 frische Saisonsblumen, handgefertigte Sträuße und nachhaltige Pflanzenpflege anbietet. Die Marke setzt auf lokale Lieferketten und persönliche Beratung als Differenzierungsmerkmal gegenüber Supermärkten und Online-Anbietern.",
   aiBriefing:
     "Die visuelle Kommunikation sollte die Wärme und Handwerkskunst des Ladens widerspiegeln. Empfohlen: natürliches Licht, erdige Töne, nahbare Texte ohne Marketingfloskeln. Die Hauptzielgruppe — Frauen 28–45 in Hamburg — schätzt Authentizität über Perfektion. Instagram und Pinterest sind die relevantesten Kanäle. Empfohlener Content-Mix: 40% Produkte in Szene gesetzt, 30% Behind-the-scenes, 30% Saison- und Eventinhalte.",
+  targetAudience: "",
+  contentOpportunities: "",
+  positioning: "",
+  platforms: "",
 
   instagramHandle: "@blumenhaus.martina",
   instagramStats: [
@@ -170,16 +216,46 @@ const defaultData: BrandData = {
     "Basierend auf deinen Zielen, deinem aktuellen Stand und deiner Branche empfehlen wir dir das Essential-Paket. Hier siehst du auch, was mit einem anderen Paket noch möglich wäre.",
 };
 
+/* ─── Map incoming JSON fields → internal BrandData ─── */
+
+function mapIncoming(incoming: IncomingData): Partial<BrandData> {
+  const mapped: Partial<BrandData> = {};
+
+  if (incoming.brandName) mapped.brandName = incoming.brandName;
+  if (incoming.tagline) mapped.brandEssence = incoming.tagline;
+  if (incoming.websiteUrl) mapped.website = incoming.websiteUrl;
+  if (incoming.firstName) mapped.firstName = incoming.firstName;
+  if (incoming.chatId) mapped.chatId = incoming.chatId;
+
+  // Build colors array from individual color fields
+  if (incoming.primaryColor || incoming.secondaryColor || incoming.accentColor || incoming.darkColor) {
+    const colors: BrandColors[] = [];
+    if (incoming.primaryColor) colors.push({ hex: incoming.primaryColor, light: isLightColor(incoming.primaryColor) });
+    if (incoming.secondaryColor) colors.push({ hex: incoming.secondaryColor, light: isLightColor(incoming.secondaryColor) });
+    if (incoming.accentColor) colors.push({ hex: incoming.accentColor, light: isLightColor(incoming.accentColor) });
+    if (incoming.darkColor) colors.push({ hex: incoming.darkColor, light: isLightColor(incoming.darkColor) });
+    mapped.colors = colors;
+  }
+
+  if (incoming.fontName) mapped.fonts = { display: incoming.fontName, body: "DM Sans" };
+  if (incoming.brandValues) mapped.values = incoming.brandValues;
+  if (incoming.aesthetic) mapped.aesthetic = incoming.aesthetic;
+  if (incoming.toneOfVoice) mapped.tones = incoming.toneOfVoice;
+  if (incoming.overview) mapped.businessOverview = incoming.overview;
+  if (incoming.contentStrategy) mapped.aiBriefing = incoming.contentStrategy;
+  if (incoming.targetAudience) mapped.targetAudience = incoming.targetAudience;
+  if (incoming.contentOpportunities) mapped.contentOpportunities = incoming.contentOpportunities;
+  if (incoming.positioning) mapped.positioning = incoming.positioning;
+  if (incoming.platforms) mapped.platforms = incoming.platforms;
+
+  return mapped;
+}
+
 /* ─── Context ─── */
 
 const BrandDataContext = createContext<BrandData>(defaultData);
 
 export const useBrandData = () => useContext(BrandDataContext);
-
-/** Deep-merge param data over defaults so partial JSON works */
-function mergeData(partial: Partial<BrandData>): BrandData {
-  return { ...defaultData, ...partial };
-}
 
 export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
   const [searchParams] = useSearchParams();
@@ -189,8 +265,9 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
     if (!encoded) return defaultData;
     try {
       const json = atob(encoded);
-      const parsed = JSON.parse(json) as Partial<BrandData>;
-      return mergeData(parsed);
+      const parsed = JSON.parse(json) as IncomingData;
+      const mapped = mapIncoming(parsed);
+      return { ...defaultData, ...mapped };
     } catch (e) {
       console.warn("Failed to parse ?d= parameter:", e);
       return defaultData;

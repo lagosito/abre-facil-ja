@@ -3,7 +3,7 @@ import SectionHeader from "./SectionHeader";
 import AddonCard from "./AddonCard";
 
 const BrandBriefing = () => {
-  const { businessOverview, aiBriefing } = useBrandData();
+  const { businessOverview, aiBriefing, targetAudience, contentOpportunities, positioning, platforms } = useBrandData();
 
   return (
     <section className="mb-16">
@@ -18,6 +18,35 @@ const BrandBriefing = () => {
           <div className="text-[15px] leading-[1.75] text-foreground/80 mt-2">
             {businessOverview}
           </div>
+
+          {targetAudience && (
+            <div className="mt-5 pt-5 border-t border-border">
+              <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-muted-foreground mb-2">Zielgruppe</div>
+              <div className="text-sm leading-[1.75] text-foreground/80">{targetAudience}</div>
+            </div>
+          )}
+
+          {positioning && (
+            <div className="mt-5 pt-5 border-t border-border">
+              <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-muted-foreground mb-2">Positionierung</div>
+              <div className="text-sm leading-[1.75] text-foreground/80">{positioning}</div>
+            </div>
+          )}
+
+          {platforms && (
+            <div className="mt-5 pt-5 border-t border-border">
+              <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-muted-foreground mb-2">Plattformen</div>
+              <div className="text-sm leading-[1.75] text-foreground/80">{platforms}</div>
+            </div>
+          )}
+
+          {contentOpportunities && (
+            <div className="mt-5 pt-5 border-t border-border">
+              <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-primary mb-2">Content-Chancen</div>
+              <div className="text-sm leading-[1.75] text-muted-foreground">{contentOpportunities}</div>
+            </div>
+          )}
+
           <div className="mt-5 pt-5 border-t border-border">
             <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-primary mb-2">AI Briefing — Content-Strategie</div>
             <div className="text-sm leading-[1.75] text-muted-foreground">
