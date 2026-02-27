@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, type ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
 import { useSearchParams } from "react-router-dom";
 
 /* ─── Internal data shape (used by components) ─── */
@@ -71,7 +71,7 @@ export interface BrandData {
   recommendedExplain: string;
 }
 
-/* ─── Incoming JSON shape from ?d= param ─── */
+/* ─── Incoming JSON shape from ?d= or ?id= fetch ─── */
 
 interface IncomingData {
   brandName?: string;
@@ -227,7 +227,6 @@ function mapIncoming(incoming: IncomingData): Partial<BrandData> {
   if (incoming.firstName) mapped.firstName = incoming.firstName;
   if (incoming.chatId) mapped.chatId = incoming.chatId;
 
-  // Build colors array from individual color fields
   if (incoming.primaryColor || incoming.secondaryColor || incoming.accentColor || incoming.darkColor) {
     const colors: BrandColors[] = [];
     if (incoming.primaryColor) colors.push({ hex: incoming.primaryColor, light: isLightColor(incoming.primaryColor) });
@@ -253,29 +252,64 @@ function mapIncoming(incoming: IncomingData): Partial<BrandData> {
 
 /* ─── Context ─── */
 
-const BrandDataContext = createContext<BrandData>(defaultData);
+interface BrandDataContextValue {
+  data: BrandData;
+  loading: boolean;
+}
 
-export const useBrandData = () => useContext(BrandDataContext);
+const BrandDataContext = createContext<BrandDataContextValue>({ data: defaultData, loading: false });
+
+export const useBrandData = () => {
+  const { data, loading } = useContext(BrandDataContext);
+  return { ...data, loading };
+};
 
 export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
   const [searchParams] = useSearchParams();
+  const [data, setData] = useState<BrandData>(defaultData);
+  const [loading, setLoading] = useState(false);
 
-  const data = useMemo(() => {
-    const encoded = searchParams.get("d");
-    if (!encoded) return defaultData;
-    try {
-      const json = atob(encoded);
-      const parsed = JSON.parse(json) as IncomingData;
-      const mapped = mapIncoming(parsed);
-      return { ...defaultData, ...mapped };
-    } catch (e) {
-      console.warn("Failed to parse ?d= parameter:", e);
-      return defaultData;
+  useEffect(() => {
+    const idParam = searchParams.get("id");
+    const dParam = searchParams.get("d");
+
+    if (idParam) {
+      // Priority 1: fetch from webhook by ID
+      setLoading(true);
+      fetch(`https://lagosito.app.n8n.cloud/webhook/elk-get-dna?id=${encodeURIComponent(idParam)}`, {
+        mode: "cors",
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return res.json();
+        })
+        .then((parsed: IncomingData) => {
+          const mapped = mapIncoming(parsed);
+          setData({ ...defaultData, ...mapped });
+        })
+        .catch((e) => {
+          console.warn("Failed to fetch brand data by id:", e);
+          setData(defaultData);
+        })
+        .finally(() => setLoading(false));
+    } else if (dParam) {
+      // Priority 2: base64 decode
+      try {
+        const json = atob(dParam);
+        const parsed = JSON.parse(json) as IncomingData;
+        const mapped = mapIncoming(parsed);
+        setData({ ...defaultData, ...mapped });
+      } catch (e) {
+        console.warn("Failed to parse ?d= parameter:", e);
+        setData(defaultData);
+      }
+    } else {
+      setData(defaultData);
     }
   }, [searchParams]);
 
   return (
-    <BrandDataContext.Provider value={data}>
+    <BrandDataContext.Provider value={{ data, loading }}>
       {children}
     </BrandDataContext.Provider>
   );
