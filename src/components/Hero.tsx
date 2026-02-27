@@ -12,7 +12,7 @@ const Hero = () => {
           Abgeschlossen ✓
         </span>
         <span className="font-mono text-xs text-muted-foreground px-3 py-1 bg-surface rounded-pill">
-          {website}
+          {website.replace(/^https?:\/\/(www\.)?/, "")}
         </span>
       </div>
       <h1 className="font-serif text-[clamp(48px,7vw,88px)] leading-[0.95] tracking-tight font-normal mb-7">
