@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useBrandData } from "@/context/BrandDataContext";
 import SectionHeader from "./SectionHeader";
 import { Pencil } from "lucide-react";
@@ -15,6 +15,12 @@ const BrandIdentity = () => {
   const [newValue, setNewValue] = useState("");
   const [newTone, setNewTone] = useState("");
   const [selectedFont, setSelectedFont] = useState(data.fonts.display);
+
+  // Sync local state when context data changes (e.g. after fetch)
+  useEffect(() => { setSwatches(data.colors); }, [data.colors]);
+  useEffect(() => { setValues(data.values); }, [data.values]);
+  useEffect(() => { setTones(data.tones); }, [data.tones]);
+  useEffect(() => { setSelectedFont(data.fonts.display); }, [data.fonts.display]);
 
   const updateSwatch = (i: number, hex: string) => {
     setSwatches((s) => s.map((sw, idx) => (idx === i ? { ...sw, hex } : sw)));

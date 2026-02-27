@@ -266,13 +266,12 @@ export const useBrandData = () => {
 
 export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
   const [searchParams] = useSearchParams();
+  const idParam = searchParams.get("id");
+  const dParam = searchParams.get("d");
   const [data, setData] = useState<BrandData>(defaultData);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(!!idParam);
 
   useEffect(() => {
-    const idParam = searchParams.get("id");
-    const dParam = searchParams.get("d");
-
     if (idParam) {
       // Priority 1: fetch from webhook by ID
       setLoading(true);
