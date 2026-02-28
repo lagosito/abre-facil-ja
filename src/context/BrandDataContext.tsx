@@ -16,6 +16,33 @@ export interface InstagramPost {
   caption?: string;
 }
 
+export interface GrowthProjection {
+  current: string;
+  month3: string;
+  month6: string;
+  month12: string;
+  currentEng: string;
+  month3Eng: string;
+  month6Eng: string;
+  month12Eng: string;
+  percentGrowth3: string;
+  percentGrowth6: string;
+  percentGrowth12: string;
+}
+
+export interface ContentInsights {
+  bestPostLikes: number;
+  bestPostComments: number;
+  bestPostCaption: string;
+  avgLikes: number;
+  avgComments: number;
+  postsPerMonth: number;
+  idealPostsPerMonth: number;
+  engagementRate: number;
+  benchmarkRate: number;
+  aboveBenchmark: boolean;
+}
+
 export interface Objective {
   icon: string;
   label: string;
@@ -57,6 +84,8 @@ export interface BrandData {
   instagramHandle: string;
   instagramStats: { val: string; lbl: string }[];
   instagramPosts: InstagramPost[];
+  growthProjection: GrowthProjection | null;
+  contentInsights: ContentInsights | null;
   objectives: Objective[];
   calendarMonth: string;
   calendarExplain: string;
@@ -98,6 +127,8 @@ interface IncomingData {
   positioning?: string;
   platforms?: string;
   contentStrategy?: string;
+  growthProjection?: GrowthProjection;
+  contentInsights?: ContentInsights;
 }
 
 function isLightColor(hex: string): boolean {
@@ -153,6 +184,8 @@ const defaultData: BrandData = {
     { icon: "📸", label: "Assets vorhanden", value: "Eigene Fotos, kein Video" },
     { icon: "💸", label: "Paid Ads", value: "Noch nicht aktiv" },
   ],
+  growthProjection: null,
+  contentInsights: null,
   calendarMonth: "März",
   calendarExplain: "Basierend auf deinen Zielen und deiner Brand-DNA haben wir einen ersten Content-Plan für März erstellt.",
   packages: [
@@ -233,6 +266,8 @@ function mapIncoming(incoming: IncomingData): Partial<BrandData> {
   if (incoming.instagramHandle) mapped.instagramHandle = incoming.instagramHandle;
   if (incoming.instagramStats?.length) mapped.instagramStats = incoming.instagramStats;
   if (incoming.instagramPosts?.length) mapped.instagramPosts = incoming.instagramPosts;
+  if (incoming.growthProjection) mapped.growthProjection = incoming.growthProjection;
+  if (incoming.contentInsights) mapped.contentInsights = incoming.contentInsights;
 
   // Legacy format (?d= base64)
   if (incoming.tagline) mapped.brandEssence = incoming.tagline;
