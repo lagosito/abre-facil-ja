@@ -15,6 +15,10 @@ const BrandIdentity = () => {
   const [newValue, setNewValue] = useState("");
   const [newTone, setNewTone] = useState("");
   const [selectedFont, setSelectedFont] = useState(data.fonts.display);
+  const [hideLogo, setHideLogo] = useState(false);
+
+  // Reset hideLogo when logo URL changes
+  useEffect(() => { setHideLogo(false); }, [data.brandLogoUrl]);
 
   // Sync local state when context data changes (e.g. after fetch)
   useEffect(() => { setSwatches(data.colors); }, [data.colors]);
@@ -51,11 +55,20 @@ const BrandIdentity = () => {
         <div className="col-span-12 md:col-span-5 text-background rounded-lg p-6 min-h-[220px] flex flex-col animate-fade-up hover:-translate-y-0.5 hover:shadow-lg transition-all" style={{ backgroundColor: data.logoBgColor || '#111111' }}>
           <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-background/40 mb-3.5">Marke</div>
           <div className="mt-auto">
-            {data.brandLogoUrl ? (
+            {data.brandLogoUrl && !hideLogo ? (
               <img
                 src={data.brandLogoUrl}
                 alt={`${data.brandName} Logo`}
-                className="max-h-[80px] max-w-[200px] object-contain brightness-0 invert"
+                className="max-h-[80px] max-w-[200px] object-contain"
+                style={{ mixBlendMode: 'screen' }}
+                onLoad={(e) => {
+                  const img = e.currentTarget;
+                  const ratio = img.naturalWidth / img.naturalHeight;
+                  if ((ratio > 0.8 && ratio < 1.2) || img.naturalWidth < 60 || img.naturalHeight < 60) {
+                    setHideLogo(true);
+                  }
+                }}
+                onError={() => setHideLogo(true)}
               />
             ) : (
               <div className="font-serif italic text-[44px] leading-none">
