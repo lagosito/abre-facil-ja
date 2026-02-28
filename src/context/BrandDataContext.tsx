@@ -7,11 +7,11 @@ export interface BrandColors {
 }
 
 export interface InstagramPost {
-  bg: string;
-  likes: number;
-  comments: number;
+  bg?: string;
   imageUrl?: string;
   url?: string;
+  likes: number;
+  comments: number;
   type?: string;
   caption?: string;
 }
@@ -77,6 +77,7 @@ interface IncomingData {
   aiBriefing?: string;
   instagramHandle?: string;
   instagramStats?: { val: string; lbl: string }[];
+  instagramPosts?: { bg?: string; imageUrl?: string; url?: string; likes: number; comments: number; type?: string; caption?: string }[];
   chatId?: string;
   firstName?: string;
   brand_logo_url?: string;
@@ -231,6 +232,7 @@ function mapIncoming(incoming: IncomingData): Partial<BrandData> {
   if (incoming.aiBriefing) mapped.aiBriefing = incoming.aiBriefing;
   if (incoming.instagramHandle) mapped.instagramHandle = incoming.instagramHandle;
   if (incoming.instagramStats?.length) mapped.instagramStats = incoming.instagramStats;
+  if (incoming.instagramPosts?.length) mapped.instagramPosts = incoming.instagramPosts;
 
   // Legacy format (?d= base64)
   if (incoming.tagline) mapped.brandEssence = incoming.tagline;
