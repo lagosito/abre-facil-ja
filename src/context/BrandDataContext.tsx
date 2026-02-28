@@ -75,6 +75,7 @@ interface IncomingData {
   chatId?: string;
   firstName?: string;
   brand_logo_url?: string;
+  logoUrl?: string;
   tagline?: string;
   websiteUrl?: string;
   primaryColor?: string;
@@ -208,6 +209,7 @@ function mapIncoming(incoming: IncomingData): Partial<BrandData> {
   if (incoming.firstName) mapped.firstName = incoming.firstName;
   if (incoming.chatId) mapped.chatId = incoming.chatId;
   if (incoming.brand_logo_url) mapped.brandLogoUrl = incoming.brand_logo_url;
+  if (incoming.logoUrl) mapped.brandLogoUrl = incoming.logoUrl;
 
   // New format (webhook)
   if (incoming.website) mapped.website = incoming.website;
