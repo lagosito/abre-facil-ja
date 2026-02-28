@@ -10,6 +10,10 @@ export interface InstagramPost {
   bg: string;
   likes: number;
   comments: number;
+  imageUrl?: string;
+  url?: string;
+  type?: string;
+  caption?: string;
 }
 
 export interface Objective {
