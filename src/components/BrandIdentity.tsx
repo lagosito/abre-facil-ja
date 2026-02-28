@@ -63,9 +63,14 @@ const BrandIdentity = () => {
                 style={{ mixBlendMode: 'screen' }}
                 onLoad={(e) => {
                   const img = e.currentTarget;
-                  const ratio = img.naturalWidth / img.naturalHeight;
-                  if ((ratio > 0.8 && ratio < 1.2) || img.naturalWidth < 60 || img.naturalHeight < 60) {
-                    setHideLogo(true);
+                  const w = img.naturalWidth;
+                  const h = img.naturalHeight;
+                  // SVGs may report 0 dimensions — skip validation in that case
+                  if (w > 0 && h > 0) {
+                    const ratio = w / h;
+                    if ((ratio > 0.8 && ratio < 1.2) && w < 200) {
+                      setHideLogo(true);
+                    }
                   }
                 }}
                 onError={() => setHideLogo(true)}
