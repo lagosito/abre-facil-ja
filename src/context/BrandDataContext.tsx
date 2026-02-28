@@ -38,6 +38,7 @@ export interface BrandData {
   firstName: string;
   chatId: string;
   brandLogoUrl: string;
+  logoBgColor: string;
   colors: BrandColors[];
   fonts: { display: string; body: string };
   values: string[];
@@ -76,6 +77,7 @@ interface IncomingData {
   firstName?: string;
   brand_logo_url?: string;
   logoUrl?: string;
+  logoBgColor?: string;
   tagline?: string;
   websiteUrl?: string;
   primaryColor?: string;
@@ -108,6 +110,7 @@ const defaultData: BrandData = {
   firstName: "",
   chatId: "",
   brandLogoUrl: "",
+  logoBgColor: "#111111",
   colors: [
     { hex: "#2D4A3E", light: false },
     { hex: "#F2C4A0", light: true },
@@ -210,6 +213,7 @@ function mapIncoming(incoming: IncomingData): Partial<BrandData> {
   if (incoming.chatId) mapped.chatId = incoming.chatId;
   if (incoming.brand_logo_url) mapped.brandLogoUrl = incoming.brand_logo_url;
   if (incoming.logoUrl) mapped.brandLogoUrl = incoming.logoUrl;
+  if (incoming.logoBgColor) mapped.logoBgColor = incoming.logoBgColor;
 
   // New format (webhook)
   if (incoming.website) mapped.website = incoming.website;

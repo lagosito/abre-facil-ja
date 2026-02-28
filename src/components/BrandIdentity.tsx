@@ -48,7 +48,7 @@ const BrandIdentity = () => {
 
       <div className="grid grid-cols-12 gap-3.5">
         {/* Identity Card */}
-        <div className="col-span-12 md:col-span-5 bg-foreground text-background rounded-lg p-6 min-h-[220px] flex flex-col animate-fade-up hover:-translate-y-0.5 hover:shadow-lg transition-all">
+        <div className="col-span-12 md:col-span-5 text-background rounded-lg p-6 min-h-[220px] flex flex-col animate-fade-up hover:-translate-y-0.5 hover:shadow-lg transition-all" style={{ backgroundColor: data.logoBgColor || '#111111' }}>
           <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-background/40 mb-3.5">Marke</div>
           <div className="mt-auto">
             {data.brandLogoUrl ? (
