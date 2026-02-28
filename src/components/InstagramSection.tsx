@@ -1,8 +1,29 @@
+import { useState } from "react";
 import { useBrandData } from "@/context/BrandDataContext";
 import SectionHeader from "./SectionHeader";
+import { Check, Plus } from "lucide-react";
 
 const InstagramSection = () => {
-  const { instagramHandle, instagramStats, growthProjection, contentInsights, objectives } = useBrandData();
+  const { instagramHandle, instagramStats, growthProjection, contentInsights, objectives, selectedObjectives, setSelectedObjectives } = useBrandData();
+  const [customObjectives, setCustomObjectives] = useState<{ icon: string; label: string; value: string }[]>([]);
+  const [newGoal, setNewGoal] = useState("");
+
+  const allObjectives = [...objectives, ...customObjectives];
+
+  const toggleObjective = (label: string) => {
+    setSelectedObjectives((prev) =>
+      prev.includes(label) ? prev.filter((l) => l !== label) : [...prev, label]
+    );
+  };
+
+  const addCustomGoal = () => {
+    const trimmed = newGoal.trim();
+    if (!trimmed) return;
+    const custom = { icon: "✏️", label: trimmed, value: "" };
+    setCustomObjectives((prev) => [...prev, custom]);
+    setSelectedObjectives((prev) => [...prev, trimmed]);
+    setNewGoal("");
+  };
 
   return (
     <section className="mb-16">
@@ -50,16 +71,51 @@ const InstagramSection = () => {
 
         {/* Right column — Objectives */}
         <div className="col-span-12 md:col-span-4 bg-card rounded-lg p-6 animate-fade-up [animation-delay:0.09s] hover:-translate-y-0.5 hover:shadow-lg transition-all h-fit">
-          <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-muted-foreground mb-3.5">Deine Ziele</div>
-          {objectives.map((o) => (
-            <div key={o.label} className="flex gap-3 items-start py-2.5 border-b border-border last:border-b-0">
-              <div className="w-[30px] h-[30px] rounded-lg bg-surface flex items-center justify-center text-sm shrink-0">{o.icon}</div>
-              <div>
-                <div className="text-[10px] uppercase tracking-[0.08em] font-bold text-muted-foreground">{o.label}</div>
-                <div className="text-sm font-medium mt-0.5">{o.value}</div>
-              </div>
-            </div>
-          ))}
+          <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-muted-foreground mb-3.5">Wähle deine Ziele</div>
+          <div className="flex flex-col gap-1">
+            {allObjectives.map((o) => {
+              const selected = selectedObjectives.includes(o.label);
+              return (
+                <button
+                  key={o.label}
+                  onClick={() => toggleObjective(o.label)}
+                  className={`flex gap-3 items-start p-2.5 rounded-lg text-left transition-all border ${
+                    selected
+                      ? "border-primary bg-primary/10"
+                      : "border-transparent hover:bg-muted/50"
+                  }`}
+                >
+                  <div className={`w-[30px] h-[30px] rounded-lg flex items-center justify-center text-sm shrink-0 ${
+                    selected ? "bg-primary text-primary-foreground" : "bg-surface"
+                  }`}>
+                    {selected ? <Check className="w-4 h-4" /> : o.icon}
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-[10px] uppercase tracking-[0.08em] font-bold text-muted-foreground">{o.label}</div>
+                    {o.value && <div className="text-sm font-medium mt-0.5">{o.value}</div>}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Custom goal input */}
+          <div className="mt-3 flex gap-2">
+            <input
+              type="text"
+              value={newGoal}
+              onChange={(e) => setNewGoal(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && addCustomGoal()}
+              placeholder="Eigenes Ziel hinzufügen"
+              className="flex-1 text-sm bg-muted/50 border border-border rounded-lg px-3 py-2 placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
+            />
+            <button
+              onClick={addCustomGoal}
+              className="w-9 h-9 rounded-lg bg-primary text-primary-foreground flex items-center justify-center shrink-0 hover:brightness-90 transition-all"
+            >
+              <Plus className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
     </section>
@@ -81,25 +137,21 @@ const GrowthChart = ({ data }: { data: GrowthProjection }) => {
     <div className="flex items-end justify-between gap-3 h-[180px]">
       {bars.map((bar) => (
         <div key={bar.label} className="flex-1 flex flex-col items-center gap-1.5 h-full justify-end">
-          {/* Value on top */}
           <div className="text-center">
             <div className="font-serif italic text-lg leading-tight">{bar.value}</div>
             {bar.growth && (
-              <div className="text-[10px] font-bold text-primary mt-0.5">+{bar.growth}</div>
+              <div className="text-[10px] font-bold text-primary mt-0.5">{bar.growth}</div>
             )}
           </div>
-          {/* Bar */}
           <div
             className="w-full rounded-t-md bg-primary/15 relative overflow-hidden transition-all"
             style={{ height: bar.height }}
           >
             <div className="absolute inset-0 bg-primary/25 rounded-t-md" />
           </div>
-          {/* Label */}
           <div className="text-[10px] uppercase tracking-[0.06em] font-bold text-muted-foreground text-center mt-1">
             {bar.label}
           </div>
-          {/* Engagement */}
           <div className="text-[9px] text-muted-foreground text-center">{bar.eng} Eng.</div>
         </div>
       ))}
@@ -116,7 +168,6 @@ const InsightsGrid = ({ data }: { data: ContentInsights }) => {
 
   return (
     <div className="space-y-4">
-      {/* Best Post */}
       <div className="flex gap-3 items-start">
         <div className="w-[30px] h-[30px] rounded-lg bg-surface flex items-center justify-center text-sm shrink-0">🏆</div>
         <div>
@@ -130,7 +181,6 @@ const InsightsGrid = ({ data }: { data: ContentInsights }) => {
         </div>
       </div>
 
-      {/* Averages */}
       <div className="flex gap-3 items-start">
         <div className="w-[30px] h-[30px] rounded-lg bg-surface flex items-center justify-center text-sm shrink-0">📊</div>
         <div>
@@ -141,7 +191,6 @@ const InsightsGrid = ({ data }: { data: ContentInsights }) => {
         </div>
       </div>
 
-      {/* Posting Frequency */}
       <div className="flex gap-3 items-start">
         <div className="w-[30px] h-[30px] rounded-lg bg-surface flex items-center justify-center text-sm shrink-0">📅</div>
         <div>
@@ -155,7 +204,6 @@ const InsightsGrid = ({ data }: { data: ContentInsights }) => {
         </div>
       </div>
 
-      {/* Engagement vs Benchmark */}
       <div className="flex gap-3 items-start">
         <div className="w-[30px] h-[30px] rounded-lg bg-surface flex items-center justify-center text-sm shrink-0">⚡</div>
         <div>
