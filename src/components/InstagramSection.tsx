@@ -24,7 +24,10 @@ const InstagramSection = () => {
           </div>
           <div className="grid grid-cols-6 gap-1.5">
             {instagramPosts.map((p, i) => (
-              <div key={i} className="aspect-square rounded-lg relative overflow-hidden group" style={{ background: p.bg }}>
+              <div key={i} className="aspect-square rounded-lg relative overflow-hidden group" style={{ background: !p.imageUrl ? p.bg : undefined }}>
+                {p.imageUrl && (
+                  <img src={p.imageUrl} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" loading="lazy" />
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/55 to-transparent flex items-end p-1.5 text-primary-foreground text-[9px] font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
                   ❤️ {p.likes} &nbsp; 💬 {p.comments}
                 </div>
