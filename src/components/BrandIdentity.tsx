@@ -51,11 +51,19 @@ const BrandIdentity = () => {
         <div className="col-span-12 md:col-span-5 bg-foreground text-background rounded-lg p-6 min-h-[220px] flex flex-col animate-fade-up hover:-translate-y-0.5 hover:shadow-lg transition-all">
           <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-background/40 mb-3.5">Marke</div>
           <div className="mt-auto">
-            <div className="font-serif italic text-[44px] leading-none">
-              {data.brandName.split(" ").map((word, i, arr) => (
-                <span key={i}>{word}{i < arr.length - 1 ? <br /> : null}</span>
-              ))}
-            </div>
+            {data.brandLogoUrl ? (
+              <img
+                src={data.brandLogoUrl}
+                alt={`${data.brandName} Logo`}
+                className="max-h-[80px] max-w-[200px] object-contain brightness-0 invert"
+              />
+            ) : (
+              <div className="font-serif italic text-[44px] leading-none">
+                {data.brandName.split(" ").map((word, i, arr) => (
+                  <span key={i}>{word}{i < arr.length - 1 ? <br /> : null}</span>
+                ))}
+              </div>
+            )}
             <div className="font-mono text-[11px] text-background/40 mt-2">{data.website.replace(/^https?:\/\/(www\.)?/, "")}</div>
           </div>
         </div>

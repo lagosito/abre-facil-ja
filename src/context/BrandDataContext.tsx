@@ -37,6 +37,7 @@ export interface BrandData {
   brandEssence: string;
   firstName: string;
   chatId: string;
+  brandLogoUrl: string;
   colors: BrandColors[];
   fonts: { display: string; body: string };
   values: string[];
@@ -73,6 +74,7 @@ interface IncomingData {
   instagramStats?: { val: string; lbl: string }[];
   chatId?: string;
   firstName?: string;
+  brand_logo_url?: string;
   tagline?: string;
   websiteUrl?: string;
   primaryColor?: string;
@@ -104,6 +106,7 @@ const defaultData: BrandData = {
   brandEssence: "Wo jede Blume eine Geschichte erzählt.",
   firstName: "",
   chatId: "",
+  brandLogoUrl: "",
   colors: [
     { hex: "#2D4A3E", light: false },
     { hex: "#F2C4A0", light: true },
@@ -204,6 +207,7 @@ function mapIncoming(incoming: IncomingData): Partial<BrandData> {
   if (incoming.brandName) mapped.brandName = incoming.brandName;
   if (incoming.firstName) mapped.firstName = incoming.firstName;
   if (incoming.chatId) mapped.chatId = incoming.chatId;
+  if (incoming.brand_logo_url) mapped.brandLogoUrl = incoming.brand_logo_url;
 
   // New format (webhook)
   if (incoming.website) mapped.website = incoming.website;
