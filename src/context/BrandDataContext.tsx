@@ -129,6 +129,7 @@ interface IncomingData {
   contentStrategy?: string;
   growthProjection?: GrowthProjection;
   contentInsights?: ContentInsights;
+  objectives?: Objective[];
 }
 
 function isLightColor(hex: string): boolean {
@@ -266,6 +267,7 @@ function mapIncoming(incoming: IncomingData): Partial<BrandData> {
   if (incoming.instagramHandle) mapped.instagramHandle = incoming.instagramHandle;
   if (incoming.instagramStats?.length) mapped.instagramStats = incoming.instagramStats;
   if (incoming.instagramPosts?.length) mapped.instagramPosts = incoming.instagramPosts;
+  if (incoming.objectives?.length) mapped.objectives = incoming.objectives;
   if (incoming.growthProjection) mapped.growthProjection = incoming.growthProjection;
   if (incoming.contentInsights) mapped.contentInsights = incoming.contentInsights;
 
@@ -296,13 +298,20 @@ function mapIncoming(incoming: IncomingData): Partial<BrandData> {
 interface BrandDataContextValue {
   data: BrandData;
   loading: boolean;
+  selectedObjectives: string[];
+  setSelectedObjectives: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
-const BrandDataContext = createContext<BrandDataContextValue>({ data: defaultData, loading: false });
+const BrandDataContext = createContext<BrandDataContextValue>({
+  data: defaultData,
+  loading: false,
+  selectedObjectives: [],
+  setSelectedObjectives: () => {},
+});
 
 export const useBrandData = () => {
-  const { data, loading } = useContext(BrandDataContext);
-  return { ...data, loading };
+  const { data, loading, selectedObjectives, setSelectedObjectives } = useContext(BrandDataContext);
+  return { ...data, loading, selectedObjectives, setSelectedObjectives };
 };
 
 export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
@@ -311,6 +320,7 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
   const dParam = searchParams.get("d");
   const [data, setData] = useState<BrandData>(defaultData);
   const [loading, setLoading] = useState(!!idParam);
+  const [selectedObjectives, setSelectedObjectives] = useState<string[]>([]);
 
   useEffect(() => {
     if (idParam) {
@@ -347,7 +357,7 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
   }, [searchParams]);
 
   return (
-    <BrandDataContext.Provider value={{ data, loading }}>
+    <BrandDataContext.Provider value={{ data, loading, selectedObjectives, setSelectedObjectives }}>
       {children}
     </BrandDataContext.Provider>
   );

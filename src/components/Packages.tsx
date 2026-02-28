@@ -5,7 +5,7 @@ import AddonCard from "./AddonCard";
 import { Loader2, Check } from "lucide-react";
 
 const Packages = () => {
-  const { packages, recommendedExplain, chatId, brandName, website } = useBrandData();
+  const { packages, recommendedExplain, chatId, brandName, website, selectedObjectives } = useBrandData();
   const [buttonStates, setButtonStates] = useState<Record<string, "idle" | "loading" | "success">>({});
 
   const handlePackageClick = async (pkg: { name: string; price: string; recommended: boolean }) => {
@@ -22,6 +22,7 @@ const Packages = () => {
           price: pkg.price,
           brandName,
           websiteUrl: website,
+          selectedObjectives,
         }),
       });
       setButtonStates((s) => ({ ...s, [pkg.name]: "success" }));
