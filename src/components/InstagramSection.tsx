@@ -30,7 +30,7 @@ const InstagramSection = () => {
       <SectionHeader
         num="03"
         title="Dein Instagram — Stand heute"
-        explain="Wir haben einen Blick auf deinen aktuellen Instagram-Account geworfen. Diese Zahlen zeigen den Ausgangspunkt — und machen deutlich, wo El Kiosko den größten Hebel hat."
+        explain="Wir haben deinen aktuellen Instagram-Account mit Branchendaten verglichen. Diese Zahlen zeigen den Ausgangspunkt — und machen deutlich, wo El Kiosk den größten Hebel hat."
       />
       <div className="grid grid-cols-12 gap-3.5">
         {/* Left column */}
@@ -47,6 +47,98 @@ const InstagramSection = () => {
               ))}
             </div>
           </div>
+
+          {/* Competitive Benchmark Card — NEW */}
+          {contentInsights && (
+            <div className="bg-card rounded-lg p-6 animate-fade-up [animation-delay:0.04s] hover:-translate-y-0.5 hover:shadow-lg transition-all">
+              <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-muted-foreground mb-5">Wettbewerbs-Vergleich</div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Engagement comparison */}
+                <div className="bg-surface rounded-xl p-4">
+                  <div className="text-[10px] uppercase tracking-[0.06em] font-bold text-muted-foreground mb-3">Engagement Rate</div>
+                  <div className="flex items-end gap-3 mb-2">
+                    <div>
+                      <div className="text-[10px] text-muted-foreground mb-0.5">Du</div>
+                      <div className={`font-serif italic text-2xl leading-none ${contentInsights.aboveBenchmark ? 'text-emerald-600' : 'text-red-500'}`}>
+                        {contentInsights.engagementRate}%
+                      </div>
+                    </div>
+                    <div className="text-muted-foreground text-lg mb-0.5">vs.</div>
+                    <div>
+                      <div className="text-[10px] text-muted-foreground mb-0.5">Markt</div>
+                      <div className="font-serif italic text-2xl leading-none">
+                        {contentInsights.benchmarkRate}%
+                      </div>
+                    </div>
+                  </div>
+                  {/* Visual bar comparison */}
+                  <div className="space-y-1.5 mt-3">
+                    <div className="flex items-center gap-2">
+                      <div className="text-[9px] w-8 text-muted-foreground">Du</div>
+                      <div className="flex-1 h-2 bg-border rounded-full overflow-hidden">
+                        <div
+                          className={`h-full rounded-full transition-all ${contentInsights.aboveBenchmark ? 'bg-emerald-500' : 'bg-red-400'}`}
+                          style={{ width: `${Math.min(100, (contentInsights.engagementRate / Math.max(contentInsights.benchmarkRate, contentInsights.engagementRate)) * 100)}%` }}
+                        />
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="text-[9px] w-8 text-muted-foreground">Markt</div>
+                      <div className="flex-1 h-2 bg-border rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-foreground/30 rounded-full transition-all"
+                          style={{ width: `${Math.min(100, (contentInsights.benchmarkRate / Math.max(contentInsights.benchmarkRate, contentInsights.engagementRate)) * 100)}%` }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Posting frequency comparison */}
+                <div className="bg-surface rounded-xl p-4">
+                  <div className="text-[10px] uppercase tracking-[0.06em] font-bold text-muted-foreground mb-3">Posting-Frequenz</div>
+                  <div className="flex items-end gap-3 mb-2">
+                    <div>
+                      <div className="text-[10px] text-muted-foreground mb-0.5">Du</div>
+                      <div className={`font-serif italic text-2xl leading-none ${contentInsights.postsPerMonth >= contentInsights.idealPostsPerMonth ? 'text-emerald-600' : 'text-red-500'}`}>
+                        {contentInsights.postsPerMonth}
+                      </div>
+                    </div>
+                    <div className="text-muted-foreground text-lg mb-0.5">vs.</div>
+                    <div>
+                      <div className="text-[10px] text-muted-foreground mb-0.5">Empfohlen</div>
+                      <div className="font-serif italic text-2xl leading-none">
+                        {contentInsights.idealPostsPerMonth}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-[10px] text-muted-foreground mt-1">Posts / Monat</div>
+                </div>
+
+                {/* Content gap */}
+                <div className="bg-red-500/5 border border-red-500/10 rounded-xl p-4">
+                  <div className="text-[10px] uppercase tracking-[0.06em] font-bold text-red-500/70 mb-3">Content Gap</div>
+                  {contentInsights.postsPerMonth < contentInsights.idealPostsPerMonth ? (
+                    <>
+                      <div className="font-serif italic text-3xl leading-none text-red-500">
+                        {Math.round((1 - contentInsights.postsPerMonth / contentInsights.idealPostsPerMonth) * 100)}%
+                      </div>
+                      <div className="text-[11px] text-red-500/70 mt-2 leading-snug">
+                        weniger Content als Top-Wettbewerber in deiner Branche.
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="font-serif italic text-3xl leading-none text-emerald-600">✓</div>
+                      <div className="text-[11px] text-emerald-600/80 mt-2 leading-snug">
+                        Deine Posting-Frequenz liegt im oder über dem Branchenschnitt.
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Growth Projection */}
           <div className="bg-card rounded-lg p-6 animate-fade-up [animation-delay:0.06s] hover:-translate-y-0.5 hover:shadow-lg transition-all">
@@ -163,9 +255,6 @@ const GrowthChart = ({ data }: { data: GrowthProjection }) => {
 import type { ContentInsights } from "@/context/BrandDataContext";
 
 const InsightsGrid = ({ data }: { data: ContentInsights }) => {
-  const freqOk = data.postsPerMonth >= data.idealPostsPerMonth;
-  const engOk = data.aboveBenchmark;
-
   return (
     <div className="space-y-4">
       <div className="flex gap-3 items-start">
@@ -187,32 +276,6 @@ const InsightsGrid = ({ data }: { data: ContentInsights }) => {
           <div className="text-[10px] uppercase tracking-[0.08em] font-bold text-muted-foreground">Durchschnitt</div>
           <div className="text-sm font-medium mt-0.5">
             Ø {data.avgLikes} Likes · Ø {data.avgComments} Kommentare pro Post
-          </div>
-        </div>
-      </div>
-
-      <div className="flex gap-3 items-start">
-        <div className="w-[30px] h-[30px] rounded-lg bg-surface flex items-center justify-center text-sm shrink-0">📅</div>
-        <div>
-          <div className="text-[10px] uppercase tracking-[0.08em] font-bold text-muted-foreground">Posting-Frequenz</div>
-          <div className="text-sm font-medium mt-0.5">
-            <span className={freqOk ? "text-emerald-600" : "text-red-500"}>
-              {data.postsPerMonth}/Monat
-            </span>
-            <span className="text-muted-foreground"> → Empfehlung: {data.idealPostsPerMonth}/Monat</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="flex gap-3 items-start">
-        <div className="w-[30px] h-[30px] rounded-lg bg-surface flex items-center justify-center text-sm shrink-0">⚡</div>
-        <div>
-          <div className="text-[10px] uppercase tracking-[0.08em] font-bold text-muted-foreground">Engagement Rate</div>
-          <div className="text-sm font-medium mt-0.5">
-            <span className={engOk ? "text-emerald-600" : "text-amber-600"}>
-              {data.engagementRate}%
-            </span>
-            <span className="text-muted-foreground"> vs. Branchenschnitt {data.benchmarkRate}%</span>
           </div>
         </div>
       </div>
