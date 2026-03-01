@@ -4,19 +4,21 @@ import SectionHeader from "./SectionHeader";
 import { Check, Plus } from "lucide-react";
 
 const InstagramSection = () => {
-  const { instagramHandle, instagramStats, growthProjection, contentInsights, objectives, selectedObjectives, setSelectedObjectives } = useBrandData();
+  const { instagramHandle, instagramStats, growthProjection, contentInsights, objectives, selectedObjectives, setSelectedObjectives, markInteraction, triggerSave } = useBrandData();
   const [customObjectives, setCustomObjectives] = useState<{ icon: string; label: string; value: string }[]>([]);
   const [newGoal, setNewGoal] = useState("");
 
   const allObjectives = [...objectives, ...customObjectives];
 
   const toggleObjective = (label: string) => {
+    markInteraction();
     setSelectedObjectives((prev) =>
       prev.includes(label) ? prev.filter((l) => l !== label) : [...prev, label]
     );
   };
 
   const addCustomGoal = () => {
+    markInteraction();
     const trimmed = newGoal.trim();
     if (!trimmed) return;
     const custom = { icon: "✏️", label: trimmed, value: "" };
