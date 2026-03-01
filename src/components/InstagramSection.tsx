@@ -12,9 +12,11 @@ const InstagramSection = () => {
 
   const toggleObjective = (label: string) => {
     markInteraction();
-    setSelectedObjectives((prev) =>
-      prev.includes(label) ? prev.filter((l) => l !== label) : [...prev, label]
-    );
+    const next = selectedObjectives.includes(label)
+      ? selectedObjectives.filter((l) => l !== label)
+      : [...selectedObjectives, label];
+    setSelectedObjectives(next);
+    triggerSave({ selectedObjectives: next });
   };
 
   const addCustomGoal = () => {
@@ -23,8 +25,10 @@ const InstagramSection = () => {
     if (!trimmed) return;
     const custom = { icon: "✏️", label: trimmed, value: "" };
     setCustomObjectives((prev) => [...prev, custom]);
-    setSelectedObjectives((prev) => [...prev, trimmed]);
+    const next = [...selectedObjectives, trimmed];
+    setSelectedObjectives(next);
     setNewGoal("");
+    triggerSave({ selectedObjectives: next });
   };
 
   return (
