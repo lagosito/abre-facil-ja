@@ -8,6 +8,7 @@ import WhatHappensNext from "@/components/WhatHappensNext";
 import PremiumAddons from "@/components/PremiumAddons";
 import Packages from "@/components/Packages";
 import CTABlocks from "@/components/CTABlocks";
+import EmailCapture from "@/components/EmailCapture";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { BrandDataProvider, useBrandData } from "@/context/BrandDataContext";
 
@@ -32,6 +33,7 @@ const PageContent = () => {
         </div>
         <CTABlocks />
       </div>
+      <EmailCapture />
     </>
   );
 };

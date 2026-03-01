@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, useRef, type ReactNode } from "react";
 import { useSearchParams } from "react-router-dom";
 
 export interface BrandColors {
@@ -254,7 +254,6 @@ function mapIncoming(incoming: IncomingData): Partial<BrandData> {
   if (incoming.logoUrl) mapped.brandLogoUrl = incoming.logoUrl;
   if (incoming.logoBgColor) mapped.logoBgColor = incoming.logoBgColor;
 
-  // New format (webhook)
   if (incoming.website) mapped.website = incoming.website;
   if (incoming.brandEssence) mapped.brandEssence = incoming.brandEssence;
   if (incoming.colors?.length) mapped.colors = incoming.colors;
@@ -271,7 +270,6 @@ function mapIncoming(incoming: IncomingData): Partial<BrandData> {
   if (incoming.growthProjection) mapped.growthProjection = incoming.growthProjection;
   if (incoming.contentInsights) mapped.contentInsights = incoming.contentInsights;
 
-  // Legacy format (?d= base64)
   if (incoming.tagline) mapped.brandEssence = incoming.tagline;
   if (incoming.websiteUrl) mapped.website = incoming.websiteUrl;
   if (incoming.primaryColor || incoming.secondaryColor || incoming.accentColor || incoming.darkColor) {
@@ -295,23 +293,103 @@ function mapIncoming(incoming: IncomingData): Partial<BrandData> {
   return mapped;
 }
 
+/* ── Auto-save webhook (debounced) ── */
+const SAVE_WEBHOOK = "https://lagosito.app.n8n.cloud/webhook/elk-save-customizations";
+const SAVE_DEBOUNCE_MS = 2000;
+
+interface UserCustomizations {
+  colors?: BrandColors[];
+  fonts?: { display: string; body: string };
+  values?: string[];
+  tones?: string[];
+  selectedObjectives?: string[];
+  selectedAddons?: string[];
+  userEmail?: string;
+}
+
+function useAutoSave(recordId: string | null, chatId: string, brandName: string) {
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastPayloadRef = useRef<string>("");
+
+  const save = useCallback(
+    (customizations: UserCustomizations) => {
+      if (!recordId) return;
+
+      const payload = JSON.stringify({
+        recordId,
+        chatId,
+        brandName,
+        customizations,
+        savedAt: new Date().toISOString(),
+      });
+
+      // Skip if nothing changed
+      if (payload === lastPayloadRef.current) return;
+
+      if (timerRef.current) clearTimeout(timerRef.current);
+
+      timerRef.current = setTimeout(() => {
+        lastPayloadRef.current = payload;
+        fetch(SAVE_WEBHOOK, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: payload,
+        }).catch((e) => console.warn("Auto-save failed:", e));
+      }, SAVE_DEBOUNCE_MS);
+    },
+    [recordId, chatId, brandName]
+  );
+
+  return save;
+}
+
+/* ── Context ── */
 interface BrandDataContextValue {
   data: BrandData;
   loading: boolean;
+  recordId: string | null;
   selectedObjectives: string[];
   setSelectedObjectives: React.Dispatch<React.SetStateAction<string[]>>;
+  selectedAddons: string[];
+  setSelectedAddons: React.Dispatch<React.SetStateAction<string[]>>;
+  userEmail: string;
+  setUserEmail: (email: string) => void;
+  hasInteracted: boolean;
+  markInteraction: () => void;
+  triggerSave: (customizations: UserCustomizations) => void;
 }
 
 const BrandDataContext = createContext<BrandDataContextValue>({
   data: defaultData,
   loading: false,
+  recordId: null,
   selectedObjectives: [],
   setSelectedObjectives: () => {},
+  selectedAddons: [],
+  setSelectedAddons: () => {},
+  userEmail: "",
+  setUserEmail: () => {},
+  hasInteracted: false,
+  markInteraction: () => {},
+  triggerSave: () => {},
 });
 
 export const useBrandData = () => {
-  const { data, loading, selectedObjectives, setSelectedObjectives } = useContext(BrandDataContext);
-  return { ...data, loading, selectedObjectives, setSelectedObjectives };
+  const ctx = useContext(BrandDataContext);
+  return {
+    ...ctx.data,
+    loading: ctx.loading,
+    recordId: ctx.recordId,
+    selectedObjectives: ctx.selectedObjectives,
+    setSelectedObjectives: ctx.setSelectedObjectives,
+    selectedAddons: ctx.selectedAddons,
+    setSelectedAddons: ctx.setSelectedAddons,
+    userEmail: ctx.userEmail,
+    setUserEmail: ctx.setUserEmail,
+    hasInteracted: ctx.hasInteracted,
+    markInteraction: ctx.markInteraction,
+    triggerSave: ctx.triggerSave,
+  };
 };
 
 export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
@@ -321,6 +399,44 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
   const [data, setData] = useState<BrandData>(defaultData);
   const [loading, setLoading] = useState(!!idParam);
   const [selectedObjectives, setSelectedObjectives] = useState<string[]>([]);
+  const [selectedAddons, setSelectedAddons] = useState<string[]>([]);
+  const [userEmail, setUserEmailState] = useState<string>("");
+  const [hasInteracted, setHasInteracted] = useState(false);
+
+  const recordId = idParam;
+  const autoSave = useAutoSave(recordId, data.chatId, data.brandName);
+
+  const markInteraction = useCallback(() => {
+    setHasInteracted(true);
+  }, []);
+
+  const setUserEmail = useCallback(
+    (email: string) => {
+      setUserEmailState(email);
+      // Save email immediately (no debounce)
+      if (recordId && email.includes("@")) {
+        fetch(SAVE_WEBHOOK, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            recordId,
+            chatId: data.chatId,
+            brandName: data.brandName,
+            customizations: { userEmail: email },
+            savedAt: new Date().toISOString(),
+          }),
+        }).catch((e) => console.warn("Email save failed:", e));
+      }
+    },
+    [recordId, data.chatId, data.brandName]
+  );
+
+  const triggerSave = useCallback(
+    (customizations: UserCustomizations) => {
+      autoSave(customizations);
+    },
+    [autoSave]
+  );
 
   useEffect(() => {
     if (idParam) {
@@ -357,7 +473,22 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
   }, [searchParams]);
 
   return (
-    <BrandDataContext.Provider value={{ data, loading, selectedObjectives, setSelectedObjectives }}>
+    <BrandDataContext.Provider
+      value={{
+        data,
+        loading,
+        recordId,
+        selectedObjectives,
+        setSelectedObjectives,
+        selectedAddons,
+        setSelectedAddons,
+        userEmail,
+        setUserEmail,
+        hasInteracted,
+        markInteraction,
+        triggerSave,
+      }}
+    >
       {children}
     </BrandDataContext.Provider>
   );
