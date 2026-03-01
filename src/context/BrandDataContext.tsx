@@ -332,7 +332,7 @@ function useAutoSave(recordId: string | null, chatId: string, brandName: string)
         lastPayloadRef.current = payload;
         fetch(SAVE_WEBHOOK, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "text/plain" },
           body: payload,
         }).catch((e) => console.warn("Auto-save failed:", e));
       }, SAVE_DEBOUNCE_MS);
@@ -417,7 +417,7 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
       if (recordId && email.includes("@")) {
         fetch(SAVE_WEBHOOK, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "text/plain" },
           body: JSON.stringify({
             recordId,
             chatId: data.chatId,
