@@ -5,6 +5,7 @@ import { Pencil } from "lucide-react";
 
 const BrandIdentity = () => {
   const data = useBrandData();
+  const { markInteraction, triggerSave } = data;
 
   const [swatches, setSwatches] = useState(data.colors);
   const [showColors, setShowColors] = useState(false);
@@ -27,6 +28,7 @@ const BrandIdentity = () => {
   useEffect(() => { setSelectedFont(data.fonts.display); }, [data.fonts.display]);
 
   const updateSwatch = (i: number, hex: string) => {
+    markInteraction();
     setSwatches((s) => s.map((sw, idx) => (idx === i ? { ...sw, hex } : sw)));
   };
 
@@ -162,7 +164,7 @@ const BrandIdentity = () => {
         <div className="bg-card border-2 border-primary rounded-lg p-6 mt-3 animate-fade-up">
           <div className="flex items-center justify-between mb-5">
             <div className="text-[13px] font-bold uppercase tracking-[0.08em] text-primary">🎨 Farbpalette bearbeiten</div>
-            <button onClick={() => setShowColors(false)} className="bg-surface rounded-pill px-3 py-1 text-xs font-bold text-muted-foreground hover:bg-border transition-all">Fertig ✓</button>
+            <button onClick={() => { setShowColors(false); triggerSave({ colors: swatches }); }} className="bg-surface rounded-pill px-3 py-1 text-xs font-bold text-muted-foreground hover:bg-border transition-all">Fertig ✓</button>
           </div>
           <div className="flex gap-2.5">
             {swatches.map((s, i) => (
@@ -182,7 +184,7 @@ const BrandIdentity = () => {
         <div className="bg-card border-2 border-primary rounded-lg p-6 mt-3 animate-fade-up">
           <div className="flex items-center justify-between mb-5">
             <div className="text-[13px] font-bold uppercase tracking-[0.08em] text-primary">✦ Brand Values & Tone of Voice bearbeiten</div>
-            <button onClick={() => setShowTags(false)} className="bg-surface rounded-pill px-3 py-1 text-xs font-bold text-muted-foreground hover:bg-border transition-all">Fertig ✓</button>
+            <button onClick={() => { setShowTags(false); triggerSave({ values, tones }); }} className="bg-surface rounded-pill px-3 py-1 text-xs font-bold text-muted-foreground hover:bg-border transition-all">Fertig ✓</button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -224,7 +226,7 @@ const BrandIdentity = () => {
         <div className="bg-card border-2 border-primary rounded-lg p-6 mt-3 animate-fade-up">
           <div className="flex items-center justify-between mb-5">
             <div className="text-[13px] font-bold uppercase tracking-[0.08em] text-primary">Aa  Schrift bearbeiten</div>
-            <button onClick={() => setShowFonts(false)} className="bg-surface rounded-pill px-3 py-1 text-xs font-bold text-muted-foreground hover:bg-border transition-all">Fertig ✓</button>
+            <button onClick={() => { setShowFonts(false); triggerSave({ fonts: { display: selectedFont, body: data.fonts.body } }); }} className="bg-surface rounded-pill px-3 py-1 text-xs font-bold text-muted-foreground hover:bg-border transition-all">Fertig ✓</button>
           </div>
           <div className="grid grid-cols-3 gap-2.5">
             {[data.fonts.display, "Playfair Display", "DM Serif Display"].map((f) => (

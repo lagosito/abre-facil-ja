@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useBrandData } from "@/context/BrandDataContext";
 
 interface Addon {
@@ -85,23 +84,19 @@ const addons: Addon[] = [
 ];
 
 const PremiumAddons = () => {
-  const { brandName } = useBrandData();
-  const [selectedAddons, setSelectedAddons] = useState<Set<string>>(new Set());
+  const { selectedAddons, setSelectedAddons, markInteraction, triggerSave } = useBrandData();
 
   const toggleAddon = (id: string) => {
+    markInteraction();
     setSelectedAddons((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
+      const next = prev.includes(id) ? prev.filter((a) => a !== id) : [...prev, id];
+      triggerSave({ selectedAddons: next });
       return next;
     });
   };
 
   const totalPrice = addons
-    .filter((a) => selectedAddons.has(a.id))
+    .filter((a) => selectedAddons.includes(a.id))
     .reduce((sum, a) => sum + parseInt(a.price.replace("€", "")), 0);
 
   return (
@@ -117,7 +112,7 @@ const PremiumAddons = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
         {addons.map((addon) => {
-          const selected = selectedAddons.has(addon.id);
+          const selected = selectedAddons.includes(addon.id);
           return (
             <div
               key={addon.id}
@@ -126,7 +121,6 @@ const PremiumAddons = () => {
               }`}
               onClick={() => toggleAddon(addon.id)}
             >
-              {/* Tag */}
               <div className="flex items-center justify-between mb-3">
                 <span className={`px-2.5 py-0.5 rounded-pill text-[9px] font-bold uppercase tracking-[0.06em] ${
                   addon.highlight
@@ -141,12 +135,10 @@ const PremiumAddons = () => {
               <div className="text-xl mb-2">{addon.icon}</div>
               <div className="font-serif italic text-lg mb-2">{addon.title}</div>
 
-              {/* Preview text */}
               <div className="text-sm text-foreground/70 mb-3 leading-relaxed">
                 {addon.previewText}
               </div>
 
-              {/* Locked items */}
               <div className="space-y-1.5 mb-4">
                 {addon.lockedItems.map((item) => (
                   <div key={item} className="flex items-center gap-2 text-[12px] text-muted-foreground">
@@ -156,7 +148,6 @@ const PremiumAddons = () => {
                 ))}
               </div>
 
-              {/* CTA button */}
               <button
                 className={`w-full py-2.5 rounded-pill text-xs font-bold transition-all ${
                   selected
@@ -171,12 +162,11 @@ const PremiumAddons = () => {
         })}
       </div>
 
-      {/* Cart summary */}
-      {selectedAddons.size > 0 && (
+      {selectedAddons.length > 0 && (
         <div className="mt-4 bg-primary/5 border border-primary/20 rounded-lg p-5 flex items-center justify-between animate-fade-up">
           <div>
             <div className="text-sm font-semibold">
-              {selectedAddons.size} Add-on{selectedAddons.size > 1 ? "s" : ""} ausgewählt
+              {selectedAddons.length} Add-on{selectedAddons.length > 1 ? "s" : ""} ausgewählt
             </div>
             <div className="text-xs text-muted-foreground mt-0.5">
               Einmalige Zahlung — sofortiger Zugang
