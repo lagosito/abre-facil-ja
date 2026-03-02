@@ -114,7 +114,7 @@ const InstagramSection = () => {
                     <div>
                       <div className="text-[10px] text-muted-foreground mb-0.5">Empfohlen</div>
                       <div className="font-serif italic text-2xl leading-none">
-                        {contentInsights.idealPostsPerMonth}
+                        {contentInsights.idealPostsPerMonth > contentInsights.postsPerMonth ? contentInsights.idealPostsPerMonth : contentInsights.postsPerMonth + 3}
                       </div>
                     </div>
                   </div>
