@@ -92,8 +92,10 @@ const ContentCalendar = () => {
   const currentMonth = now.getMonth();
   const currentYear = now.getFullYear();
 
-  // Use ideal posts or default to 18
-  const idealPosts = contentInsights?.idealPostsPerMonth || 18;
+  // Use ideal posts or default to 18, but always show improvement over current
+  const currentPosts = contentInsights?.postsPerMonth || 0;
+  const rawIdeal = contentInsights?.idealPostsPerMonth || 18;
+  const idealPosts = rawIdeal > currentPosts ? rawIdeal : currentPosts + 3;
 
   // Generate two months
   const month1Idx = (currentMonth + 1) % 12;
@@ -106,7 +108,7 @@ const ContentCalendar = () => {
   const cal1 = useMemo(() => generateCalendar(idealPosts, month1Year, month1Idx), [idealPosts, month1Year, month1Idx]);
   const cal2 = useMemo(() => generateCalendar(idealMonth2, month2Year, month2Idx), [idealMonth2, month2Year, month2Idx]);
 
-  const currentPosts = contentInsights?.postsPerMonth || 0;
+  // currentPosts already declared above
 
   return (
     <section className="mb-16">
