@@ -415,17 +415,27 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
       setUserEmailState(email);
       // Save email immediately (no debounce)
       if (recordId && email.includes("@")) {
+        const payload = JSON.stringify({
+          recordId,
+          chatId: data.chatId,
+          brandName: data.brandName,
+          customizations: { userEmail: email },
+          savedAt: new Date().toISOString(),
+        });
+
+        // Save to Airtable
         fetch(SAVE_WEBHOOK, {
           method: "POST",
           headers: { "Content-Type": "text/plain" },
-          body: JSON.stringify({
-            recordId,
-            chatId: data.chatId,
-            brandName: data.brandName,
-            customizations: { userEmail: email },
-            savedAt: new Date().toISOString(),
-          }),
+          body: payload,
         }).catch((e) => console.warn("Email save failed:", e));
+
+        // Trigger confirmation email
+        fetch("https://lagosito.app.n8n.cloud/webhook/elk-email-confirm", {
+          method: "POST",
+          headers: { "Content-Type": "text/plain" },
+          body: payload,
+        }).catch((e) => console.warn("Email confirm failed:", e));
       }
     },
     [recordId, data.chatId, data.brandName]
