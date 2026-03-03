@@ -5,7 +5,6 @@ import BrandBriefing from "@/components/BrandBriefing";
 import InstagramSection from "@/components/InstagramSection";
 import ContentCalendar from "@/components/ContentCalendar";
 import WhatHappensNext from "@/components/WhatHappensNext";
-import PremiumAddons from "@/components/PremiumAddons";
 import Packages from "@/components/Packages";
 import CTABlocks from "@/components/CTABlocks";
 import EmailCapture from "@/components/EmailCapture";
@@ -26,7 +25,6 @@ const PageContent = () => {
         <BrandBriefing />
         <InstagramSection />
         <ContentCalendar />
-        <PremiumAddons />
         <WhatHappensNext />
         <div id="packages">
           <Packages />

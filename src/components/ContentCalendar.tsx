@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useBrandData } from "@/context/BrandDataContext";
 import SectionHeader from "./SectionHeader";
 import AddonCard from "./AddonCard";
+import PremiumAddonCard from "./PremiumAddonCard";
 
 type DayType = "empty" | "normal" | "post" | "reel" | "story";
 
@@ -174,12 +175,27 @@ const ContentCalendar = () => {
           <CalendarGrid days={cal2.grid} />
         </div>
 
-        {/* Add-on */}
-        <div className="col-span-12">
+        {/* Add-ons */}
+        <div className="col-span-12 grid grid-cols-1 md:grid-cols-2 gap-3.5">
           <AddonCard
             icon="🎬"
             title="UGC Generator"
             desc="Lade ein Produktfoto hoch — wir generieren automatisch einen professionellen UGC-Video für deinen Reel-Kalender. Powered by Sora & VEO3."
+          />
+          <PremiumAddonCard
+            id="content-pack"
+            icon="📦"
+            title="Generated Content Pack"
+            price="€29"
+            tag="Hohe Conversion"
+            highlight
+            previewText="El Kiosk hat erste Inhalte für deine Marke generiert."
+            lockedItems={[
+              "12 fertige Posts mit Captions",
+              "Grafiken in deinem Brand-Design",
+              "Optimierte Hashtag-Sets",
+              "Posting-Zeitplan-Empfehlung",
+            ]}
           />
         </div>
       </div>
