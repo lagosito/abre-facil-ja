@@ -130,6 +130,12 @@ interface IncomingData {
   growthProjection?: GrowthProjection;
   contentInsights?: ContentInsights;
   objectives?: Objective[];
+  status?: string;
+  brandDna?: string;
+}
+
+function isProcessing(data: IncomingData): boolean {
+  return !data.brandDna || data.brandDna.trim() === "" || data.status === "Processing";
 }
 
 function isLightColor(hex: string): boolean {
@@ -344,9 +350,13 @@ function useAutoSave(recordId: string | null, chatId: string, brandName: string)
 }
 
 /* ── Context ── */
+type ProcessingState = "idle" | "processing" | "timeout";
+
 interface BrandDataContextValue {
   data: BrandData;
   loading: boolean;
+  processing: ProcessingState;
+  retryProcessing: () => void;
   recordId: string | null;
   selectedObjectives: string[];
   setSelectedObjectives: React.Dispatch<React.SetStateAction<string[]>>;
@@ -362,6 +372,8 @@ interface BrandDataContextValue {
 const BrandDataContext = createContext<BrandDataContextValue>({
   data: defaultData,
   loading: false,
+  processing: "idle",
+  retryProcessing: () => {},
   recordId: null,
   selectedObjectives: [],
   setSelectedObjectives: () => {},
@@ -379,6 +391,8 @@ export const useBrandData = () => {
   return {
     ...ctx.data,
     loading: ctx.loading,
+    processing: ctx.processing,
+    retryProcessing: ctx.retryProcessing,
     recordId: ctx.recordId,
     selectedObjectives: ctx.selectedObjectives,
     setSelectedObjectives: ctx.setSelectedObjectives,
@@ -398,10 +412,13 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
   const dParam = searchParams.get("d");
   const [data, setData] = useState<BrandData>(defaultData);
   const [loading, setLoading] = useState(!!idParam);
+  const [processing, setProcessing] = useState<ProcessingState>("idle");
   const [selectedObjectives, setSelectedObjectives] = useState<string[]>([]);
   const [selectedAddons, setSelectedAddons] = useState<string[]>([]);
   const [userEmail, setUserEmailState] = useState<string>("");
   const [hasInteracted, setHasInteracted] = useState(false);
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const pollCountRef = useRef(0);
 
   const recordId = idParam;
   const autoSave = useAutoSave(recordId, data.chatId, data.brandName);
@@ -413,7 +430,6 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
   const setUserEmail = useCallback(
     (email: string) => {
       setUserEmailState(email);
-      // Save email immediately (no debounce)
       if (recordId && email.includes("@")) {
         const payload = JSON.stringify({
           recordId,
@@ -423,14 +439,12 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
           savedAt: new Date().toISOString(),
         });
 
-        // Save to Airtable
         fetch(SAVE_WEBHOOK, {
           method: "POST",
           headers: { "Content-Type": "text/plain" },
           body: payload,
         }).catch((e) => console.warn("Email save failed:", e));
 
-        // Trigger confirmation email
         fetch("https://lagosito.app.n8n.cloud/webhook/elk-email-confirm", {
           method: "POST",
           headers: { "Content-Type": "text/plain" },
@@ -448,10 +462,17 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
     [autoSave]
   );
 
-  useEffect(() => {
-    if (idParam) {
-      setLoading(true);
-      fetch(`https://lagosito.app.n8n.cloud/webhook/elk-get-dna?id=${encodeURIComponent(idParam)}`, {
+  const stopPolling = useCallback(() => {
+    if (pollRef.current) {
+      clearInterval(pollRef.current);
+      pollRef.current = null;
+    }
+    pollCountRef.current = 0;
+  }, []);
+
+  const fetchBrandData = useCallback(
+    (id: string, isPolling = false) => {
+      return fetch(`https://lagosito.app.n8n.cloud/webhook/elk-get-dna?id=${encodeURIComponent(id)}`, {
         mode: "cors",
       })
         .then((res) => {
@@ -459,14 +480,64 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
           return res.json();
         })
         .then((parsed: IncomingData) => {
+          if (isProcessing(parsed)) {
+            // Still processing — start or continue polling
+            if (!isPolling) {
+              setLoading(false);
+              setProcessing("processing");
+              startPolling(id);
+            }
+            return false; // not ready
+          }
+          // Data is ready
           const mapped = mapIncoming(parsed);
           setData({ ...defaultData, ...mapped });
+          setProcessing("idle");
+          setLoading(false);
+          stopPolling();
+          return true; // ready
         })
         .catch((e) => {
-          console.warn("Failed to fetch brand data by id:", e);
-          setData(defaultData);
-        })
-        .finally(() => setLoading(false));
+          console.warn("Failed to fetch brand data:", e);
+          if (!isPolling) {
+            setData(defaultData);
+            setLoading(false);
+          }
+          return false;
+        });
+    },
+    [stopPolling]
+  );
+
+  const startPolling = useCallback(
+    (id: string) => {
+      if (pollRef.current) return; // already polling
+      pollCountRef.current = 0;
+
+      pollRef.current = setInterval(() => {
+        pollCountRef.current += 1;
+        if (pollCountRef.current >= 60) {
+          stopPolling();
+          setProcessing("timeout");
+          return;
+        }
+        fetchBrandData(id, true);
+      }, 4000);
+    },
+    [fetchBrandData, stopPolling]
+  );
+
+  const retryProcessing = useCallback(() => {
+    if (!idParam) return;
+    setProcessing("processing");
+    stopPolling();
+    fetchBrandData(idParam, false);
+  }, [idParam, fetchBrandData, stopPolling]);
+
+  useEffect(() => {
+    if (idParam) {
+      setLoading(true);
+      fetchBrandData(idParam, false);
     } else if (dParam) {
       try {
         const json = atob(dParam);
@@ -480,6 +551,8 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
     } else {
       setData(defaultData);
     }
+
+    return () => stopPolling();
   }, [searchParams]);
 
   return (
@@ -487,6 +560,8 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
       value={{
         data,
         loading,
+        processing,
+        retryProcessing,
         recordId,
         selectedObjectives,
         setSelectedObjectives,
