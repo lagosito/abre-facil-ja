@@ -62,10 +62,10 @@ const PremiumAddonCard = ({ id, icon, title, price, tag, highlight, previewText,
         className={`w-full py-2.5 rounded-pill text-xs font-bold transition-all ${
           selected
             ? "bg-primary text-primary-foreground"
-            : "bg-foreground text-background hover:bg-primary"
+            : "border border-border bg-transparent text-foreground hover:border-primary"
         }`}
       >
-        {selected ? "✓ Hinzugefügt" : "🔓 Freischalten"}
+        {selected ? "✓ Hinzugefügt" : "➕ Zum Paket hinzufügen"}
       </button>
     </div>
   );
