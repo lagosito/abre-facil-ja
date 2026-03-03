@@ -189,6 +189,7 @@ const ContentCalendar = () => {
             price="€29"
             tag="Hohe Conversion"
             highlight
+            purchasable
             previewText="El Kiosk hat erste Inhalte für deine Marke generiert."
             lockedItems={[
               "12 fertige Posts mit Captions",
