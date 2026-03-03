@@ -147,38 +147,6 @@ const InstagramSection = () => {
             </div>
           )}
 
-          {/* Competitor Ad Intelligence — Premium Add-on */}
-          <PremiumAddonCard
-            id="competitor-ads"
-            icon="📡"
-            title="Competitor Ad Intelligence"
-            price="€19"
-            tag="Sehr empfohlen"
-            highlight
-            previewText="Deine Wettbewerber schalten aktiv bezahlte Werbung."
-            lockedItems={[
-              "Vollständige Ad-Creatives",
-              "Komplette Werbetexte",
-              "Ad-Laufzeit & Performance",
-              "Erkannte Muster & Empfehlungen",
-            ]}
-          />
-
-          {/* Content Opportunity Score — Premium Add-on */}
-          <PremiumAddonCard
-            id="opportunity-score"
-            icon="📈"
-            title="Content Opportunity Score"
-            price="€9"
-            tag="Analyse"
-            previewText="Dein Opportunity Score: 82/100"
-            lockedItems={[
-              "Detaillierte Wachstumsprognose",
-              "Fehlende Content-Formate",
-              "Spezifische Handlungsempfehlungen",
-            ]}
-          />
-
           {/* Growth Projection */}
           <div className="bg-card rounded-lg p-6 animate-fade-up [animation-delay:0.06s] hover:-translate-y-0.5 hover:shadow-lg transition-all">
             <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-muted-foreground mb-5">Dein Wachstum mit El Kiosk</div>
@@ -197,6 +165,38 @@ const InstagramSection = () => {
             ) : (
               <p className="text-sm text-muted-foreground italic">Kein Instagram-Account gefunden.</p>
             )}
+          </div>
+
+          {/* Premium Add-ons — below Content Insights */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+            <PremiumAddonCard
+              id="competitor-ads"
+              icon="📡"
+              title="Competitor Ad Intelligence"
+              price="€19"
+              tag="Sehr empfohlen"
+              highlight
+              previewText="Deine Wettbewerber schalten aktiv bezahlte Werbung."
+              lockedItems={[
+                "Vollständige Ad-Creatives",
+                "Komplette Werbetexte",
+                "Ad-Laufzeit & Performance",
+                "Erkannte Muster & Empfehlungen",
+              ]}
+            />
+            <PremiumAddonCard
+              id="opportunity-score"
+              icon="📈"
+              title="Content Opportunity Score"
+              price="€9"
+              tag="Analyse"
+              previewText="Dein Opportunity Score: 82/100"
+              lockedItems={[
+                "Detaillierte Wachstumsprognose",
+                "Fehlende Content-Formate",
+                "Spezifische Handlungsempfehlungen",
+              ]}
+            />
           </div>
         </div>
 
