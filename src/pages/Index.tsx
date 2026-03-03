@@ -9,12 +9,14 @@ import Packages from "@/components/Packages";
 import CTABlocks from "@/components/CTABlocks";
 import EmailCapture from "@/components/EmailCapture";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import ProcessingScreen from "@/components/ProcessingScreen";
 import { BrandDataProvider, useBrandData } from "@/context/BrandDataContext";
 
 const PageContent = () => {
-  const { loading } = useBrandData();
+  const { loading, processing } = useBrandData();
 
   if (loading) return <LoadingSpinner />;
+  if (processing !== "idle") return <ProcessingScreen />;
 
   return (
     <>
