@@ -135,7 +135,14 @@ interface IncomingData {
 }
 
 function isProcessing(data: IncomingData): boolean {
-  return !data.brandDna || data.brandDna.trim() === "" || data.status === "Processing";
+  // If status is explicitly "Processing", it's still processing
+  if (data.status === "Processing") return true;
+  // If we have meaningful brand data (brandName + colors or businessOverview), it's ready
+  if (data.brandName && (data.colors?.length || data.businessOverview)) return false;
+  // If brandDna field exists and is non-empty, it's ready
+  if (data.brandDna && data.brandDna.trim() !== "") return false;
+  // Otherwise assume processing
+  return true;
 }
 
 function isLightColor(hex: string): boolean {
