@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useBrandData } from "@/context/BrandDataContext";
 import SectionHeader from "./SectionHeader";
+import PremiumAddonCard from "./PremiumAddonCard";
 import { Check, Plus } from "lucide-react";
 
 const InstagramSection = () => {
@@ -54,7 +55,7 @@ const InstagramSection = () => {
             </div>
           </div>
 
-          {/* Competitive Benchmark Card — NEW */}
+          {/* Competitive Benchmark Card */}
           {contentInsights && (
             <div className="bg-card rounded-lg p-6 animate-fade-up [animation-delay:0.04s] hover:-translate-y-0.5 hover:shadow-lg transition-all">
               <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-muted-foreground mb-5">Wettbewerbs-Vergleich</div>
@@ -146,6 +147,38 @@ const InstagramSection = () => {
             </div>
           )}
 
+          {/* Competitor Ad Intelligence — Premium Add-on */}
+          <PremiumAddonCard
+            id="competitor-ads"
+            icon="📡"
+            title="Competitor Ad Intelligence"
+            price="€19"
+            tag="Sehr empfohlen"
+            highlight
+            previewText="Deine Wettbewerber schalten aktiv bezahlte Werbung."
+            lockedItems={[
+              "Vollständige Ad-Creatives",
+              "Komplette Werbetexte",
+              "Ad-Laufzeit & Performance",
+              "Erkannte Muster & Empfehlungen",
+            ]}
+          />
+
+          {/* Content Opportunity Score — Premium Add-on */}
+          <PremiumAddonCard
+            id="opportunity-score"
+            icon="📈"
+            title="Content Opportunity Score"
+            price="€9"
+            tag="Analyse"
+            previewText="Dein Opportunity Score: 82/100"
+            lockedItems={[
+              "Detaillierte Wachstumsprognose",
+              "Fehlende Content-Formate",
+              "Spezifische Handlungsempfehlungen",
+            ]}
+          />
+
           {/* Growth Projection */}
           <div className="bg-card rounded-lg p-6 animate-fade-up [animation-delay:0.06s] hover:-translate-y-0.5 hover:shadow-lg transition-all">
             <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-muted-foreground mb-5">Dein Wachstum mit El Kiosk</div>
@@ -168,52 +201,69 @@ const InstagramSection = () => {
         </div>
 
         {/* Right column — Objectives */}
-        <div className="col-span-12 md:col-span-4 bg-card rounded-lg p-6 animate-fade-up [animation-delay:0.09s] hover:-translate-y-0.5 hover:shadow-lg transition-all h-fit">
-          <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-muted-foreground mb-3.5">Wähle deine Ziele</div>
-          <div className="flex flex-col gap-1">
-            {allObjectives.map((o) => {
-              const selected = selectedObjectives.includes(o.label);
-              return (
-                <button
-                  key={o.label}
-                  onClick={() => toggleObjective(o.label)}
-                  className={`flex gap-3 items-start p-2.5 rounded-lg text-left transition-all border ${
-                    selected
-                      ? "border-primary bg-primary/10"
-                      : "border-transparent hover:bg-muted/50"
-                  }`}
-                >
-                  <div className={`w-[30px] h-[30px] rounded-lg flex items-center justify-center text-sm shrink-0 ${
-                    selected ? "bg-primary text-primary-foreground" : "bg-surface"
-                  }`}>
-                    {selected ? <Check className="w-4 h-4" /> : o.icon}
-                  </div>
-                  <div className="min-w-0">
-                    <div className="text-[10px] uppercase tracking-[0.08em] font-bold text-muted-foreground">{o.label}</div>
-                    {o.value && <div className="text-sm font-medium mt-0.5">{o.value}</div>}
-                  </div>
-                </button>
-              );
-            })}
+        <div className="col-span-12 md:col-span-4 space-y-3.5">
+          <div className="bg-card rounded-lg p-6 animate-fade-up [animation-delay:0.09s] hover:-translate-y-0.5 hover:shadow-lg transition-all h-fit">
+            <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-muted-foreground mb-3.5">Wähle deine Ziele</div>
+            <div className="flex flex-col gap-1">
+              {allObjectives.map((o) => {
+                const selected = selectedObjectives.includes(o.label);
+                return (
+                  <button
+                    key={o.label}
+                    onClick={() => toggleObjective(o.label)}
+                    className={`flex gap-3 items-start p-2.5 rounded-lg text-left transition-all border ${
+                      selected
+                        ? "border-primary bg-primary/10"
+                        : "border-transparent hover:bg-muted/50"
+                    }`}
+                  >
+                    <div className={`w-[30px] h-[30px] rounded-lg flex items-center justify-center text-sm shrink-0 ${
+                      selected ? "bg-primary text-primary-foreground" : "bg-surface"
+                    }`}>
+                      {selected ? <Check className="w-4 h-4" /> : o.icon}
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-[10px] uppercase tracking-[0.08em] font-bold text-muted-foreground">{o.label}</div>
+                      {o.value && <div className="text-sm font-medium mt-0.5">{o.value}</div>}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Custom goal input */}
+            <div className="mt-3 flex gap-2">
+              <input
+                type="text"
+                value={newGoal}
+                onChange={(e) => setNewGoal(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && addCustomGoal()}
+                placeholder="Eigenes Ziel hinzufügen"
+                className="flex-1 text-sm bg-muted/50 border border-border rounded-lg px-3 py-2 placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
+              />
+              <button
+                onClick={addCustomGoal}
+                className="w-9 h-9 rounded-lg bg-primary text-primary-foreground flex items-center justify-center shrink-0 hover:brightness-90 transition-all"
+              >
+                <Plus className="w-4 h-4" />
+              </button>
+            </div>
           </div>
 
-          {/* Custom goal input */}
-          <div className="mt-3 flex gap-2">
-            <input
-              type="text"
-              value={newGoal}
-              onChange={(e) => setNewGoal(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && addCustomGoal()}
-              placeholder="Eigenes Ziel hinzufügen"
-              className="flex-1 text-sm bg-muted/50 border border-border rounded-lg px-3 py-2 placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
-            />
-            <button
-              onClick={addCustomGoal}
-              className="w-9 h-9 rounded-lg bg-primary text-primary-foreground flex items-center justify-center shrink-0 hover:brightness-90 transition-all"
-            >
-              <Plus className="w-4 h-4" />
-            </button>
-          </div>
+          {/* Market Trends Intelligence — Premium Add-on (after goals) */}
+          <PremiumAddonCard
+            id="trends"
+            icon="🔮"
+            title="Market Trends Intelligence"
+            price="€9"
+            tag="Trends"
+            previewText="Neue Content-Trends in deiner Branche erkannt."
+            lockedItems={[
+              "Trending Formate & Beispiele",
+              "Branchenspezifische Empfehlungen",
+              "Virale Muster & Inspiration",
+            ]}
+          />
         </div>
       </div>
     </section>

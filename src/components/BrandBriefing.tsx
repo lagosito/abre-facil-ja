@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { useBrandData } from "@/context/BrandDataContext";
 import SectionHeader from "./SectionHeader";
 import AddonCard from "./AddonCard";
+import PremiumAddonCard from "./PremiumAddonCard";
 
 const BRIEFING_SECTIONS: { keyword: string; icon: string; title: string }[] = [
   { keyword: "Zielgruppe:", icon: "🎯", title: "Zielgruppe" },
@@ -151,11 +152,24 @@ const BrandBriefing = () => {
           )}
         </div>
 
-        <div className="col-span-12 md:col-span-4">
+        <div className="col-span-12 md:col-span-4 space-y-3.5">
           <AddonCard
             icon="🔍"
             title="Ads Analyst"
             desc="Sieh was deine Konkurrenten gerade auf Meta schalten — Creatives, Copy, Laufzeit. Direkt aus der Meta Ad Library, vollautomatisch aufbereitet."
+          />
+          <PremiumAddonCard
+            id="competitor-strategy"
+            icon="🔎"
+            title="Competitor Content Strategy"
+            price="€14"
+            tag="Report"
+            previewText="Deine Wettbewerber posten 4.2× mehr Content als du."
+            lockedItems={[
+              "Posting-Frequenz Vergleich",
+              "Content-Mix Analyse",
+              "Beste Formate & Wachstumsmuster",
+            ]}
           />
         </div>
       </div>
