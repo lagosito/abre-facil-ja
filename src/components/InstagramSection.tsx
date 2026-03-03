@@ -176,6 +176,7 @@ const InstagramSection = () => {
               price="€19"
               tag="Sehr empfohlen"
               highlight
+              purchasable
               previewText="Deine Wettbewerber schalten aktiv bezahlte Werbung."
               lockedItems={[
                 "Vollständige Ad-Creatives",
@@ -190,6 +191,7 @@ const InstagramSection = () => {
               title="Content Opportunity Score"
               price="€9"
               tag="Analyse"
+              purchasable
               previewText="Dein Opportunity Score: 82/100"
               lockedItems={[
                 "Detaillierte Wachstumsprognose",

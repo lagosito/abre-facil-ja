@@ -164,6 +164,7 @@ const BrandBriefing = () => {
             title="Competitor Content Strategy"
             price="€14"
             tag="Report"
+            purchasable
             previewText="Deine Wettbewerber posten 4.2× mehr Content als du."
             lockedItems={[
               "Posting-Frequenz Vergleich",

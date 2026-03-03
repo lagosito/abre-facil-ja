@@ -1,4 +1,5 @@
 import { useBrandData } from "@/context/BrandDataContext";
+import { useToast } from "@/hooks/use-toast";
 
 interface PremiumAddonCardProps {
   id: string;
@@ -9,13 +10,22 @@ interface PremiumAddonCardProps {
   highlight?: boolean;
   previewText: string;
   lockedItems: string[];
+  purchasable?: boolean;
 }
 
-const PremiumAddonCard = ({ id, icon, title, price, tag, highlight, previewText, lockedItems }: PremiumAddonCardProps) => {
+const PremiumAddonCard = ({ id, icon, title, price, tag, highlight, previewText, lockedItems, purchasable }: PremiumAddonCardProps) => {
   const { selectedAddons, setSelectedAddons, markInteraction, triggerSave } = useBrandData();
-  const selected = selectedAddons.includes(id);
+  const { toast } = useToast();
+  const selected = !purchasable && selectedAddons.includes(id);
 
-  const toggle = () => {
+  const handleClick = () => {
+    if (purchasable) {
+      toast({
+        title: "Kommt bald!",
+        description: "Wir benachrichtigen dich, sobald dieser Report verfügbar ist.",
+      });
+      return;
+    }
     markInteraction();
     setSelectedAddons((prev) => {
       const next = prev.includes(id) ? prev.filter((a) => a !== id) : [...prev, id];
@@ -29,7 +39,7 @@ const PremiumAddonCard = ({ id, icon, title, price, tag, highlight, previewText,
       className={`bg-card rounded-lg p-5 relative border-2 transition-all hover:-translate-y-0.5 hover:shadow-lg cursor-pointer ${
         selected ? "border-primary" : highlight ? "border-primary/30" : "border-transparent"
       }`}
-      onClick={toggle}
+      onClick={handleClick}
     >
       <div className="flex items-center justify-between mb-3">
         <span className={`px-2.5 py-0.5 rounded-pill text-[9px] font-bold uppercase tracking-[0.06em] ${
@@ -58,15 +68,21 @@ const PremiumAddonCard = ({ id, icon, title, price, tag, highlight, previewText,
         ))}
       </div>
 
-      <button
-        className={`w-full py-2.5 rounded-pill text-xs font-bold transition-all ${
-          selected
-            ? "bg-primary text-primary-foreground"
-            : "border border-border bg-transparent text-foreground hover:border-primary"
-        }`}
-      >
-        {selected ? "✓ Hinzugefügt" : "➕ Zum Paket hinzufügen"}
-      </button>
+      {purchasable ? (
+        <button className="w-full py-2.5 rounded-pill text-xs font-bold transition-all bg-foreground text-background hover:opacity-90">
+          Jetzt kaufen — {price}
+        </button>
+      ) : (
+        <button
+          className={`w-full py-2.5 rounded-pill text-xs font-bold transition-all ${
+            selected
+              ? "bg-primary text-primary-foreground"
+              : "border border-border bg-transparent text-foreground hover:border-primary"
+          }`}
+        >
+          {selected ? "✓ Hinzugefügt" : "➕ Zum Paket hinzufügen"}
+        </button>
+      )}
     </div>
   );
 };
