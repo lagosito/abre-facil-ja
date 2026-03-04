@@ -1,10 +1,5 @@
-import ContentStyleSection from "./ContentStyleSection";
-
 const CTABlocks = () => (
   <>
-    {/* Content-Stil Section (replaces Phase 2 CTA) */}
-    <ContentStyleSection />
-
     {/* Final CTA */}
     <div className="bg-foreground rounded-lg p-10 md:p-14 flex flex-col md:flex-row items-start md:items-center justify-between text-background mt-16 mb-8">
       <div>

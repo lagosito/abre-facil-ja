@@ -115,10 +115,6 @@ const Packages = () => {
           </div>
         ))}
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 mt-3.5">
-        <AddonCard icon="📈" title="Trend Scout" desc="Jede Woche: was in deiner Branche auf Instagram gerade viral geht — direkt als Content-Ideen in deinen Kalender integriert." />
-        <AddonCard icon="📊" title="Performance Report" desc="Automatischer PDF-Bericht jeden Monat: Reach, Engagement, Wachstum — alles übersichtlich aufbereitet, direkt zu dir geschickt." />
-      </div>
     </section>
   );
 };
