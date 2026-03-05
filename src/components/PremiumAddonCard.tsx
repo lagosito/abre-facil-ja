@@ -70,7 +70,7 @@ const PremiumAddonCard = ({ id, icon, title, price, tag, highlight, previewText,
 
       {purchasable ? (
         <button className="w-full py-2.5 rounded-pill text-xs font-bold transition-all bg-foreground text-background hover:opacity-90">
-          Jetzt kaufen — {price}
+          Jetzt kaufen
         </button>
       ) : (
         <button
