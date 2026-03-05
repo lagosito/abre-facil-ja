@@ -49,7 +49,7 @@ const PremiumAddonCard = ({ id, icon, title, price, tag, highlight, previewText,
         }`}>
           {tag}
         </span>
-        <span className="font-serif italic text-lg">{price}</span>
+        
       </div>
 
       <div className="text-xl mb-2">{icon}</div>
