@@ -49,7 +49,7 @@ const PremiumAddonCard = ({ id, icon, title, price, tag, highlight, previewText,
         }`}>
           {tag}
         </span>
-        <span className="font-serif italic text-lg">{price}</span>
+        
       </div>
 
       <div className="text-xl mb-2">{icon}</div>
@@ -70,7 +70,7 @@ const PremiumAddonCard = ({ id, icon, title, price, tag, highlight, previewText,
 
       {purchasable ? (
         <button className="w-full py-2.5 rounded-pill text-xs font-bold transition-all bg-foreground text-background hover:opacity-90">
-          Jetzt kaufen — {price}
+          Jetzt kaufen
         </button>
       ) : (
         <button
