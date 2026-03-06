@@ -176,28 +176,20 @@ const ContentCalendar = () => {
         </div>
 
         {/* Add-ons */}
-        <div className="col-span-12 grid grid-cols-1 md:grid-cols-2 gap-3.5">
-          <AddonCard
-            icon="🎬"
-            title="UGC Generator"
-            desc="Lade ein Produktfoto hoch — wir generieren automatisch einen professionellen UGC-Video für deinen Reel-Kalender. Powered by Sora & VEO3."
-          />
+        <div className="col-span-12 grid grid-cols-1 md:grid-cols-3 gap-3.5">
           <PremiumAddonCard
-            id="content-pack"
-            icon="📦"
-            title="Generated Content Pack"
-            price="€29"
-            tag="Hohe Conversion"
-            highlight
+            id="seasonal-planner"
+            icon="📅"
+            title="Seasonal Campaign Planner"
+            price="€19"
+            tag="PLANUNG"
             purchasable
-            previewText="El Kiosk hat erste Inhalte für deine Marke generiert."
-            lockedItems={[
-              "12 fertige Posts mit Captions",
-              "Grafiken in deinem Brand-Design",
-              "Optimierte Hashtag-Sets",
-              "Posting-Zeitplan-Empfehlung",
-            ]}
+            buttonLabel="Jetzt kaufen — €19"
+            previewText="Jahreskalender mit branchenrelevanten Kampagnen-Anlässen: Black Friday, Feiertage, Awareness Days — inklusive Content-Ideen für jeden Anlass."
+            lockedItems={[]}
           />
+          <AddonCard icon="📈" title="Trend Scout" price="€49/Monat" tag="ADD-ON" desc="Jede Woche: was in deiner Branche auf Instagram gerade viral geht — direkt als Content-Ideen in deinen Kalender integriert." />
+          <AddonCard icon="✉️" title="Newsletter Autopilot" price="€49/Monat" tag="ADD-ON" desc="Wöchentlicher oder zweiwöchentlicher Newsletter — automatisch generiert mit Branchen-News, Marken-Updates und CTA. Du gibst nur noch frei." />
         </div>
       </div>
     </section>

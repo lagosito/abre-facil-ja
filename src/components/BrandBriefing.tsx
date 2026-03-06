@@ -153,24 +153,39 @@ const BrandBriefing = () => {
         </div>
 
         <div className="col-span-12 md:col-span-4 space-y-3.5">
-          <AddonCard
-            icon="🔍"
-            title="Ads Analyst"
-            desc="Sieh was deine Konkurrenten gerade auf Meta schalten — Creatives, Copy, Laufzeit. Direkt aus der Meta Ad Library, vollautomatisch aufbereitet."
+          <PremiumAddonCard
+            id="campaign-blueprint"
+            icon="📋"
+            title="Campaign Blueprint"
+            price="€49"
+            tag="STRATEGIE"
+            highlight
+            purchasable
+            buttonLabel="Jetzt kaufen — €49"
+            previewText="Komplette Kampagnenstrategie: Ziel, Zielgruppe, Messaging, Timeline, Kanal-Mix und Budget-Empfehlung. Wie von einem Senior Strategist."
+            lockedItems={[]}
           />
           <PremiumAddonCard
-            id="competitor-strategy"
-            icon="🔎"
-            title="Competitor Content Strategy"
-            price="€14"
-            tag="Report"
+            id="ads-analyst"
+            icon="🔍"
+            title="Ads Analyst"
+            price="€29"
+            tag="ANALYSE"
             purchasable
-            previewText="Deine Wettbewerber posten 4.2× mehr Content als du."
-            lockedItems={[
-              "Posting-Frequenz Vergleich",
-              "Content-Mix Analyse",
-              "Beste Formate & Wachstumsmuster",
-            ]}
+            buttonLabel="Jetzt kaufen — €29"
+            previewText="Sieh was deine Konkurrenten gerade auf Meta schalten — Creatives, Copy, Laufzeit. Direkt aus der Meta Ad Library, vollautomatisch aufbereitet."
+            lockedItems={[]}
+          />
+          <PremiumAddonCard
+            id="ad-creative-pack"
+            icon="🎯"
+            title="Ad Creative Pack"
+            price="€39"
+            tag="CREATIVES"
+            purchasable
+            buttonLabel="Jetzt kaufen — €39"
+            previewText="5 Ad-Konzepte mit Headline, Copy, CTA und Visual Direction — angepasst an Meta & Google. Bereit für Designer oder AI-Generierung."
+            lockedItems={[]}
           />
         </div>
       </div>
