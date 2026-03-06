@@ -15,12 +15,13 @@ interface PremiumAddonCardProps {
   comingSoon?: boolean;
 }
 
-const PremiumAddonCard = ({ id, icon, title, price, tag, highlight, previewText, lockedItems, purchasable }: PremiumAddonCardProps) => {
+const PremiumAddonCard = ({ id, icon, title, price, tag, highlight, previewText, lockedItems, purchasable, buttonLabel, comingSoon }: PremiumAddonCardProps) => {
   const { selectedAddons, setSelectedAddons, markInteraction, triggerSave } = useBrandData();
   const { toast } = useToast();
-  const selected = !purchasable && selectedAddons.includes(id);
+  const selected = !purchasable && !comingSoon && selectedAddons.includes(id);
 
   const handleClick = () => {
+    if (comingSoon) return;
     if (purchasable) {
       toast({
         title: "Kommt bald!",
@@ -38,7 +39,7 @@ const PremiumAddonCard = ({ id, icon, title, price, tag, highlight, previewText,
 
   return (
     <div
-      className={`bg-card rounded-lg p-5 relative border-2 transition-all hover:-translate-y-0.5 hover:shadow-lg cursor-pointer ${
+      className={`bg-card rounded-lg p-5 relative border-2 transition-all ${comingSoon ? "opacity-60 cursor-default" : "hover:-translate-y-0.5 hover:shadow-lg cursor-pointer"} ${
         selected ? "border-primary" : highlight ? "border-primary/30" : "border-transparent"
       }`}
       onClick={handleClick}
