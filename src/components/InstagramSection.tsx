@@ -170,34 +170,49 @@ const InstagramSection = () => {
           {/* Premium Add-ons — below Content Insights */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
             <PremiumAddonCard
-              id="competitor-ads"
-              icon="📡"
-              title="Competitor Ad Intelligence"
-              price="€19"
-              tag="Sehr empfohlen"
-              highlight
+              id="ad-creative-pack"
+              icon="🎯"
+              title="Ad Creative Pack"
+              price="€39"
+              tag="CREATIVES"
               purchasable
-              previewText="Deine Wettbewerber schalten aktiv bezahlte Werbung."
-              lockedItems={[
-                "Vollständige Ad-Creatives",
-                "Komplette Werbetexte",
-                "Ad-Laufzeit & Performance",
-                "Erkannte Muster & Empfehlungen",
-              ]}
+              buttonLabel="Jetzt kaufen — €39"
+              previewText="5 Ad-Konzepte mit Headline, Copy, CTA und Visual Direction — angepasst an Meta & Google. Bereit für Designer oder AI-Generierung."
+              lockedItems={[]}
             />
             <PremiumAddonCard
-              id="opportunity-score"
-              icon="📈"
-              title="Content Opportunity Score"
-              price="€9"
-              tag="Analyse"
+              id="campaign-blueprint"
+              icon="📋"
+              title="Campaign Blueprint"
+              price="€49"
+              tag="STRATEGIE"
+              highlight
               purchasable
-              previewText="Dein Opportunity Score: 82/100"
-              lockedItems={[
-                "Detaillierte Wachstumsprognose",
-                "Fehlende Content-Formate",
-                "Spezifische Handlungsempfehlungen",
-              ]}
+              buttonLabel="Jetzt kaufen — €49"
+              previewText="Komplette Kampagnenstrategie: Ziel, Zielgruppe, Messaging, Timeline, Kanal-Mix und Budget-Empfehlung. Wie von einem Senior Strategist — in Minuten generiert."
+              lockedItems={[]}
+            />
+            <PremiumAddonCard
+              id="seasonal-planner"
+              icon="📅"
+              title="Seasonal Campaign Planner"
+              price="€19"
+              tag="PLANUNG"
+              purchasable
+              buttonLabel="Jetzt kaufen — €19"
+              previewText="Jahreskalender mit branchenrelevanten Kampagnen-Anlässen: Black Friday, Feiertage, Awareness Days — inklusive Content-Ideen für jeden Anlass."
+              lockedItems={[]}
+            />
+            <PremiumAddonCard
+              id="ads-analyst"
+              icon="🔍"
+              title="Ads Analyst"
+              price="€29"
+              tag="ANALYSE"
+              purchasable
+              buttonLabel="Jetzt kaufen — €29"
+              previewText="Sieh was deine Konkurrenten gerade auf Meta schalten — Creatives, Copy, Laufzeit. Direkt aus der Meta Ad Library, vollautomatisch aufbereitet."
+              lockedItems={[]}
             />
           </div>
         </div>
@@ -252,20 +267,6 @@ const InstagramSection = () => {
             </div>
           </div>
 
-          {/* Market Trends Intelligence — Premium Add-on (after goals) */}
-          <PremiumAddonCard
-            id="trends"
-            icon="🔮"
-            title="Market Trends Intelligence"
-            price="€9"
-            tag="Trends"
-            previewText="Neue Content-Trends in deiner Branche erkannt."
-            lockedItems={[
-              "Trending Formate & Beispiele",
-              "Branchenspezifische Empfehlungen",
-              "Virale Muster & Inspiration",
-            ]}
-          />
         </div>
       </div>
     </section>
