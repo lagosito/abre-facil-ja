@@ -30,13 +30,9 @@ const PageContent = () => {
         <InstagramSection />
         <ContentCalendar />
         <ContentStyleSection />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 mb-6">
-          <AddonCard icon="📈" title="Trend Scout" price="€49/Monat" tag="ADD-ON" desc="Jede Woche: was in deiner Branche auf Instagram gerade viral geht — direkt als Content-Ideen in deinen Kalender integriert." />
-          <AddonCard icon="✉️" title="Newsletter Autopilot" price="€49/Monat" tag="ADD-ON" desc="Wöchentlicher oder zweiwöchentlicher Newsletter — automatisch generiert mit Branchen-News, Marken-Updates und CTA. Du gibst nur noch frei." />
-        </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 mb-16">
           <AddonCard icon="🤳" title="UGC Generator" comingSoon desc="Lade ein Produktfoto hoch — wir generieren automatisch einen professionellen UGC-Video für deinen Reel-Kalender. Powered by Sora & VEO3." />
-          <AddonCard icon="📸" title="AI Product Shots" comingSoon desc="Professionelle Produktfotos mit AI-generierten Lifestyle-Hintergründen in deinen Markenfarben." />
+          <AddonCard icon="📸" title="AI Product Shots" comingSoon desc="Professionelle Produktfotos mit AI-generierten Lifestyle-Hintergründen in deinen Markenfarben. Lade dein Produkt hoch, wir machen den Rest." />
           <AddonCard icon="🎬" title="Video & Motion Content" comingSoon desc="Animierte Social-Media-Videos und Motion Graphics in deinem Brand-Design. Automatisch generiert, ready to post." />
         </div>
         <div id="packages">
