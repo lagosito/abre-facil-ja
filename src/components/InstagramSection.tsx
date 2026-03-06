@@ -267,20 +267,6 @@ const InstagramSection = () => {
             </div>
           </div>
 
-          {/* Market Trends Intelligence — Premium Add-on (after goals) */}
-          <PremiumAddonCard
-            id="trends"
-            icon="🔮"
-            title="Market Trends Intelligence"
-            price="€9"
-            tag="Trends"
-            previewText="Neue Content-Trends in deiner Branche erkannt."
-            lockedItems={[
-              "Trending Formate & Beispiele",
-              "Branchenspezifische Empfehlungen",
-              "Virale Muster & Inspiration",
-            ]}
-          />
         </div>
       </div>
     </section>

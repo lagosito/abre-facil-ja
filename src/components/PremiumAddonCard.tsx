@@ -71,9 +71,13 @@ const PremiumAddonCard = ({ id, icon, title, price, tag, highlight, previewText,
         ))}
       </div>
 
-      {purchasable ? (
+      {comingSoon ? (
+        <button disabled className="w-full py-2.5 rounded-pill text-xs font-bold transition-all bg-muted text-muted-foreground cursor-not-allowed">
+          Bald verfügbar
+        </button>
+      ) : purchasable ? (
         <button className="w-full py-2.5 rounded-pill text-xs font-bold transition-all bg-foreground text-background hover:opacity-90">
-          Jetzt kaufen
+          {buttonLabel || "Jetzt kaufen"}
         </button>
       ) : (
         <button
