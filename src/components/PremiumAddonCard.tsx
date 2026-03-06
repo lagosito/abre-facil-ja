@@ -5,12 +5,14 @@ interface PremiumAddonCardProps {
   id: string;
   icon: string;
   title: string;
-  price: string;
+  price?: string;
   tag: string;
   highlight?: boolean;
   previewText: string;
   lockedItems: string[];
   purchasable?: boolean;
+  buttonLabel?: string;
+  comingSoon?: boolean;
 }
 
 const PremiumAddonCard = ({ id, icon, title, price, tag, highlight, previewText, lockedItems, purchasable }: PremiumAddonCardProps) => {
