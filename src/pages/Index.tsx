@@ -12,36 +12,93 @@ import CTABlocks from "@/components/CTABlocks";
 import EmailCapture from "@/components/EmailCapture";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import ProcessingScreen from "@/components/ProcessingScreen";
+import SectionSkeleton, { CalendarSkeleton } from "@/components/SectionSkeleton";
 import { BrandDataProvider, useBrandData } from "@/context/BrandDataContext";
 
+const AnalyzingBanner = () => (
+  <div className="analyzing-banner border-b border-primary/10 px-6 py-3 text-center sticky top-[60px] z-40">
+    <div className="flex items-center justify-center gap-2 text-sm font-medium text-primary">
+      <span className="inline-block w-2 h-2 rounded-full bg-primary animate-pulse" />
+      ✨ Analyzing your brand with AI — this takes about 30 seconds...
+    </div>
+  </div>
+);
+
+const FadeInSection = ({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) => (
+  <div className="section-appear" style={{ animationDelay: `${delay}ms` }}>
+    {children}
+  </div>
+);
+
 const PageContent = () => {
-  const { loading, processing } = useBrandData();
+  const { loading, processing, loadingStage } = useBrandData();
 
   if (loading) return <LoadingSpinner />;
-  if (processing !== "idle") return <ProcessingScreen />;
+  if (processing !== "idle" && loadingStage === "waiting") return <ProcessingScreen />;
+
+  const isPartial = loadingStage === "partial";
+  const isComplete = loadingStage === "complete";
 
   return (
     <>
       <Navbar />
+      {isPartial && <AnalyzingBanner />}
       <div className="max-w-[1100px] mx-auto px-6 md:px-12 pb-28">
+        {/* Stage 1: Always visible with data */}
         <Hero />
         <BrandIdentity />
-        <BrandBriefing />
-        <InstagramSection />
-        <ContentCalendar />
-        <ContentStyleSection />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 mb-16">
-          <AddonCard icon="🤳" title="UGC Generator" comingSoon desc="Upload a product photo — we automatically generate a professional UGC video for your Reel calendar. Powered by Sora & VEO3." />
-          <AddonCard icon="📸" title="AI Product Shots" comingSoon desc="Professional product photos with AI-generated lifestyle backgrounds in your brand colors. Upload your product, we do the rest." />
-          <AddonCard icon="🎬" title="Video & Motion Content" comingSoon desc="Animated social media videos and motion graphics in your brand design. Automatically generated, ready to post." />
-        </div>
-        <div id="packages">
-          <Packages />
-        </div>
-        <WhatHappensNext />
-        <CTABlocks />
+
+        {/* Stage 2 sections: show real content or skeletons */}
+        {isComplete ? (
+          <>
+            <FadeInSection>
+              <BrandBriefing />
+            </FadeInSection>
+            <FadeInSection delay={100}>
+              <InstagramSection />
+            </FadeInSection>
+            <FadeInSection delay={200}>
+              <ContentCalendar />
+            </FadeInSection>
+            <FadeInSection delay={300}>
+              <ContentStyleSection />
+            </FadeInSection>
+            <FadeInSection delay={350}>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 mb-16">
+                <AddonCard icon="🤳" title="UGC Generator" comingSoon desc="Upload a product photo — we automatically generate a professional UGC video for your Reel calendar. Powered by Sora & VEO3." />
+                <AddonCard icon="📸" title="AI Product Shots" comingSoon desc="Professional product photos with AI-generated lifestyle backgrounds in your brand colors. Upload your product, we do the rest." />
+                <AddonCard icon="🎬" title="Video & Motion Content" comingSoon desc="Animated social media videos and motion graphics in your brand design. Automatically generated, ready to post." />
+              </div>
+            </FadeInSection>
+            <FadeInSection delay={400}>
+              <div id="packages">
+                <Packages />
+              </div>
+            </FadeInSection>
+            <FadeInSection delay={450}>
+              <WhatHappensNext />
+            </FadeInSection>
+            <FadeInSection delay={500}>
+              <CTABlocks />
+            </FadeInSection>
+          </>
+        ) : (
+          <>
+            <SectionSkeleton headerNum="02" headerTitle="Brand Briefing" lines={5} />
+            <SectionSkeleton headerNum="03" headerTitle="Your Instagram — Current Snapshot" lines={4} />
+            <div className="grid grid-cols-12 gap-3.5 mb-16">
+              <div className="col-span-12 md:col-span-6">
+                <CalendarSkeleton />
+              </div>
+              <div className="col-span-12 md:col-span-6">
+                <CalendarSkeleton />
+              </div>
+            </div>
+            <SectionSkeleton headerNum="05" headerTitle="Pick Your Plan" lines={3} />
+          </>
+        )}
       </div>
-      <EmailCapture />
+      {isComplete && <EmailCapture />}
     </>
   );
 };

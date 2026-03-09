@@ -565,7 +565,7 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
           return;
         }
         fetchBrandData(id, true);
-      }, 4000);
+      }, 3000);
     },
     [fetchBrandData, stopPolling]
   );
