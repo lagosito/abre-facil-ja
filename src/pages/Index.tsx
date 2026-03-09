@@ -13,15 +13,27 @@ import EmailCapture from "@/components/EmailCapture";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import SectionSkeleton, { CalendarSkeleton } from "@/components/SectionSkeleton";
 import { BrandDataProvider, useBrandData } from "@/context/BrandDataContext";
+import { useEffect, useState } from "react";
 
-const AnalyzingBanner = () => (
-  <div className="analyzing-banner border-b border-primary/10 px-6 py-3 text-center sticky top-[60px] z-40">
-    <div className="flex items-center justify-center gap-2 text-sm font-medium text-primary">
-      <span className="inline-block w-2 h-2 rounded-full bg-primary animate-pulse" />
-      ✨ Analyzing your brand with AI — this takes about 30 seconds...
+const CountdownBanner = () => {
+  const [seconds, setSeconds] = useState(30);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setSeconds((s) => (s > 0 ? s - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <div className="analyzing-banner border-b border-primary/10 px-6 py-2.5 text-center sticky top-[60px] z-40">
+      <div className="flex items-center justify-center gap-2 text-sm font-medium text-primary">
+        ⏳ Completing your full report...{" "}
+        {seconds > 0 ? `~${seconds}s remaining` : "almost done..."}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const FadeInSection = ({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) => (
   <div className="section-appear" style={{ animationDelay: `${delay}ms` }}>
@@ -32,7 +44,7 @@ const FadeInSection = ({ children, delay = 0 }: { children: React.ReactNode; del
 const PageContent = () => {
   const { loading, loadingStage } = useBrandData();
 
-  // Only show spinner on the very first fetch before ANY data arrives
+  // Show progress bar loading screen before ANY data arrives
   if (loading) return <LoadingSpinner />;
 
   const isPartial = loadingStage === "partial" || loadingStage === "waiting";
@@ -41,7 +53,7 @@ const PageContent = () => {
   return (
     <>
       <Navbar />
-      {isPartial && <AnalyzingBanner />}
+      {isPartial && <CountdownBanner />}
       <div className="max-w-[1100px] mx-auto px-6 md:px-12 pb-28">
         {/* Always visible — uses whatever data is available */}
         <Hero />
