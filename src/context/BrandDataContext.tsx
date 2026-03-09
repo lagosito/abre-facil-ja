@@ -507,43 +507,35 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
           return res.json();
         })
         .then((parsed: IncomingData) => {
-          if (isProcessing(parsed)) {
-            // Still processing — but map whatever data exists
-            const mapped = mapIncoming(parsed);
-            const hasAnyData = parsed.brandName || parsed.colors?.length;
-            if (hasAnyData) {
-              setData((prev) => ({ ...prev, ...mapped }));
-              setLoadingStage("partial");
-            }
-            if (!isPolling) {
-              setLoading(false);
-              setProcessing("processing");
-              startPolling(id);
-            }
-            return false; // not ready
-          }
-
-          // Detect stage from data
           const stage = detectLoadingStage(parsed);
           const mapped = mapIncoming(parsed);
-          setData((prev) => ({ ...prev, ...mapped }));
-          setLoading(false);
 
-          if (stage === "partial") {
-            setProcessing("idle");
-            setLoadingStage("partial");
-            // Keep polling for complete data
-            if (!pollRef.current) {
+          if (stage === "waiting" && isProcessing(parsed)) {
+            // No meaningful data yet — keep loading spinner, start polling
+            if (!isPolling) {
+              setProcessing("processing");
               startPolling(id);
             }
             return false;
           }
 
-          // Complete
+          // We have data — show the report page immediately
+          setData((prev) => ({ ...prev, ...mapped }));
+          setLoading(false);
           setProcessing("idle");
-          setLoadingStage("complete");
-          stopPolling();
-          return true; // ready
+
+          if (stage === "complete") {
+            setLoadingStage("complete");
+            stopPolling();
+            return true;
+          }
+
+          // Partial data — show report with skeletons, keep polling
+          setLoadingStage("partial");
+          if (!pollRef.current) {
+            startPolling(id);
+          }
+          return false;
         })
         .catch((e) => {
           console.warn("Failed to fetch brand data:", e);
