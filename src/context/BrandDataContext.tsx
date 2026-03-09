@@ -499,19 +499,25 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
 
   const fetchBrandData = useCallback(
     (id: string, isPolling = false) => {
-      return fetch(`https://lagosito.app.n8n.cloud/webhook/elk-get-dna?id=${encodeURIComponent(id)}`, {
-        mode: "cors",
-      })
+      const url = `https://lagosito.app.n8n.cloud/webhook/elk-get-dna?id=${encodeURIComponent(id)}`;
+      if (!isPolling) {
+        console.log('[ELK] First fetch URL:', url);
+      }
+      return fetch(url, { mode: "cors" })
         .then((res) => {
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           return res.json();
         })
         .then((parsed: IncomingData) => {
-          const stage = detectLoadingStage(parsed);
-          const mapped = mapIncoming(parsed);
+          console.log('[ELK] Poll response:', parsed);
+          console.log('[ELK] Is partial:', parsed?._partial, 'Has brandName:', !!parsed?.brandName, 'status:', parsed?.status);
 
-          if (stage === "waiting" && isProcessing(parsed)) {
-            // No meaningful data yet — keep loading spinner, start polling
+          const hasBrandName = !!parsed?.brandName;
+          const isPartial = parsed?._partial === true;
+
+          // No brandName yet — keep loading screen, keep polling
+          if (!hasBrandName) {
+            console.log('[ELK] No brandName yet, keeping loading screen');
             if (!isPolling) {
               setProcessing("processing");
               startPolling(id);
@@ -519,29 +525,34 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
             return false;
           }
 
-          // We have data — show the report page immediately
+          // We have brandName — show the report
+          const mapped = mapIncoming(parsed);
           setData((prev) => ({ ...prev, ...mapped }));
           setLoading(false);
           setProcessing("idle");
 
-          if (stage === "complete") {
-            setLoadingStage("complete");
-            stopPolling();
-            return true;
+          if (isPartial) {
+            // Partial data — show report with skeletons, keep polling
+            console.log('[ELK] Partial data — showing report with skeletons');
+            setLoadingStage("partial");
+            if (!pollRef.current) {
+              startPolling(id);
+            }
+            return false;
           }
 
-          // Partial data — show report with skeletons, keep polling
-          setLoadingStage("partial");
-          if (!pollRef.current) {
-            startPolling(id);
-          }
-          return false;
+          // Complete data
+          console.log('[ELK] Complete data — showing full report');
+          setLoadingStage("complete");
+          stopPolling();
+          return true;
         })
         .catch((e) => {
-          console.warn("Failed to fetch brand data:", e);
+          console.warn("[ELK] Failed to fetch brand data:", e);
+          // Keep loading screen, keep polling
           if (!isPolling) {
-            setData(defaultData);
-            setLoading(false);
+            setProcessing("processing");
+            startPolling(id);
           }
           return false;
         });
