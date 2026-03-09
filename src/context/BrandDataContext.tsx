@@ -132,17 +132,33 @@ interface IncomingData {
   objectives?: Objective[];
   status?: string;
   brandDna?: string;
+  _partial?: boolean;
+  _status?: string;
 }
+
+export type LoadingStage = "waiting" | "partial" | "complete";
 
 function isProcessing(data: IncomingData): boolean {
   // If status is explicitly "Processing", it's still processing
   if (data.status === "Processing") return true;
-  // If we have meaningful brand data (brandName + colors or businessOverview), it's ready
+  // If we have meaningful brand data (brandName + colors or businessOverview), it's ready (at least partial)
   if (data.brandName && (data.colors?.length || data.businessOverview)) return false;
   // If brandDna field exists and is non-empty, it's ready
   if (data.brandDna && data.brandDna.trim() !== "") return false;
   // Otherwise assume processing
   return true;
+}
+
+function detectLoadingStage(data: IncomingData): LoadingStage {
+  // Explicit partial flag from backend
+  if (data._partial === true || data._status === "analyzing") return "partial";
+  // If status is "Lead" or no _partial flag and we have data, it's complete
+  if (data.status === "Lead") return "complete";
+  // If we have rich data (instagram, objectives, etc.), it's complete
+  if (data.brandName && (data.instagramHandle || data.objectives?.length || data.contentInsights)) return "complete";
+  // If we have basic brand data but nothing else, partial
+  if (data.brandName && (data.colors?.length || data.businessOverview)) return "partial";
+  return "waiting";
 }
 
 function isLightColor(hex: string): boolean {
