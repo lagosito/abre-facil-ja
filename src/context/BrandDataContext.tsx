@@ -512,15 +512,31 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
             if (!isPolling) {
               setLoading(false);
               setProcessing("processing");
+              setLoadingStage("waiting");
               startPolling(id);
             }
             return false; // not ready
           }
-          // Data is ready
+
+          // Detect stage from data
+          const stage = detectLoadingStage(parsed);
           const mapped = mapIncoming(parsed);
-          setData({ ...defaultData, ...mapped });
-          setProcessing("idle");
+          setData((prev) => ({ ...prev, ...mapped }));
           setLoading(false);
+
+          if (stage === "partial") {
+            setProcessing("idle");
+            setLoadingStage("partial");
+            // Keep polling for complete data
+            if (!pollRef.current) {
+              startPolling(id);
+            }
+            return false;
+          }
+
+          // Complete
+          setProcessing("idle");
+          setLoadingStage("complete");
           stopPolling();
           return true; // ready
         })
