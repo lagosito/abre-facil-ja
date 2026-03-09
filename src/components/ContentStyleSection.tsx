@@ -5,11 +5,11 @@ import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 
 const FORMAT_OPTIONS = [
-  { emoji: "📸", label: "Statische Posts" },
+  { emoji: "📸", label: "Static Posts" },
   { emoji: "🎬", label: "Reels / Short Videos" },
-  { emoji: "🎨", label: "Illustrationen / Grafiken" },
+  { emoji: "🎨", label: "Illustrations / Graphics" },
   { emoji: "🤳", label: "UGC-Style" },
-  { emoji: "📊", label: "Infografiken" },
+  { emoji: "📊", label: "Infographics" },
 ];
 
 const STYLE_OPTIONS = [
@@ -55,9 +55,9 @@ const ContentStyleSection = () => {
         }),
       });
       setSaved(true);
-      toast({ title: "Gespeichert ✓", description: "Deine Content-Präferenzen wurden gespeichert." });
+      toast({ title: "Saved ✓", description: "Your content preferences have been saved." });
     } catch {
-      toast({ title: "Fehler", description: "Bitte versuche es erneut.", variant: "destructive" });
+      toast({ title: "Error", description: "Please try again.", variant: "destructive" });
     } finally {
       setSaving(false);
     }
@@ -69,13 +69,13 @@ const ContentStyleSection = () => {
     <section className="mb-16 animate-fade-up">
       <SectionHeader
         num="06"
-        title="Dein Content-Stil"
-        explain="Du hast deine Ziele definiert. Jetzt zeig uns, wie dein Content aussehen soll — damit wir von Tag 1 das Richtige produzieren."
+        title="Your Content Style"
+        explain="You've defined your goals. Now show us how your content should look — so we produce the right thing from day one."
       />
 
-      {/* Frage 1 — Content-Format */}
+      {/* Question 1 — Content Format */}
       <div className="mb-10">
-        <h4 className="text-sm font-semibold mb-4">Welche Formate passen zu dir?</h4>
+        <h4 className="text-sm font-semibold mb-4">Which formats suit you?</h4>
         <div className="flex flex-wrap gap-2.5">
           {FORMAT_OPTIONS.map((opt) => {
             const selected = formats.includes(opt.label);
@@ -96,9 +96,9 @@ const ContentStyleSection = () => {
         </div>
       </div>
 
-      {/* Frage 2 — Visueller Stil */}
+      {/* Question 2 — Visual Style */}
       <div className="mb-10">
-        <h4 className="text-sm font-semibold mb-4">Welcher Stil spricht dich an?</h4>
+        <h4 className="text-sm font-semibold mb-4">Which style appeals to you?</h4>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {STYLE_OPTIONS.map((opt) => {
             const selected = style === opt.label;
@@ -120,14 +120,14 @@ const ContentStyleSection = () => {
         </div>
       </div>
 
-      {/* Frage 3 — Benchmark */}
+      {/* Question 3 — Benchmark */}
       <div className="mb-10">
-        <h4 className="text-sm font-semibold mb-1.5">Gibt es Marken, deren Content du magst?</h4>
-        <p className="text-xs text-muted-foreground mb-3">Optional — hilft uns, deinen Stil besser zu verstehen</p>
+        <h4 className="text-sm font-semibold mb-1.5">Are there brands whose content you like?</h4>
+        <p className="text-xs text-muted-foreground mb-3">Optional — helps us better understand your style</p>
         <Input
           value={benchmark}
           onChange={(e) => { setBenchmark(e.target.value); setSaved(false); }}
-          placeholder="z.B. Nike, Glossier, Flaconi..."
+          placeholder="e.g. Nike, Glossier, Flaconi..."
           className="max-w-md"
         />
       </div>
@@ -144,7 +144,7 @@ const ContentStyleSection = () => {
               : "bg-muted text-muted-foreground cursor-not-allowed"
         }`}
       >
-        {saving ? "Speichern..." : saved ? "Gespeichert ✓" : "Auswahl speichern ✓"}
+        {saving ? "Saving..." : saved ? "Saved ✓" : "Save selection ✓"}
       </button>
     </section>
   );

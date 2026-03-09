@@ -15,19 +15,13 @@ const dayStyles: Record<DayType, string> = {
 };
 
 function generateCalendar(totalPosts: number, year: number, month: number) {
-  // month is 0-indexed (0 = January)
-  const firstDay = new Date(year, month, 1).getDay(); // 0=Sun
+  const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-  // Convert Sunday=0 to Monday-based: Mon=0, Tue=1, ..., Sun=6
   const startOffset = firstDay === 0 ? 6 : firstDay - 1;
-
-  // Distribute content types: ~50% posts, ~30% reels, ~20% stories
   const reels = Math.round(totalPosts * 0.3);
   const stories = Math.round(totalPosts * 0.2);
   const posts = totalPosts - reels - stories;
 
-  // Pick evenly-spaced days for content
   const contentDays: Set<number> = new Set();
   if (totalPosts > 0 && daysInMonth > 0) {
     const spacing = daysInMonth / totalPosts;
@@ -35,13 +29,11 @@ function generateCalendar(totalPosts: number, year: number, month: number) {
       let day = Math.round(spacing * i + spacing / 2);
       day = Math.min(day, daysInMonth);
       day = Math.max(day, 1);
-      // Avoid duplicates — shift to nearest free day
       while (contentDays.has(day) && day <= daysInMonth) day++;
       if (day <= daysInMonth) contentDays.add(day);
     }
   }
 
-  // Assign types to content days
   const sortedDays = Array.from(contentDays).sort((a, b) => a - b);
   const dayTypeMap: Record<number, DayType> = {};
   let postCount = 0;
@@ -61,12 +53,10 @@ function generateCalendar(totalPosts: number, year: number, month: number) {
     }
   });
 
-  // Remaining content days get story type
   sortedDays.forEach((d) => {
     if (!dayTypeMap[d]) dayTypeMap[d] = "story";
   });
 
-  // Build grid
   const grid: { num: string; type: DayType }[] = [];
   for (let i = 0; i < startOffset; i++) {
     grid.push({ num: "", type: "empty" });
@@ -82,8 +72,8 @@ function generateCalendar(totalPosts: number, year: number, month: number) {
 }
 
 const monthNames = [
-  "Januar", "Februar", "März", "April", "Mai", "Juni",
-  "Juli", "August", "September", "Oktober", "November", "Dezember",
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
 ];
 
 const ContentCalendar = () => {
@@ -93,30 +83,26 @@ const ContentCalendar = () => {
   const currentMonth = now.getMonth();
   const currentYear = now.getFullYear();
 
-  // Use ideal posts or default to 18, but always show improvement over current
   const currentPosts = contentInsights?.postsPerMonth || 0;
   const rawIdeal = contentInsights?.idealPostsPerMonth || 18;
   const idealPosts = rawIdeal > currentPosts ? rawIdeal : currentPosts + 3;
 
-  // Generate two months
   const month1Idx = (currentMonth + 1) % 12;
   const month1Year = currentMonth === 11 ? currentYear + 1 : currentYear;
   const month2Idx = (currentMonth + 2) % 12;
   const month2Year = currentMonth >= 10 ? currentYear + 1 : currentYear;
 
-  const idealMonth2 = Math.round(idealPosts * 1.15); // slight increase for month 2
+  const idealMonth2 = Math.round(idealPosts * 1.15);
 
   const cal1 = useMemo(() => generateCalendar(idealPosts, month1Year, month1Idx), [idealPosts, month1Year, month1Idx]);
   const cal2 = useMemo(() => generateCalendar(idealMonth2, month2Year, month2Idx), [idealMonth2, month2Year, month2Idx]);
-
-  // currentPosts already declared above
 
   return (
     <section className="mb-16">
       <SectionHeader
         num="04"
-        title="Dein automatisierter Publishing-Plan"
-        explain="Basierend auf deiner Brand-DNA, deinem Branchenbenchmark und deinen Zielen hat El Kiosk einen optimierten Content-Plan erstellt. Dieser Kalender zeigt, was nach Aktivierung automatisch produziert und geplant wird."
+        title="Your Automated Publishing Plan"
+        explain="Based on your Brand DNA, industry benchmark, and goals, El Kiosk has created an optimized content plan. This calendar shows what will be automatically produced and scheduled after activation."
       />
 
       {/* Summary bar */}
@@ -124,13 +110,13 @@ const ContentCalendar = () => {
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-5">
             <div>
-              <div className="text-[10px] uppercase tracking-[0.08em] font-bold text-muted-foreground">Aktuell</div>
-              <div className="font-serif italic text-2xl text-red-500">{currentPosts} <span className="text-sm text-muted-foreground font-sans not-italic">Posts/Monat</span></div>
+              <div className="text-[10px] uppercase tracking-[0.08em] font-bold text-muted-foreground">Current</div>
+              <div className="font-serif italic text-2xl text-red-500">{currentPosts} <span className="text-sm text-muted-foreground font-sans not-italic">Posts/Month</span></div>
             </div>
             <div className="text-2xl text-muted-foreground">→</div>
             <div>
-              <div className="text-[10px] uppercase tracking-[0.08em] font-bold text-primary">Mit El Kiosk</div>
-              <div className="font-serif italic text-2xl text-primary">{idealPosts} <span className="text-sm text-muted-foreground font-sans not-italic">Posts/Monat</span></div>
+              <div className="text-[10px] uppercase tracking-[0.08em] font-bold text-primary">With El Kiosk</div>
+              <div className="font-serif italic text-2xl text-primary">{idealPosts} <span className="text-sm text-muted-foreground font-sans not-italic">Posts/Month</span></div>
             </div>
           </div>
           <div className="flex gap-5">
@@ -156,7 +142,7 @@ const ContentCalendar = () => {
               {monthNames[month1Idx]} {month1Year}
             </div>
             <div className="px-2.5 py-1 rounded-pill bg-primary/10 text-primary text-[10px] font-bold">
-              {idealPosts} Posts geplant
+              {idealPosts} Posts planned
             </div>
           </div>
           <CalendarGrid days={cal1.grid} />
@@ -169,7 +155,7 @@ const ContentCalendar = () => {
               {monthNames[month2Idx]} {month2Year}
             </div>
             <div className="px-2.5 py-1 rounded-pill bg-primary/10 text-primary text-[10px] font-bold">
-              {idealMonth2} Posts geplant
+              {idealMonth2} Posts planned
             </div>
           </div>
           <CalendarGrid days={cal2.grid} />
@@ -182,14 +168,14 @@ const ContentCalendar = () => {
             icon="📅"
             title="Seasonal Campaign Planner"
             price="€19"
-            tag="PLANUNG"
+            tag="PLANNING"
             purchasable
-            buttonLabel="Jetzt kaufen — €19"
-            previewText="Jahreskalender mit branchenrelevanten Kampagnen-Anlässen: Black Friday, Feiertage, Awareness Days — inklusive Content-Ideen für jeden Anlass."
+            buttonLabel="Buy now — €19"
+            previewText="Annual calendar with industry-relevant campaign occasions: Black Friday, holidays, Awareness Days — including content ideas for each occasion."
             lockedItems={[]}
           />
-          <AddonCard icon="📈" title="Trend Scout" price="€49/Monat" tag="ADD-ON" desc="Jede Woche: was in deiner Branche auf Instagram gerade viral geht — direkt als Content-Ideen in deinen Kalender integriert." />
-          <AddonCard icon="✉️" title="Newsletter Autopilot" price="€49/Monat" tag="ADD-ON" desc="Wöchentlicher oder zweiwöchentlicher Newsletter — automatisch generiert mit Branchen-News, Marken-Updates und CTA. Du gibst nur noch frei." />
+          <AddonCard icon="📈" title="Trend Scout" price="€49/month" tag="ADD-ON" desc="Every week: what's going viral in your industry on Instagram — delivered as content ideas directly into your calendar." />
+          <AddonCard icon="✉️" title="Newsletter Autopilot" price="€49/month" tag="ADD-ON" desc="Weekly or bi-weekly newsletter — automatically generated with industry news, brand updates, and CTA. You just approve." />
         </div>
       </div>
     </section>
@@ -199,7 +185,7 @@ const ContentCalendar = () => {
 const CalendarGrid = ({ days }: { days: { num: string; type: DayType }[] }) => (
   <>
     <div className="grid grid-cols-7 gap-[5px]">
-      {["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"].map((d) => (
+      {["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"].map((d) => (
         <div key={d} className="text-center text-[9px] uppercase tracking-[0.1em] font-bold text-muted-foreground pb-1.5">{d}</div>
       ))}
       {days.map((d, i) => (

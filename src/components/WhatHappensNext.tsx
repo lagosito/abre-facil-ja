@@ -6,23 +6,23 @@ const WhatHappensNext = () => {
   const steps = [
     {
       icon: "⚡",
-      title: "Content wird automatisch generiert",
-      desc: "Posts, Reels, Stories — abgestimmt auf deine Brand-DNA und deinen Kalender.",
+      title: "Content is automatically generated",
+      desc: "Posts, Reels, Stories — aligned with your Brand DNA and your calendar.",
     },
     {
       icon: "📋",
-      title: "Wöchentliche Post-Vorschläge",
-      desc: "Jeden Montag bekommst du Vorschläge zur Freigabe — du bestätigst, wir publizieren.",
+      title: "Weekly post suggestions",
+      desc: "Every Monday you receive suggestions for approval — you confirm, we publish.",
     },
     {
       icon: "🎯",
-      title: "Kampagnen-Konzepte",
-      desc: "Saisonale und branchenspezifische Kampagnen, automatisch vorbereitet.",
+      title: "Campaign concepts",
+      desc: "Seasonal and industry-specific campaigns, automatically prepared.",
     },
     {
       icon: "🎨",
       title: "Visuals & Videos",
-      desc: "Professionelle Grafiken und Kurzvideos, erstellt auf Basis deiner Farben und Schriften.",
+      desc: "Professional graphics and short videos, created based on your colors and fonts.",
     },
   ];
 
@@ -32,15 +32,15 @@ const WhatHappensNext = () => {
         <div className="flex items-center gap-2.5 mb-6">
           <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
           <div className="text-[10px] uppercase tracking-[0.12em] font-bold text-primary">
-            Nach der Aktivierung
+            After Activation
           </div>
         </div>
 
         <h3 className="font-serif italic text-[28px] md:text-[34px] leading-[1.1] mb-2">
-          Was als nächstes passiert
+          What Happens Next
         </h3>
         <p className="text-sm text-muted-foreground mb-8 max-w-[480px]">
-          Sobald du dein Paket wählst, startet El Kiosk die automatische Content-Produktion für {brandName}.
+          Once you choose your plan, El Kiosk starts automatic content production for {brandName}.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
@@ -64,15 +64,15 @@ const WhatHappensNext = () => {
           <div className="flex items-center gap-3">
             <div className="text-2xl">✅</div>
             <div>
-              <div className="text-sm font-semibold">Du gibst frei. Wir publizieren.</div>
-              <div className="text-xs text-muted-foreground">Kein Aufwand für dich — volle Kontrolle über jeden Post.</div>
+              <div className="text-sm font-semibold">You approve. We publish.</div>
+              <div className="text-xs text-muted-foreground">No effort on your end — full control over every post.</div>
             </div>
           </div>
           <a
             href="#packages"
             className="bg-primary text-primary-foreground px-6 py-3 rounded-pill text-sm font-bold hover:brightness-90 transition-all whitespace-nowrap shrink-0"
           >
-            Paket wählen ↗
+            Pick your plan ↗
           </a>
         </div>
       </div>

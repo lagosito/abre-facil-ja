@@ -31,9 +31,9 @@ const PageContent = () => {
         <ContentCalendar />
         <ContentStyleSection />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 mb-16">
-          <AddonCard icon="🤳" title="UGC Generator" comingSoon desc="Lade ein Produktfoto hoch — wir generieren automatisch einen professionellen UGC-Video für deinen Reel-Kalender. Powered by Sora & VEO3." />
-          <AddonCard icon="📸" title="AI Product Shots" comingSoon desc="Professionelle Produktfotos mit AI-generierten Lifestyle-Hintergründen in deinen Markenfarben. Lade dein Produkt hoch, wir machen den Rest." />
-          <AddonCard icon="🎬" title="Video & Motion Content" comingSoon desc="Animierte Social-Media-Videos und Motion Graphics in deinem Brand-Design. Automatisch generiert, ready to post." />
+          <AddonCard icon="🤳" title="UGC Generator" comingSoon desc="Upload a product photo — we automatically generate a professional UGC video for your Reel calendar. Powered by Sora & VEO3." />
+          <AddonCard icon="📸" title="AI Product Shots" comingSoon desc="Professional product photos with AI-generated lifestyle backgrounds in your brand colors. Upload your product, we do the rest." />
+          <AddonCard icon="🎬" title="Video & Motion Content" comingSoon desc="Animated social media videos and motion graphics in your brand design. Automatically generated, ready to post." />
         </div>
         <div id="packages">
           <Packages />

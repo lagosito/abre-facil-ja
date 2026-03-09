@@ -31,14 +31,12 @@ const Packages = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          // Existing fields
           chatId,
           package: pkg.name,
           price: pkg.price,
           brandName,
           websiteUrl: website,
           selectedObjectives,
-          // NEW: Complete payload
           recordId,
           userEmail,
           selectedAddons,
@@ -62,15 +60,15 @@ const Packages = () => {
   const getButtonContent = (pkg: { name: string; recommended: boolean }) => {
     const state = buttonStates[pkg.name] || "idle";
     if (state === "loading") return <Loader2 className="w-4 h-4 animate-spin mx-auto" />;
-    if (state === "success") return <span className="flex items-center justify-center gap-1.5"><Check className="w-4 h-4" /> Gesendet!</span>;
-    return pkg.recommended ? "Jetzt starten ↗" : "Paket wählen";
+    if (state === "success") return <span className="flex items-center justify-center gap-1.5"><Check className="w-4 h-4" /> Sent!</span>;
+    return pkg.recommended ? "Get started ↗" : "Choose plan";
   };
 
   return (
     <section className="mb-16">
       <SectionHeader
         num="05"
-        title="Dein empfohlenes Paket"
+        title="Pick Your Plan"
         explain={recommendedExplain}
       />
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
@@ -83,13 +81,13 @@ const Packages = () => {
           >
             {pkg.recommended && (
               <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-3.5 py-1 rounded-pill text-[10px] font-bold uppercase tracking-[0.06em] whitespace-nowrap">
-                ✦ Empfohlen für dich
+                ✦ Recommended for you
               </div>
             )}
             <div className="font-serif italic text-2xl mb-1">{pkg.name}</div>
             <div className="text-xs text-muted-foreground leading-relaxed mb-5">{pkg.desc}</div>
             <div className="font-serif text-[44px] leading-none">
-              {pkg.price}<span className="font-sans text-sm text-muted-foreground">/Monat</span>
+              {pkg.price}<span className="font-sans text-sm text-muted-foreground">/month</span>
             </div>
             <button
               onClick={() => handlePackageClick(pkg)}
