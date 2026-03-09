@@ -439,6 +439,7 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
   const [data, setData] = useState<BrandData>(defaultData);
   const [loading, setLoading] = useState(!!idParam);
   const [processing, setProcessing] = useState<ProcessingState>("idle");
+  const [loadingStage, setLoadingStage] = useState<LoadingStage>(idParam ? "waiting" : "complete");
   const [selectedObjectives, setSelectedObjectives] = useState<string[]>([]);
   const [selectedAddons, setSelectedAddons] = useState<string[]>([]);
   const [userEmail, setUserEmailState] = useState<string>("");
