@@ -604,6 +604,7 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
         data,
         loading,
         processing,
+        loadingStage,
         retryProcessing,
         recordId,
         selectedObjectives,
