@@ -11,7 +11,6 @@ import Packages from "@/components/Packages";
 import CTABlocks from "@/components/CTABlocks";
 import EmailCapture from "@/components/EmailCapture";
 import LoadingSpinner from "@/components/LoadingSpinner";
-import ProcessingScreen from "@/components/ProcessingScreen";
 import SectionSkeleton, { CalendarSkeleton } from "@/components/SectionSkeleton";
 import { BrandDataProvider, useBrandData } from "@/context/BrandDataContext";
 
@@ -31,12 +30,12 @@ const FadeInSection = ({ children, delay = 0 }: { children: React.ReactNode; del
 );
 
 const PageContent = () => {
-  const { loading, processing, loadingStage } = useBrandData();
+  const { loading, loadingStage } = useBrandData();
 
+  // Only show spinner on the very first fetch before ANY data arrives
   if (loading) return <LoadingSpinner />;
-  if (processing !== "idle" && loadingStage === "waiting") return <ProcessingScreen />;
 
-  const isPartial = loadingStage === "partial";
+  const isPartial = loadingStage === "partial" || loadingStage === "waiting";
   const isComplete = loadingStage === "complete";
 
   return (
@@ -44,11 +43,11 @@ const PageContent = () => {
       <Navbar />
       {isPartial && <AnalyzingBanner />}
       <div className="max-w-[1100px] mx-auto px-6 md:px-12 pb-28">
-        {/* Stage 1: Always visible with data */}
+        {/* Always visible — uses whatever data is available */}
         <Hero />
         <BrandIdentity />
 
-        {/* Stage 2 sections: show real content or skeletons */}
+        {/* Stage 2 sections: real content or skeletons */}
         {isComplete ? (
           <>
             <FadeInSection>
