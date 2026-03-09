@@ -397,6 +397,7 @@ const BrandDataContext = createContext<BrandDataContextValue>({
   data: defaultData,
   loading: false,
   processing: "idle",
+  loadingStage: "complete",
   retryProcessing: () => {},
   recordId: null,
   selectedObjectives: [],
