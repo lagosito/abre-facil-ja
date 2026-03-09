@@ -5,18 +5,17 @@ import AddonCard from "./AddonCard";
 import PremiumAddonCard from "./PremiumAddonCard";
 
 const BRIEFING_SECTIONS: { keyword: string; icon: string; title: string }[] = [
-  { keyword: "Zielgruppe:", icon: "🎯", title: "Zielgruppe" },
-  { keyword: "Content-Chancen:", icon: "💡", title: "Content-Chancen" },
-  { keyword: "Positionierung:", icon: "📍", title: "Positionierung" },
-  { keyword: "Plattformen:", icon: "📱", title: "Plattformen" },
-  { keyword: "Strategie:", icon: "🧭", title: "Strategie" },
+  { keyword: "Zielgruppe:", icon: "🎯", title: "Target Audience" },
+  { keyword: "Content-Chancen:", icon: "💡", title: "Content Opportunities" },
+  { keyword: "Positionierung:", icon: "📍", title: "Positioning" },
+  { keyword: "Plattformen:", icon: "📱", title: "Platforms" },
+  { keyword: "Strategie:", icon: "🧭", title: "Strategy" },
 ];
 
 function parseBriefingSections(text: string) {
   const sections: { icon: string; title: string; content: string }[] = [];
   let remaining = text;
 
-  // Find all keyword positions
   const found = BRIEFING_SECTIONS.map((s) => ({
     ...s,
     index: text.indexOf(s.keyword),
@@ -25,11 +24,9 @@ function parseBriefingSections(text: string) {
     .sort((a, b) => a.index - b.index);
 
   if (found.length === 0) {
-    // No keywords found — return whole text as single section
-    return { sections: [{ icon: "📋", title: "Content-Strategie", content: text.trim() }], remaining: "" };
+    return { sections: [{ icon: "📋", title: "Content Strategy", content: text.trim() }], remaining: "" };
   }
 
-  // Text before first keyword
   const preamble = text.slice(0, found[0].index).trim();
 
   found.forEach((s, i) => {
@@ -46,7 +43,6 @@ function parseBriefingSections(text: string) {
 
 const ExpandableText = ({ text, lineClamp = 3 }: { text: string; lineClamp?: number }) => {
   const [expanded, setExpanded] = useState(false);
-  // Rough heuristic: if text is short, no need for toggle
   const isLong = text.length > 250;
 
   return (
@@ -62,7 +58,7 @@ const ExpandableText = ({ text, lineClamp = 3 }: { text: string; lineClamp?: num
           onClick={() => setExpanded(!expanded)}
           className="mt-2 text-xs font-bold text-primary hover:underline transition-colors"
         >
-          {expanded ? "Weniger anzeigen" : "Mehr anzeigen"}
+          {expanded ? "Show less" : "Show more"}
         </button>
       )}
     </div>
@@ -84,17 +80,15 @@ const BrandBriefing = () => {
 
   const parsed = useMemo(() => (aiBriefing ? parseBriefingSections(aiBriefing) : null), [aiBriefing]);
 
-  // Collect structured fields into cards too
   const structuredCards = useMemo(() => {
     const cards: { icon: string; title: string; content: string }[] = [];
-    if (targetAudience) cards.push({ icon: "🎯", title: "Zielgruppe", content: targetAudience });
-    if (positioning) cards.push({ icon: "📍", title: "Positionierung", content: positioning });
-    if (platforms) cards.push({ icon: "📱", title: "Plattformen", content: platforms });
-    if (contentOpportunities) cards.push({ icon: "💡", title: "Content-Chancen", content: contentOpportunities });
+    if (targetAudience) cards.push({ icon: "🎯", title: "Target Audience", content: targetAudience });
+    if (positioning) cards.push({ icon: "📍", title: "Positioning", content: positioning });
+    if (platforms) cards.push({ icon: "📱", title: "Platforms", content: platforms });
+    if (contentOpportunities) cards.push({ icon: "💡", title: "Content Opportunities", content: contentOpportunities });
     return cards;
   }, [targetAudience, positioning, platforms, contentOpportunities]);
 
-  // Merge structured fields + parsed AI briefing sections, avoiding duplicate titles
   const allCards = useMemo(() => {
     const cards = [...structuredCards];
     const existingTitles = new Set(cards.map((c) => c.title));
@@ -114,11 +108,10 @@ const BrandBriefing = () => {
       <SectionHeader
         num="02"
         title="Brand Briefing"
-        explain="Auf Basis deiner Marken-DNA haben wir ein AI-Briefing erstellt — eine klare Beschreibung deiner Marke, deiner Zielgruppe und des optimalen Content-Mix. Das ist das Dokument, das jeder Content-Creator bei uns bekommt, bevor er für dich arbeitet."
+        explain="Based on your Brand DNA, we've created an AI briefing — a clear description of your brand, target audience, and optimal content mix. This is the document every content creator on our team receives before working on your brand."
       />
       <div className="grid grid-cols-12 gap-3.5">
         <div className="col-span-12 md:col-span-8 space-y-3.5">
-          {/* Business Overview — collapsible */}
           {businessOverview && (
             <div className="bg-card rounded-lg p-6 animate-fade-up hover:-translate-y-0.5 hover:shadow-lg transition-all">
               <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-muted-foreground mb-3">Business Overview</div>
@@ -126,15 +119,13 @@ const BrandBriefing = () => {
             </div>
           )}
 
-          {/* AI Briefing preamble if any */}
           {parsed?.remaining && (
             <div className="bg-card rounded-lg p-6 animate-fade-up hover:-translate-y-0.5 hover:shadow-lg transition-all">
-              <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-primary mb-3">AI Briefing — Content-Strategie</div>
+              <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-primary mb-3">AI Briefing — Content Strategy</div>
               <div className="text-sm leading-[1.75] text-muted-foreground">{parsed.remaining}</div>
             </div>
           )}
 
-          {/* Cards grid */}
           {allCards.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {allCards.map((card) => (
@@ -143,10 +134,9 @@ const BrandBriefing = () => {
             </div>
           )}
 
-          {/* Fallback: if no parsed sections and no structured cards, show raw aiBriefing */}
           {allCards.length === 0 && aiBriefing && (
             <div className="bg-card rounded-lg p-6 animate-fade-up">
-              <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-primary mb-3">AI Briefing — Content-Strategie</div>
+              <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-primary mb-3">AI Briefing — Content Strategy</div>
               <div className="text-sm leading-[1.75] text-muted-foreground">{aiBriefing}</div>
             </div>
           )}
@@ -158,11 +148,11 @@ const BrandBriefing = () => {
             icon="📋"
             title="Campaign Blueprint"
             price="€49"
-            tag="STRATEGIE"
+            tag="STRATEGY"
             highlight
             purchasable
-            buttonLabel="Jetzt kaufen — €49"
-            previewText="Komplette Kampagnenstrategie: Ziel, Zielgruppe, Messaging, Timeline, Kanal-Mix und Budget-Empfehlung. Wie von einem Senior Strategist."
+            buttonLabel="Buy now — €49"
+            previewText="Complete campaign strategy: goal, target audience, messaging, timeline, channel mix, and budget recommendation. Like from a Senior Strategist."
             lockedItems={[]}
           />
           <PremiumAddonCard
@@ -170,10 +160,10 @@ const BrandBriefing = () => {
             icon="🔍"
             title="Ads Analyst"
             price="€29"
-            tag="ANALYSE"
+            tag="ANALYSIS"
             purchasable
-            buttonLabel="Jetzt kaufen — €29"
-            previewText="Sieh was deine Konkurrenten gerade auf Meta schalten — Creatives, Copy, Laufzeit. Direkt aus der Meta Ad Library, vollautomatisch aufbereitet."
+            buttonLabel="Buy now — €29"
+            previewText="See what your competitors are currently running on Meta — creatives, copy, duration. Directly from the Meta Ad Library, fully automated."
             lockedItems={[]}
           />
           <PremiumAddonCard
@@ -183,8 +173,8 @@ const BrandBriefing = () => {
             price="€39"
             tag="CREATIVES"
             purchasable
-            buttonLabel="Jetzt kaufen — €39"
-            previewText="5 Ad-Konzepte mit Headline, Copy, CTA und Visual Direction — angepasst an Meta & Google. Bereit für Designer oder AI-Generierung."
+            buttonLabel="Buy now — €39"
+            previewText="5 ad concepts with headline, copy, CTA, and visual direction — tailored for Meta & Google. Ready for designers or AI generation."
             lockedItems={[]}
           />
         </div>

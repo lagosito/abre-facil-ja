@@ -3,7 +3,6 @@ import { useBrandData } from "@/context/BrandDataContext";
 const Hero = () => {
   const { brandName, website, contentInsights } = useBrandData();
 
-  // Calculate content gap percentage if data available
   const contentGap = contentInsights
     ? Math.round(
         (1 - contentInsights.postsPerMonth / contentInsights.idealPostsPerMonth) * 100
@@ -26,12 +25,11 @@ const Hero = () => {
         <span className="text-muted-foreground">is ready.</span>
       </h1>
       <p className="text-base text-muted-foreground max-w-[600px] leading-relaxed">
-        Wir haben deine Marke analysiert, deine Brand-DNA extrahiert und daraus
-        ein komplettes Content-System aufgebaut. Aktiviere es im nächsten Schritt
-        — und El Kiosk produziert automatisch Content für dich.
+        We've analyzed your brand, extracted your Brand DNA, and built a complete
+        content system. Activate it in the next step — and El Kiosk automatically
+        produces content for you.
       </p>
 
-      {/* Quick impact stats */}
       {contentInsights && (
         <div className="flex flex-wrap gap-6 mt-8">
           <div className="flex items-center gap-3">
@@ -40,8 +38,8 @@ const Hero = () => {
               <div className="text-[10px] uppercase tracking-[0.08em] font-bold text-muted-foreground">Content Gap</div>
               <div className="text-sm font-semibold">
                 {contentGap !== null && contentGap > 0
-                  ? `${contentGap}% weniger Content als empfohlen`
-                  : "Content-Frequenz im Rahmen"}
+                  ? `${contentGap}% less content than recommended`
+                  : "Content frequency on track"}
               </div>
             </div>
           </div>
@@ -51,7 +49,7 @@ const Hero = () => {
               <div className="text-[10px] uppercase tracking-[0.08em] font-bold text-muted-foreground">Engagement</div>
               <div className="text-sm font-semibold">
                 {contentInsights.engagementRate}%
-                <span className="text-muted-foreground font-normal"> vs. {contentInsights.benchmarkRate}% Branchenschnitt</span>
+                <span className="text-muted-foreground font-normal"> vs. {contentInsights.benchmarkRate}% Industry Average</span>
               </div>
             </div>
           </div>

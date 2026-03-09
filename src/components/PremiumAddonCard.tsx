@@ -24,8 +24,8 @@ const PremiumAddonCard = ({ id, icon, title, price, tag, highlight, previewText,
     if (comingSoon) return;
     if (purchasable) {
       toast({
-        title: "Kommt bald!",
-        description: "Wir benachrichtigen dich, sobald dieser Report verfügbar ist.",
+        title: "Coming soon!",
+        description: "We'll notify you as soon as this report is available.",
       });
       return;
     }
@@ -73,11 +73,11 @@ const PremiumAddonCard = ({ id, icon, title, price, tag, highlight, previewText,
 
       {comingSoon ? (
         <button disabled className="w-full py-2.5 rounded-pill text-xs font-bold transition-all bg-muted text-muted-foreground cursor-not-allowed">
-          Bald verfügbar
+          Coming soon
         </button>
       ) : purchasable ? (
         <button className="w-full py-2.5 rounded-pill text-xs font-bold transition-all bg-foreground text-background hover:opacity-90">
-          {buttonLabel || "Jetzt kaufen"}
+          {buttonLabel || "Buy now"}
         </button>
       ) : (
         <button
@@ -87,7 +87,7 @@ const PremiumAddonCard = ({ id, icon, title, price, tag, highlight, previewText,
               : "border border-border bg-transparent text-foreground hover:border-primary"
           }`}
         >
-          {selected ? "✓ Hinzugefügt" : "➕ Zum Paket hinzufügen"}
+          {selected ? "✓ Added" : "➕ Add to plan"}
         </button>
       )}
     </div>

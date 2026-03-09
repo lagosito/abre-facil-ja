@@ -7,7 +7,6 @@ const EmailCapture = () => {
   const [submitted, setSubmitted] = useState(false);
   const [dismissed, setDismissed] = useState(false);
 
-  // Don't show if: not yet interacted, already submitted email, or dismissed
   if (!hasInteracted || userEmail || dismissed) return null;
 
   const handleSubmit = () => {
@@ -21,7 +20,7 @@ const EmailCapture = () => {
   if (submitted) {
     return (
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-emerald-500 text-white px-6 py-3 rounded-pill shadow-lg animate-fade-up text-sm font-semibold">
-        ✓ Gespeichert — du kannst den Report jetzt jederzeit teilen.
+        ✓ Saved — you can now share the report anytime.
       </div>
     );
   }
@@ -29,7 +28,6 @@ const EmailCapture = () => {
   return (
     <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 w-[90vw] max-w-[520px] animate-fade-up">
       <div className="bg-card border border-border rounded-2xl shadow-xl p-5 relative">
-        {/* Dismiss button */}
         <button
           onClick={() => setDismissed(true)}
           className="absolute top-3 right-3 w-6 h-6 rounded-full bg-surface flex items-center justify-center text-muted-foreground hover:text-foreground text-xs transition-colors"
@@ -42,9 +40,9 @@ const EmailCapture = () => {
             📧
           </div>
           <div>
-            <div className="text-sm font-semibold">Änderungen speichern & Report teilen</div>
+            <div className="text-sm font-semibold">Save changes & share report</div>
             <div className="text-xs text-muted-foreground mt-0.5">
-              Gib deine E-Mail ein, um deine Anpassungen zu sichern und den {brandName}-Report mit Kollegen zu teilen.
+              Enter your email to save your customizations and share the {brandName} report with colleagues.
             </div>
           </div>
         </div>
@@ -55,14 +53,14 @@ const EmailCapture = () => {
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-            placeholder="deine@email.de"
+            placeholder="your@email.com"
             className="flex-1 text-sm bg-surface border border-border rounded-xl px-4 py-2.5 placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
           />
           <button
             onClick={handleSubmit}
             className="bg-primary text-primary-foreground px-5 py-2.5 rounded-xl text-sm font-bold hover:brightness-90 transition-all whitespace-nowrap shrink-0"
           >
-            Speichern
+            Save
           </button>
         </div>
       </div>

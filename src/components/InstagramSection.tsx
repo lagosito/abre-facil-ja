@@ -36,8 +36,8 @@ const InstagramSection = () => {
     <section className="mb-16">
       <SectionHeader
         num="03"
-        title="Dein Instagram — Stand heute"
-        explain="Wir haben deinen aktuellen Instagram-Account mit Branchendaten verglichen. Diese Zahlen zeigen den Ausgangspunkt — und machen deutlich, wo El Kiosk den größten Hebel hat."
+        title="Your Instagram — Current Snapshot"
+        explain="We compared your current Instagram account with industry data. These numbers show the starting point — and highlight where El Kiosk can make the biggest impact."
       />
       <div className="grid grid-cols-12 gap-3.5">
         {/* Left column */}
@@ -58,21 +58,21 @@ const InstagramSection = () => {
           {/* Competitive Benchmark Card */}
           {contentInsights && (
             <div className="bg-card rounded-lg p-6 animate-fade-up [animation-delay:0.04s] hover:-translate-y-0.5 hover:shadow-lg transition-all">
-              <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-muted-foreground mb-5">Wettbewerbs-Vergleich</div>
+              <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-muted-foreground mb-5">Competitive Benchmark</div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* Engagement comparison */}
                 <div className="bg-surface rounded-xl p-4">
                   <div className="text-[10px] uppercase tracking-[0.06em] font-bold text-muted-foreground mb-3">Engagement Rate</div>
                   <div className="flex items-end gap-3 mb-2">
                     <div>
-                      <div className="text-[10px] text-muted-foreground mb-0.5">Du</div>
+                      <div className="text-[10px] text-muted-foreground mb-0.5">You</div>
                       <div className={`font-serif italic text-2xl leading-none ${contentInsights.aboveBenchmark ? 'text-emerald-600' : 'text-red-500'}`}>
                         {contentInsights.engagementRate}%
                       </div>
                     </div>
                     <div className="text-muted-foreground text-lg mb-0.5">vs.</div>
                     <div>
-                      <div className="text-[10px] text-muted-foreground mb-0.5">Markt</div>
+                      <div className="text-[10px] text-muted-foreground mb-0.5">Market</div>
                       <div className="font-serif italic text-2xl leading-none">
                         {contentInsights.benchmarkRate}%
                       </div>
@@ -81,7 +81,7 @@ const InstagramSection = () => {
                   {/* Visual bar comparison */}
                   <div className="space-y-1.5 mt-3">
                     <div className="flex items-center gap-2">
-                      <div className="text-[9px] w-8 text-muted-foreground">Du</div>
+                      <div className="text-[9px] w-8 text-muted-foreground">You</div>
                       <div className="flex-1 h-2 bg-border rounded-full overflow-hidden">
                         <div
                           className={`h-full rounded-full transition-all ${contentInsights.aboveBenchmark ? 'bg-emerald-500' : 'bg-red-400'}`}
@@ -90,7 +90,7 @@ const InstagramSection = () => {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="text-[9px] w-8 text-muted-foreground">Markt</div>
+                      <div className="text-[9px] w-8 text-muted-foreground">Market</div>
                       <div className="flex-1 h-2 bg-border rounded-full overflow-hidden">
                         <div
                           className="h-full bg-foreground/30 rounded-full transition-all"
@@ -103,23 +103,23 @@ const InstagramSection = () => {
 
                 {/* Posting frequency comparison */}
                 <div className="bg-surface rounded-xl p-4">
-                  <div className="text-[10px] uppercase tracking-[0.06em] font-bold text-muted-foreground mb-3">Posting-Frequenz</div>
+                  <div className="text-[10px] uppercase tracking-[0.06em] font-bold text-muted-foreground mb-3">Posting Frequency</div>
                   <div className="flex items-end gap-3 mb-2">
                     <div>
-                      <div className="text-[10px] text-muted-foreground mb-0.5">Du</div>
+                      <div className="text-[10px] text-muted-foreground mb-0.5">You</div>
                       <div className={`font-serif italic text-2xl leading-none ${contentInsights.postsPerMonth >= contentInsights.idealPostsPerMonth ? 'text-emerald-600' : 'text-red-500'}`}>
                         {contentInsights.postsPerMonth}
                       </div>
                     </div>
                     <div className="text-muted-foreground text-lg mb-0.5">vs.</div>
                     <div>
-                      <div className="text-[10px] text-muted-foreground mb-0.5">Empfohlen</div>
+                      <div className="text-[10px] text-muted-foreground mb-0.5">Recommended</div>
                       <div className="font-serif italic text-2xl leading-none">
                         {contentInsights.idealPostsPerMonth > contentInsights.postsPerMonth ? contentInsights.idealPostsPerMonth : contentInsights.postsPerMonth + 3}
                       </div>
                     </div>
                   </div>
-                  <div className="text-[10px] text-muted-foreground mt-1">Posts / Monat</div>
+                  <div className="text-[10px] text-muted-foreground mt-1">Posts / Month</div>
                 </div>
 
                 {/* Content gap */}
@@ -131,14 +131,14 @@ const InstagramSection = () => {
                         {Math.round((1 - contentInsights.postsPerMonth / contentInsights.idealPostsPerMonth) * 100)}%
                       </div>
                       <div className="text-[11px] text-red-500/70 mt-2 leading-snug">
-                        weniger Content als Top-Wettbewerber in deiner Branche.
+                        less content than top competitors in your industry.
                       </div>
                     </>
                   ) : (
                     <>
                       <div className="font-serif italic text-3xl leading-none text-emerald-600">✓</div>
                       <div className="text-[11px] text-emerald-600/80 mt-2 leading-snug">
-                        Deine Posting-Frequenz liegt im oder über dem Branchenschnitt.
+                        Your posting frequency is at or above the industry average.
                       </div>
                     </>
                   )}
@@ -149,11 +149,11 @@ const InstagramSection = () => {
 
           {/* Growth Projection */}
           <div className="bg-card rounded-lg p-6 animate-fade-up [animation-delay:0.06s] hover:-translate-y-0.5 hover:shadow-lg transition-all">
-            <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-muted-foreground mb-5">Dein Wachstum mit El Kiosk</div>
+            <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-muted-foreground mb-5">Your Growth with El Kiosk</div>
             {growthProjection ? (
               <GrowthChart data={growthProjection} />
             ) : (
-              <p className="text-sm text-muted-foreground italic">Kein Instagram-Account gefunden.</p>
+              <p className="text-sm text-muted-foreground italic">No Instagram account found.</p>
             )}
           </div>
 
@@ -163,11 +163,11 @@ const InstagramSection = () => {
             {contentInsights ? (
               <InsightsGrid data={contentInsights} />
             ) : (
-              <p className="text-sm text-muted-foreground italic">Kein Instagram-Account gefunden.</p>
+              <p className="text-sm text-muted-foreground italic">No Instagram account found.</p>
             )}
           </div>
 
-          {/* Premium Add-ons — below Content Insights */}
+          {/* Premium Add-ons */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
             <PremiumAddonCard
               id="ad-creative-pack"
@@ -176,8 +176,8 @@ const InstagramSection = () => {
               price="€39"
               tag="CREATIVES"
               purchasable
-              buttonLabel="Jetzt kaufen — €39"
-              previewText="5 Ad-Konzepte mit Headline, Copy, CTA und Visual Direction — angepasst an Meta & Google. Bereit für Designer oder AI-Generierung."
+              buttonLabel="Buy now — €39"
+              previewText="5 ad concepts with headline, copy, CTA, and visual direction — tailored for Meta & Google. Ready for designers or AI generation."
               lockedItems={[]}
             />
             <PremiumAddonCard
@@ -185,11 +185,11 @@ const InstagramSection = () => {
               icon="📋"
               title="Campaign Blueprint"
               price="€49"
-              tag="STRATEGIE"
+              tag="STRATEGY"
               highlight
               purchasable
-              buttonLabel="Jetzt kaufen — €49"
-              previewText="Komplette Kampagnenstrategie: Ziel, Zielgruppe, Messaging, Timeline, Kanal-Mix und Budget-Empfehlung. Wie von einem Senior Strategist — in Minuten generiert."
+              buttonLabel="Buy now — €49"
+              previewText="Complete campaign strategy: goal, target audience, messaging, timeline, channel mix, and budget recommendation. Like from a Senior Strategist — generated in minutes."
               lockedItems={[]}
             />
             <PremiumAddonCard
@@ -197,10 +197,10 @@ const InstagramSection = () => {
               icon="📅"
               title="Seasonal Campaign Planner"
               price="€19"
-              tag="PLANUNG"
+              tag="PLANNING"
               purchasable
-              buttonLabel="Jetzt kaufen — €19"
-              previewText="Jahreskalender mit branchenrelevanten Kampagnen-Anlässen: Black Friday, Feiertage, Awareness Days — inklusive Content-Ideen für jeden Anlass."
+              buttonLabel="Buy now — €19"
+              previewText="Annual calendar with industry-relevant campaign occasions: Black Friday, holidays, Awareness Days — including content ideas for each occasion."
               lockedItems={[]}
             />
             <PremiumAddonCard
@@ -208,10 +208,10 @@ const InstagramSection = () => {
               icon="🔍"
               title="Ads Analyst"
               price="€29"
-              tag="ANALYSE"
+              tag="ANALYSIS"
               purchasable
-              buttonLabel="Jetzt kaufen — €29"
-              previewText="Sieh was deine Konkurrenten gerade auf Meta schalten — Creatives, Copy, Laufzeit. Direkt aus der Meta Ad Library, vollautomatisch aufbereitet."
+              buttonLabel="Buy now — €29"
+              previewText="See what your competitors are currently running on Meta — creatives, copy, duration. Directly from the Meta Ad Library, fully automated."
               lockedItems={[]}
             />
           </div>
@@ -220,7 +220,7 @@ const InstagramSection = () => {
         {/* Right column — Objectives */}
         <div className="col-span-12 md:col-span-4 space-y-3.5">
           <div className="bg-card rounded-lg p-6 animate-fade-up [animation-delay:0.09s] hover:-translate-y-0.5 hover:shadow-lg transition-all h-fit">
-            <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-muted-foreground mb-3.5">Wähle deine Ziele</div>
+            <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-muted-foreground mb-3.5">Select Your Goals</div>
             <div className="flex flex-col gap-1">
               {allObjectives.map((o) => {
                 const selected = selectedObjectives.includes(o.label);
@@ -255,7 +255,7 @@ const InstagramSection = () => {
                 value={newGoal}
                 onChange={(e) => setNewGoal(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && addCustomGoal()}
-                placeholder="Eigenes Ziel hinzufügen"
+                placeholder="Add custom goal"
                 className="flex-1 text-sm bg-muted/50 border border-border rounded-lg px-3 py-2 placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
               />
               <button
@@ -278,10 +278,10 @@ import type { GrowthProjection } from "@/context/BrandDataContext";
 
 const GrowthChart = ({ data }: { data: GrowthProjection }) => {
   const bars = [
-    { label: "Heute", value: data.current, eng: data.currentEng, growth: null, height: "25%" },
-    { label: "3 Monate", value: data.month3, eng: data.month3Eng, growth: data.percentGrowth3, height: "50%" },
-    { label: "6 Monate", value: data.month6, eng: data.month6Eng, growth: data.percentGrowth6, height: "75%" },
-    { label: "12 Monate", value: data.month12, eng: data.month12Eng, growth: data.percentGrowth12, height: "100%" },
+    { label: "Today", value: data.current, eng: data.currentEng, growth: null, height: "25%" },
+    { label: "3 Months", value: data.month3, eng: data.month3Eng, growth: data.percentGrowth3, height: "50%" },
+    { label: "6 Months", value: data.month6, eng: data.month6Eng, growth: data.percentGrowth6, height: "75%" },
+    { label: "12 Months", value: data.month12, eng: data.month12Eng, growth: data.percentGrowth12, height: "100%" },
   ];
 
   return (
@@ -319,12 +319,12 @@ const InsightsGrid = ({ data }: { data: ContentInsights }) => {
       <div className="flex gap-3 items-start">
         <div className="w-[30px] h-[30px] rounded-lg bg-surface flex items-center justify-center text-sm shrink-0">🏆</div>
         <div>
-          <div className="text-[10px] uppercase tracking-[0.08em] font-bold text-muted-foreground">Bester Post</div>
+          <div className="text-[10px] uppercase tracking-[0.08em] font-bold text-muted-foreground">Best Post</div>
           <div className="text-sm font-medium mt-0.5">
-            {data.bestPostLikes} Likes · {data.bestPostComments} Kommentare
+            {data.bestPostLikes} Likes · {data.bestPostComments} Comments
           </div>
           {data.bestPostCaption && (
-            <div className="text-xs text-muted-foreground mt-1 line-clamp-2 italic">„{data.bestPostCaption}"</div>
+            <div className="text-xs text-muted-foreground mt-1 line-clamp-2 italic">"{data.bestPostCaption}"</div>
           )}
         </div>
       </div>
@@ -332,9 +332,9 @@ const InsightsGrid = ({ data }: { data: ContentInsights }) => {
       <div className="flex gap-3 items-start">
         <div className="w-[30px] h-[30px] rounded-lg bg-surface flex items-center justify-center text-sm shrink-0">📊</div>
         <div>
-          <div className="text-[10px] uppercase tracking-[0.08em] font-bold text-muted-foreground">Durchschnitt</div>
+          <div className="text-[10px] uppercase tracking-[0.08em] font-bold text-muted-foreground">Average</div>
           <div className="text-sm font-medium mt-0.5">
-            Ø {data.avgLikes} Likes · Ø {data.avgComments} Kommentare pro Post
+            Ø {data.avgLikes} Likes · Ø {data.avgComments} Comments per post
           </div>
         </div>
       </div>

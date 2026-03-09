@@ -25,10 +25,10 @@ const ProcessingScreen = () => {
             </div>
             <div>
               <h2 className="text-lg font-semibold text-foreground mb-2">
-                Das dauert länger als erwartet
+                This is taking longer than expected
               </h2>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Dein Brand DNA wird noch erstellt. Bitte versuche es in ein paar Minuten erneut.
+                Your Brand DNA is still being created. Please try again in a few minutes.
               </p>
             </div>
             <button
@@ -36,7 +36,7 @@ const ProcessingScreen = () => {
               className="mt-2 inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-foreground text-background text-sm font-semibold hover:opacity-90 transition-opacity"
             >
               <RefreshCw className="w-4 h-4" />
-              Erneut versuchen
+              Try again
             </button>
           </>
         ) : (
@@ -44,10 +44,10 @@ const ProcessingScreen = () => {
             <Loader2 className="w-10 h-10 animate-spin text-primary" />
             <div>
               <h2 className="text-lg font-semibold text-foreground mb-2">
-                Dein Brand DNA wird erstellt...
+                Your Brand DNA is being created...
               </h2>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Das dauert etwa 30–60 Sekunden. Bitte warte kurz.
+                This takes about 30–60 seconds. Please wait a moment.
               </p>
             </div>
             <div className="flex gap-1.5 mt-2">

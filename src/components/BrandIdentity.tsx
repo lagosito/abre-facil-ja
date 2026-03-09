@@ -18,10 +18,7 @@ const BrandIdentity = () => {
   const [selectedFont, setSelectedFont] = useState(data.fonts.display);
   const [hideLogo, setHideLogo] = useState(false);
 
-  // Reset hideLogo when logo URL changes
   useEffect(() => { setHideLogo(false); }, [data.brandLogoUrl]);
-
-  // Sync local state when context data changes (e.g. after fetch)
   useEffect(() => { setSwatches(data.colors); }, [data.colors]);
   useEffect(() => { setValues(data.values); }, [data.values]);
   useEffect(() => { setTones(data.tones); }, [data.tones]);
@@ -41,21 +38,20 @@ const BrandIdentity = () => {
     </button>
   );
 
-  /* Split brand essence into parts around the first "quoted" or italic phrase */
   const essenceParts = data.brandEssence.split(/(<em>.*?<\/em>)/);
 
   return (
     <section className="mb-16">
       <SectionHeader
         num="01"
-        title="Markenidentität"
-        explain="Aus deiner Website haben wir automatisch die visuellen und sprachlichen Kernelemente deiner Marke extrahiert — Farben, Typografie, Tonalität und Essenz. Das ist die DNA, aus der wir deinen gesamten Content entwickeln."
+        title="Brand Identity"
+        explain="We automatically extracted the visual and verbal core elements of your brand from your website — colors, typography, tonality, and essence. This is the DNA from which we develop all your content."
       />
 
       <div className="grid grid-cols-12 gap-3.5">
         {/* Identity Card */}
         <div className="col-span-12 md:col-span-5 text-background rounded-lg p-6 min-h-[220px] flex flex-col animate-fade-up hover:-translate-y-0.5 hover:shadow-lg transition-all" style={{ backgroundColor: data.logoBgColor || '#111111' }}>
-          <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-background/40 mb-3.5">Marke</div>
+          <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-background/40 mb-3.5">Brand</div>
           <div className="mt-auto">
             {data.brandLogoUrl && !hideLogo ? (
               <img
@@ -67,7 +63,6 @@ const BrandIdentity = () => {
                   const img = e.currentTarget;
                   const w = img.naturalWidth;
                   const h = img.naturalHeight;
-                  // SVGs may report 0 dimensions — skip validation in that case
                   if (w > 0 && h > 0) {
                     const ratio = w / h;
                     if ((ratio > 0.8 && ratio < 1.2) && w < 200) {
@@ -98,7 +93,7 @@ const BrandIdentity = () => {
 
         {/* Colors Card */}
         <div className="col-span-12 md:col-span-4 bg-card rounded-lg p-6 relative animate-fade-up [animation-delay:0.13s] hover:-translate-y-0.5 hover:shadow-lg transition-all">
-          <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-muted-foreground mb-3.5">Farbpalette</div>
+          <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-muted-foreground mb-3.5">Color Palette</div>
           <EditBtn onClick={() => setShowColors(!showColors)} />
           <div className="flex gap-2 mt-3">
             {swatches.map((s, i) => (
@@ -163,8 +158,8 @@ const BrandIdentity = () => {
       {showColors && (
         <div className="bg-card border-2 border-primary rounded-lg p-6 mt-3 animate-fade-up">
           <div className="flex items-center justify-between mb-5">
-            <div className="text-[13px] font-bold uppercase tracking-[0.08em] text-primary">🎨 Farbpalette bearbeiten</div>
-            <button onClick={() => { setShowColors(false); triggerSave({ colors: swatches }); }} className="bg-surface rounded-pill px-3 py-1 text-xs font-bold text-muted-foreground hover:bg-border transition-all">Fertig ✓</button>
+            <div className="text-[13px] font-bold uppercase tracking-[0.08em] text-primary">🎨 Edit Color Palette</div>
+            <button onClick={() => { setShowColors(false); triggerSave({ colors: swatches }); }} className="bg-surface rounded-pill px-3 py-1 text-xs font-bold text-muted-foreground hover:bg-border transition-all">Done ✓</button>
           </div>
           <div className="flex gap-2.5">
             {swatches.map((s, i) => (
@@ -183,8 +178,8 @@ const BrandIdentity = () => {
       {showTags && (
         <div className="bg-card border-2 border-primary rounded-lg p-6 mt-3 animate-fade-up">
           <div className="flex items-center justify-between mb-5">
-            <div className="text-[13px] font-bold uppercase tracking-[0.08em] text-primary">✦ Brand Values & Tone of Voice bearbeiten</div>
-            <button onClick={() => { setShowTags(false); triggerSave({ values, tones }); }} className="bg-surface rounded-pill px-3 py-1 text-xs font-bold text-muted-foreground hover:bg-border transition-all">Fertig ✓</button>
+            <div className="text-[13px] font-bold uppercase tracking-[0.08em] text-primary">✦ Edit Brand Values & Tone of Voice</div>
+            <button onClick={() => { setShowTags(false); triggerSave({ values, tones }); }} className="bg-surface rounded-pill px-3 py-1 text-xs font-bold text-muted-foreground hover:bg-border transition-all">Done ✓</button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -198,7 +193,7 @@ const BrandIdentity = () => {
                 ))}
               </div>
               <div className="flex gap-1.5">
-                <input value={newValue} onChange={(e) => setNewValue(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && newValue.trim()) { setValues((v) => [...v, newValue.trim()]); setNewValue(""); } }} placeholder="Neuer Value..." className="px-3 py-1 rounded-pill border-[1.5px] border-border text-xs outline-none focus:border-primary transition-colors w-28" />
+                <input value={newValue} onChange={(e) => setNewValue(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && newValue.trim()) { setValues((v) => [...v, newValue.trim()]); setNewValue(""); } }} placeholder="New value..." className="px-3 py-1 rounded-pill border-[1.5px] border-border text-xs outline-none focus:border-primary transition-colors w-28" />
                 <button onClick={() => { if (newValue.trim()) { setValues((v) => [...v, newValue.trim()]); setNewValue(""); } }} className="px-3 py-1 rounded-pill bg-primary text-primary-foreground text-xs font-bold">+</button>
               </div>
             </div>
@@ -213,7 +208,7 @@ const BrandIdentity = () => {
                 ))}
               </div>
               <div className="flex gap-1.5">
-                <input value={newTone} onChange={(e) => setNewTone(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && newTone.trim()) { setTones((t) => [...t, newTone.trim()]); setNewTone(""); } }} placeholder="Neuer Tone..." className="px-3 py-1 rounded-pill border-[1.5px] border-border text-xs outline-none focus:border-primary transition-colors w-28" />
+                <input value={newTone} onChange={(e) => setNewTone(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && newTone.trim()) { setTones((t) => [...t, newTone.trim()]); setNewTone(""); } }} placeholder="New tone..." className="px-3 py-1 rounded-pill border-[1.5px] border-border text-xs outline-none focus:border-primary transition-colors w-28" />
                 <button onClick={() => { if (newTone.trim()) { setTones((t) => [...t, newTone.trim()]); setNewTone(""); } }} className="px-3 py-1 rounded-pill bg-primary text-primary-foreground text-xs font-bold">+</button>
               </div>
             </div>
@@ -225,8 +220,8 @@ const BrandIdentity = () => {
       {showFonts && (
         <div className="bg-card border-2 border-primary rounded-lg p-6 mt-3 animate-fade-up">
           <div className="flex items-center justify-between mb-5">
-            <div className="text-[13px] font-bold uppercase tracking-[0.08em] text-primary">Aa  Schrift bearbeiten</div>
-            <button onClick={() => { setShowFonts(false); triggerSave({ fonts: { display: selectedFont, body: data.fonts.body } }); }} className="bg-surface rounded-pill px-3 py-1 text-xs font-bold text-muted-foreground hover:bg-border transition-all">Fertig ✓</button>
+            <div className="text-[13px] font-bold uppercase tracking-[0.08em] text-primary">Aa  Edit Font</div>
+            <button onClick={() => { setShowFonts(false); triggerSave({ fonts: { display: selectedFont, body: data.fonts.body } }); }} className="bg-surface rounded-pill px-3 py-1 text-xs font-bold text-muted-foreground hover:bg-border transition-all">Done ✓</button>
           </div>
           <div className="grid grid-cols-3 gap-2.5">
             {[data.fonts.display, "Playfair Display", "DM Serif Display"].map((f) => (

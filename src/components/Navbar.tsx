@@ -11,7 +11,7 @@ const Navbar = () => {
         [ Brand Intelligence Report — {brandName} ]
       </div>
       <button className="bg-primary text-primary-foreground px-5 py-2.5 rounded-pill text-sm font-semibold hover:brightness-90 transition-all">
-        Paket Kaufen ↗
+        Choose Plan ↗
       </button>
     </nav>
   );
