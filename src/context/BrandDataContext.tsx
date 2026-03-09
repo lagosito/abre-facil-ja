@@ -379,6 +379,7 @@ interface BrandDataContextValue {
   data: BrandData;
   loading: boolean;
   processing: ProcessingState;
+  loadingStage: LoadingStage;
   retryProcessing: () => void;
   recordId: string | null;
   selectedObjectives: string[];
