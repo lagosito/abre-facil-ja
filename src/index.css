@@ -109,3 +109,23 @@
   from { transform: translateY(60px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
+
+@keyframes section-appear {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.section-appear {
+  animation: section-appear 0.5s ease-out both;
+}
+
+@keyframes shimmer-bar {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.analyzing-banner {
+  background: linear-gradient(90deg, hsl(var(--primary) / 0.05), hsl(var(--primary) / 0.12), hsl(var(--primary) / 0.05));
+  background-size: 200% 100%;
+  animation: shimmer-bar 3s ease-in-out infinite;
+}
