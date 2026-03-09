@@ -132,17 +132,33 @@ interface IncomingData {
   objectives?: Objective[];
   status?: string;
   brandDna?: string;
+  _partial?: boolean;
+  _status?: string;
 }
+
+export type LoadingStage = "waiting" | "partial" | "complete";
 
 function isProcessing(data: IncomingData): boolean {
   // If status is explicitly "Processing", it's still processing
   if (data.status === "Processing") return true;
-  // If we have meaningful brand data (brandName + colors or businessOverview), it's ready
+  // If we have meaningful brand data (brandName + colors or businessOverview), it's ready (at least partial)
   if (data.brandName && (data.colors?.length || data.businessOverview)) return false;
   // If brandDna field exists and is non-empty, it's ready
   if (data.brandDna && data.brandDna.trim() !== "") return false;
   // Otherwise assume processing
   return true;
+}
+
+function detectLoadingStage(data: IncomingData): LoadingStage {
+  // Explicit partial flag from backend
+  if (data._partial === true || data._status === "analyzing") return "partial";
+  // If status is "Lead" or no _partial flag and we have data, it's complete
+  if (data.status === "Lead") return "complete";
+  // If we have rich data (instagram, objectives, etc.), it's complete
+  if (data.brandName && (data.instagramHandle || data.objectives?.length || data.contentInsights)) return "complete";
+  // If we have basic brand data but nothing else, partial
+  if (data.brandName && (data.colors?.length || data.businessOverview)) return "partial";
+  return "waiting";
 }
 
 function isLightColor(hex: string): boolean {
@@ -363,6 +379,7 @@ interface BrandDataContextValue {
   data: BrandData;
   loading: boolean;
   processing: ProcessingState;
+  loadingStage: LoadingStage;
   retryProcessing: () => void;
   recordId: string | null;
   selectedObjectives: string[];
@@ -380,6 +397,7 @@ const BrandDataContext = createContext<BrandDataContextValue>({
   data: defaultData,
   loading: false,
   processing: "idle",
+  loadingStage: "complete",
   retryProcessing: () => {},
   recordId: null,
   selectedObjectives: [],
@@ -399,6 +417,7 @@ export const useBrandData = () => {
     ...ctx.data,
     loading: ctx.loading,
     processing: ctx.processing,
+    loadingStage: ctx.loadingStage,
     retryProcessing: ctx.retryProcessing,
     recordId: ctx.recordId,
     selectedObjectives: ctx.selectedObjectives,
@@ -420,6 +439,7 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
   const [data, setData] = useState<BrandData>(defaultData);
   const [loading, setLoading] = useState(!!idParam);
   const [processing, setProcessing] = useState<ProcessingState>("idle");
+  const [loadingStage, setLoadingStage] = useState<LoadingStage>(idParam ? "waiting" : "complete");
   const [selectedObjectives, setSelectedObjectives] = useState<string[]>([]);
   const [selectedAddons, setSelectedAddons] = useState<string[]>([]);
   const [userEmail, setUserEmailState] = useState<string>("");
@@ -492,15 +512,31 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
             if (!isPolling) {
               setLoading(false);
               setProcessing("processing");
+              setLoadingStage("waiting");
               startPolling(id);
             }
             return false; // not ready
           }
-          // Data is ready
+
+          // Detect stage from data
+          const stage = detectLoadingStage(parsed);
           const mapped = mapIncoming(parsed);
-          setData({ ...defaultData, ...mapped });
-          setProcessing("idle");
+          setData((prev) => ({ ...prev, ...mapped }));
           setLoading(false);
+
+          if (stage === "partial") {
+            setProcessing("idle");
+            setLoadingStage("partial");
+            // Keep polling for complete data
+            if (!pollRef.current) {
+              startPolling(id);
+            }
+            return false;
+          }
+
+          // Complete
+          setProcessing("idle");
+          setLoadingStage("complete");
           stopPolling();
           return true; // ready
         })
@@ -529,7 +565,7 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
           return;
         }
         fetchBrandData(id, true);
-      }, 4000);
+      }, 3000);
     },
     [fetchBrandData, stopPolling]
   );
@@ -568,6 +604,7 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
         data,
         loading,
         processing,
+        loadingStage,
         retryProcessing,
         recordId,
         selectedObjectives,
