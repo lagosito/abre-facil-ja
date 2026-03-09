@@ -508,11 +508,16 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
         })
         .then((parsed: IncomingData) => {
           if (isProcessing(parsed)) {
-            // Still processing — start or continue polling
+            // Still processing — but map whatever data exists
+            const mapped = mapIncoming(parsed);
+            const hasAnyData = parsed.brandName || parsed.colors?.length;
+            if (hasAnyData) {
+              setData((prev) => ({ ...prev, ...mapped }));
+              setLoadingStage("partial");
+            }
             if (!isPolling) {
               setLoading(false);
               setProcessing("processing");
-              setLoadingStage("waiting");
               startPolling(id);
             }
             return false; // not ready
