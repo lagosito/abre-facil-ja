@@ -43,7 +43,9 @@ const FadeInSection = ({ children, delay = 0 }: { children: React.ReactNode; del
 );
 
 const PageContent = () => {
-  const { loading, loadingStage } = useBrandData();
+  const { loading, loadingStage, processing } = useBrandData();
+
+  if (processing === "timeout") return <ProcessingScreen />;
 
   // Show progress bar loading screen before ANY data arrives
   if (loading) return <LoadingSpinner />;
