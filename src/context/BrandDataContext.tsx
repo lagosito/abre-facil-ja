@@ -438,14 +438,16 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
   const dParam = searchParams.get("d");
   const [data, setData] = useState<BrandData>(defaultData);
   const [loading, setLoading] = useState(!!idParam);
-  const [processing, setProcessing] = useState<ProcessingState>("idle");
+  const [processing, setProcessing] = useState<ProcessingState>(idParam ? "processing" : "idle");
   const [loadingStage, setLoadingStage] = useState<LoadingStage>(idParam ? "waiting" : "complete");
   const [selectedObjectives, setSelectedObjectives] = useState<string[]>([]);
   const [selectedAddons, setSelectedAddons] = useState<string[]>([]);
   const [userEmail, setUserEmailState] = useState<string>("");
   const [hasInteracted, setHasInteracted] = useState(false);
-  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const pollCountRef = useRef(0);
+  const [retryKey, setRetryKey] = useState(0);
+  const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pollSessionRef = useRef(0);
 
   const recordId = idParam;
   const autoSave = useAutoSave(recordId, data.chatId, data.brandName);
@@ -490,108 +492,109 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
   );
 
   const stopPolling = useCallback(() => {
-    if (pollRef.current) {
-      clearInterval(pollRef.current);
-      pollRef.current = null;
+    if (pollIntervalRef.current) {
+      clearInterval(pollIntervalRef.current);
+      pollIntervalRef.current = null;
     }
-    pollCountRef.current = 0;
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
   }, []);
 
-  // Use a ref for fetchBrandData to break circular dep with startPolling
-  const fetchBrandDataRef = useRef<(id: string, isPolling?: boolean) => void>(() => {});
+  const fetchBrandData = useCallback(
+    async (id: string, sessionId: number) => {
+      const url = `https://lagosito.app.n8n.cloud/webhook/elk-get-dna?id=${encodeURIComponent(id)}`;
 
-  const startPolling = useCallback(
-    (id: string) => {
-      if (pollRef.current) return;
-      console.log('[ELK] Starting poll for record:', id);
-      pollCountRef.current = 0;
+      try {
+        const response = await fetch(url, { mode: "cors" });
+        console.log("[Polling]", response);
 
-      pollRef.current = setInterval(() => {
-        pollCountRef.current += 1;
-        if (pollCountRef.current >= 60) {
-          stopPolling();
-          setProcessing("timeout");
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const brandDna = (await response.json()) as IncomingData;
+
+        if (sessionId !== pollSessionRef.current) {
           return;
         }
-        fetchBrandDataRef.current(id, true);
-      }, 3000);
+
+        const hasPartialData = brandDna?._status === "analyzing" && brandDna?._partial === true;
+        const hasFullData = !!(brandDna?.brandName && brandDna.brandName.trim() !== "") && brandDna?._status !== "analyzing";
+
+        if (!hasPartialData && !hasFullData) {
+          setLoading(true);
+          setProcessing("processing");
+          setLoadingStage("waiting");
+          return;
+        }
+
+        const mapped = mapIncoming(brandDna);
+        pollSessionRef.current += 1;
+        stopPolling();
+        setData((prev) => ({ ...prev, ...mapped }));
+        setLoading(false);
+        setProcessing("idle");
+        setLoadingStage(hasPartialData ? "partial" : "complete");
+      } catch {
+        if (sessionId !== pollSessionRef.current) {
+          return;
+        }
+
+        setLoading(true);
+        setProcessing("processing");
+        setLoadingStage("waiting");
+      }
     },
     [stopPolling]
   );
 
-  const fetchBrandData = useCallback(
-    (id: string, isPolling = false) => {
-      const url = `https://lagosito.app.n8n.cloud/webhook/elk-get-dna?id=${encodeURIComponent(id)}`;
-      console.log('[ELK] Polling URL:', url);
-      fetch(url, { mode: "cors" })
-        .then((res) => {
-          console.log('[ELK] Poll response: HTTP', res.status);
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          return res.json();
-        })
-        .then((parsed: IncomingData) => {
-          console.log('[ELK] Poll response:', parsed?.brandName, '_partial:', parsed?._partial);
-          console.log('[ELK] Raw keys:', Object.keys(parsed || {}).join(', '));
-
-          const hasBrandName = !!(parsed?.brandName && parsed.brandName.trim() !== "");
-
-          if (!hasBrandName) {
-            console.log('[ELK] No brandName yet, keeping loading screen');
-            if (!isPolling) {
-              setProcessing("processing");
-              startPolling(id);
-            }
-            return;
-          }
-
-          // We have brandName — map data and show the report
-          const mapped = mapIncoming(parsed);
-          setData((prev) => ({ ...prev, ...mapped }));
-          setLoading(false);
-          setProcessing("idle");
-
-          if (parsed._partial === true) {
-            console.log('[ELK] Partial data detected, showing report with skeletons');
-            setLoadingStage("partial");
-            if (!pollRef.current) {
-              startPolling(id);
-            }
-            return;
-          }
-
-          // Complete data — stop polling
-          console.log('[ELK] Complete data loaded, stopping poll');
-          setLoadingStage("complete");
-          stopPolling();
-        })
-        .catch((e) => {
-          console.log('[ELK] Poll error:', e);
-          if (!isPolling) {
-            setProcessing("processing");
-            startPolling(id);
-          }
-        });
-    },
-    [stopPolling, startPolling]
-  );
-
-  // Keep ref in sync
-  useEffect(() => {
-    fetchBrandDataRef.current = fetchBrandData;
-  }, [fetchBrandData]);
-
   const retryProcessing = useCallback(() => {
     if (!idParam) return;
-    setProcessing("processing");
     stopPolling();
-    fetchBrandData(idParam, false);
-  }, [idParam, fetchBrandData, stopPolling]);
+    setLoading(true);
+    setProcessing("processing");
+    setLoadingStage("waiting");
+    setRetryKey((prev) => prev + 1);
+  }, [idParam, stopPolling]);
 
   useEffect(() => {
+    stopPolling();
+
     if (idParam) {
       setLoading(true);
-      fetchBrandData(idParam, false);
-    } else if (dParam) {
+      setProcessing("processing");
+      setLoadingStage("waiting");
+
+      pollSessionRef.current += 1;
+      const sessionId = pollSessionRef.current;
+
+      void fetchBrandData(idParam, sessionId);
+
+      pollIntervalRef.current = setInterval(() => {
+        void fetchBrandData(idParam, sessionId);
+      }, 4000);
+
+      timeoutRef.current = setTimeout(() => {
+        if (sessionId !== pollSessionRef.current) {
+          return;
+        }
+
+        pollSessionRef.current += 1;
+        stopPolling();
+        setLoading(false);
+        setProcessing("timeout");
+        setLoadingStage("waiting");
+      }, 90000);
+
+      return () => {
+        pollSessionRef.current += 1;
+        stopPolling();
+      };
+    }
+
+    if (dParam) {
       try {
         const json = atob(dParam);
         const parsed = JSON.parse(json) as IncomingData;
@@ -605,8 +608,15 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
       setData(defaultData);
     }
 
-    return () => stopPolling();
-  }, [searchParams]);
+    setLoading(false);
+    setProcessing("idle");
+    setLoadingStage("complete");
+
+    return () => {
+      pollSessionRef.current += 1;
+      stopPolling();
+    };
+  }, [idParam, dParam, fetchBrandData, retryKey, stopPolling]);
 
   return (
     <BrandDataContext.Provider

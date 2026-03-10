@@ -11,6 +11,7 @@ import Packages from "@/components/Packages";
 import CTABlocks from "@/components/CTABlocks";
 import EmailCapture from "@/components/EmailCapture";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import ProcessingScreen from "@/components/ProcessingScreen";
 import SectionSkeleton, { CalendarSkeleton } from "@/components/SectionSkeleton";
 import { BrandDataProvider, useBrandData } from "@/context/BrandDataContext";
 import { useEffect, useState } from "react";
