@@ -500,16 +500,14 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
   const fetchBrandData = useCallback(
     (id: string, isPolling = false) => {
       const url = `https://lagosito.app.n8n.cloud/webhook/elk-get-dna?id=${encodeURIComponent(id)}`;
-      if (!isPolling) {
-        console.log('[ELK] First fetch URL:', url);
-      }
+      console.log('[ELK] Polling URL:', url);
       return fetch(url, { mode: "cors" })
         .then((res) => {
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           return res.json();
         })
         .then((parsed: IncomingData) => {
-          console.log('[ELK] Poll response:', parsed);
+          console.log('[ELK] Poll response:', JSON.stringify(parsed).substring(0, 200));
           console.log('[ELK] Is partial:', parsed?._partial, 'Has brandName:', !!parsed?.brandName, 'status:', parsed?.status);
 
           const hasBrandName = !!parsed?.brandName;
@@ -533,7 +531,7 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
 
           if (isPartial) {
             // Partial data — show report with skeletons, keep polling
-            console.log('[ELK] Partial data — showing report with skeletons');
+            console.log('[ELK] Partial data detected, _partial:', parsed?._partial);
             setLoadingStage("partial");
             if (!pollRef.current) {
               startPolling(id);
@@ -542,13 +540,13 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
           }
 
           // Complete data
-          console.log('[ELK] Complete data — showing full report');
+          console.log('[ELK] Complete data loaded');
           setLoadingStage("complete");
           stopPolling();
           return true;
         })
         .catch((e) => {
-          console.warn("[ELK] Failed to fetch brand data:", e);
+          console.log('[ELK] Poll error:', e);
           // Keep loading screen, keep polling
           if (!isPolling) {
             setProcessing("processing");
@@ -563,6 +561,7 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
   const startPolling = useCallback(
     (id: string) => {
       if (pollRef.current) return; // already polling
+      console.log('[ELK] Starting poll for record:', id);
       pollCountRef.current = 0;
 
       pollRef.current = setInterval(() => {
