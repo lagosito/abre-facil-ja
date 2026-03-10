@@ -16,7 +16,7 @@ import { BrandDataProvider, useBrandData } from "@/context/BrandDataContext";
 const PageContent = () => {
   const { loading, loadingStage } = useBrandData();
 
-  if (loading || loadingStage === "error") return <LoadingSpinner />;
+  if (loading) return <LoadingSpinner />;
 
   return (
     <>
