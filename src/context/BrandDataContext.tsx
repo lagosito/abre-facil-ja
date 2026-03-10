@@ -540,7 +540,7 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
           }
 
           // Complete data
-          console.log('[ELK] Complete data — showing full report');
+          console.log('[ELK] Complete data loaded');
           setLoadingStage("complete");
           stopPolling();
           return true;
