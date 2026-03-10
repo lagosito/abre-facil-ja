@@ -10,7 +10,7 @@ const LoadingSpinner = () => {
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center px-6"
-      style={{ background: "#f0eeea" }}
+      style={{ background: "#ffffff" }}
     >
       {/* Countdown row */}
       <div className="flex items-baseline gap-4 select-none">
