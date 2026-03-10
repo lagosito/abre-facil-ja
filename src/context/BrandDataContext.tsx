@@ -497,70 +497,12 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
     pollCountRef.current = 0;
   }, []);
 
-  const fetchBrandData = useCallback(
-    (id: string, isPolling = false) => {
-      const url = `https://lagosito.app.n8n.cloud/webhook/elk-get-dna?id=${encodeURIComponent(id)}`;
-      console.log('[ELK] Polling URL:', url);
-      return fetch(url, { mode: "cors" })
-        .then((res) => {
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          return res.json();
-        })
-        .then((parsed: IncomingData) => {
-          console.log('[ELK] Poll response:', JSON.stringify(parsed).substring(0, 200));
-          console.log('[ELK] Is partial:', parsed?._partial, 'Has brandName:', !!parsed?.brandName, 'status:', parsed?.status);
-
-          const hasBrandName = !!parsed?.brandName;
-          const isPartial = parsed?._partial === true;
-
-          // No brandName yet — keep loading screen, keep polling
-          if (!hasBrandName) {
-            console.log('[ELK] No brandName yet, keeping loading screen');
-            if (!isPolling) {
-              setProcessing("processing");
-              startPolling(id);
-            }
-            return false;
-          }
-
-          // We have brandName — show the report
-          const mapped = mapIncoming(parsed);
-          setData((prev) => ({ ...prev, ...mapped }));
-          setLoading(false);
-          setProcessing("idle");
-
-          if (isPartial) {
-            // Partial data — show report with skeletons, keep polling
-            console.log('[ELK] Partial data detected, _partial:', parsed?._partial);
-            setLoadingStage("partial");
-            if (!pollRef.current) {
-              startPolling(id);
-            }
-            return false;
-          }
-
-          // Complete data
-          console.log('[ELK] Complete data loaded');
-          setLoadingStage("complete");
-          stopPolling();
-          return true;
-        })
-        .catch((e) => {
-          console.log('[ELK] Poll error:', e);
-          // Keep loading screen, keep polling
-          if (!isPolling) {
-            setProcessing("processing");
-            startPolling(id);
-          }
-          return false;
-        });
-    },
-    [stopPolling]
-  );
+  // Use a ref for fetchBrandData to break circular dep with startPolling
+  const fetchBrandDataRef = useRef<(id: string, isPolling?: boolean) => void>(() => {});
 
   const startPolling = useCallback(
     (id: string) => {
-      if (pollRef.current) return; // already polling
+      if (pollRef.current) return;
       console.log('[ELK] Starting poll for record:', id);
       pollCountRef.current = 0;
 
@@ -571,11 +513,72 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
           setProcessing("timeout");
           return;
         }
-        fetchBrandData(id, true);
+        fetchBrandDataRef.current(id, true);
       }, 3000);
     },
-    [fetchBrandData, stopPolling]
+    [stopPolling]
   );
+
+  const fetchBrandData = useCallback(
+    (id: string, isPolling = false) => {
+      const url = `https://lagosito.app.n8n.cloud/webhook/elk-get-dna?id=${encodeURIComponent(id)}`;
+      console.log('[ELK] Polling URL:', url);
+      fetch(url, { mode: "cors" })
+        .then((res) => {
+          console.log('[ELK] Poll response: HTTP', res.status);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return res.json();
+        })
+        .then((parsed: IncomingData) => {
+          console.log('[ELK] Poll response:', parsed?.brandName, '_partial:', parsed?._partial);
+          console.log('[ELK] Raw keys:', Object.keys(parsed || {}).join(', '));
+
+          const hasBrandName = !!(parsed?.brandName && parsed.brandName.trim() !== "");
+
+          if (!hasBrandName) {
+            console.log('[ELK] No brandName yet, keeping loading screen');
+            if (!isPolling) {
+              setProcessing("processing");
+              startPolling(id);
+            }
+            return;
+          }
+
+          // We have brandName — map data and show the report
+          const mapped = mapIncoming(parsed);
+          setData((prev) => ({ ...prev, ...mapped }));
+          setLoading(false);
+          setProcessing("idle");
+
+          if (parsed._partial === true) {
+            console.log('[ELK] Partial data detected, showing report with skeletons');
+            setLoadingStage("partial");
+            if (!pollRef.current) {
+              startPolling(id);
+            }
+            return;
+          }
+
+          // Complete data — stop polling
+          console.log('[ELK] Complete data loaded, stopping poll');
+          setLoadingStage("complete");
+          stopPolling();
+        })
+        .catch((e) => {
+          console.log('[ELK] Poll error:', e);
+          if (!isPolling) {
+            setProcessing("processing");
+            startPolling(id);
+          }
+        });
+    },
+    [stopPolling, startPolling]
+  );
+
+  // Keep ref in sync
+  useEffect(() => {
+    fetchBrandDataRef.current = fetchBrandData;
+  }, [fetchBrandData]);
 
   const retryProcessing = useCallback(() => {
     if (!idParam) return;
