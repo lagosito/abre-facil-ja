@@ -2,8 +2,7 @@ import { Loader2, RefreshCw } from "lucide-react";
 import { useBrandData } from "@/context/BrandDataContext";
 
 const ProcessingScreen = () => {
-  const { processing, retryProcessing } = useBrandData();
-  const isTimeout = processing === "timeout";
+  const isTimeout = false;
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background px-6">
