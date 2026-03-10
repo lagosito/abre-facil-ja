@@ -136,7 +136,7 @@ interface IncomingData {
   _status?: string;
 }
 
-export type LoadingStage = "waiting" | "complete";
+export type LoadingStage = "waiting" | "complete" | "error";
 
 function isLightColor(hex: string): boolean {
   const c = hex.replace("#", "");
@@ -483,42 +483,72 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
 
-    // Start countdown
+    // Start countdown + smart polling every 5s
     setLoading(true);
     setLoadingStage("waiting");
     setCountdown(COUNTDOWN_SECONDS);
+    let stopped = false;
 
-    const interval = setInterval(() => {
+    const countdownInterval = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
-          clearInterval(interval);
+          clearInterval(countdownInterval);
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
 
-    // Fetch data after countdown
-    const fetchTimer = setTimeout(async () => {
+    const finishSuccess = (brandDna: IncomingData) => {
+      stopped = true;
+      clearInterval(countdownInterval);
+      clearInterval(pollInterval);
+      clearTimeout(timeoutTimer);
+      const mapped = mapIncoming(brandDna);
+      setData((prev) => ({ ...prev, ...mapped }));
+      setCountdown(0);
+      setLoading(false);
+      setLoadingStage("complete");
+    };
+
+    const poll = async () => {
+      if (stopped) return;
       const url = `https://lagosito.app.n8n.cloud/webhook/elk-get-dna?id=${encodeURIComponent(idParam)}`;
       try {
         const response = await fetch(url, { mode: "cors" });
-        console.log("[ELK] Fetch response:", response.status);
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        if (!response.ok) return;
         const brandDna = (await response.json()) as IncomingData;
-        console.log("[ELK] Data received:", brandDna?.brandName);
-        const mapped = mapIncoming(brandDna);
-        setData((prev) => ({ ...prev, ...mapped }));
+        console.log("[ELK] Poll response:", brandDna?.brandName);
+        if (brandDna?.brandName) {
+          finishSuccess(brandDna);
+        }
       } catch (e) {
-        console.warn("[ELK] Fetch failed, showing default data:", e);
+        console.warn("[ELK] Poll error:", e);
       }
-      setLoading(false);
-      setLoadingStage("complete");
+    };
+
+    // Poll every 5 seconds
+    const pollInterval = setInterval(poll, 5000);
+    // Also poll immediately
+    poll();
+
+    // Timeout after 60s
+    const timeoutTimer = setTimeout(() => {
+      if (!stopped) {
+        stopped = true;
+        clearInterval(countdownInterval);
+        clearInterval(pollInterval);
+        setCountdown(0);
+        setLoading(true);
+        setLoadingStage("error");
+      }
     }, COUNTDOWN_SECONDS * 1000);
 
     return () => {
-      clearInterval(interval);
-      clearTimeout(fetchTimer);
+      stopped = true;
+      clearInterval(countdownInterval);
+      clearInterval(pollInterval);
+      clearTimeout(timeoutTimer);
     };
   }, [idParam, dParam]);
 

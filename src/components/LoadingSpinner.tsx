@@ -3,7 +3,30 @@ import { useBrandData } from "@/context/BrandDataContext";
 const BLUE = "#455eff";
 
 const LoadingSpinner = () => {
-  const { countdown } = useBrandData();
+  const { countdown, loadingStage } = useBrandData();
+
+  if (loadingStage === "error") {
+    return (
+      <div
+        className="min-h-screen flex flex-col items-center justify-center px-6 gap-4"
+        style={{ background: "#ffffff" }}
+      >
+        <p
+          className="text-lg font-medium"
+          style={{ color: "#a09e99", fontFamily: "'DM Sans', sans-serif" }}
+        >
+          Something went wrong — please try again.
+        </p>
+        <button
+          onClick={() => window.location.reload()}
+          className="px-6 py-2 rounded-full text-sm font-medium text-white"
+          style={{ background: BLUE, fontFamily: "'DM Sans', sans-serif" }}
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
 
   const progress = Math.max(0, ((60 - countdown) / 60) * 100);
 
