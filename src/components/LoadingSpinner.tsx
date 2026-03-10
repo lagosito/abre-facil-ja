@@ -21,7 +21,7 @@ const LoadingSpinner = () => {
           Ready in
         </span>
         <span
-          className="font-bold leading-none"
+          className="font-normal leading-none"
           style={{
             fontSize: "clamp(100px, 20vw, 260px)",
             color: BLUE,
