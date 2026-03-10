@@ -1,17 +1,7 @@
-import { useEffect, useState } from "react";
+import { useBrandData } from "@/context/BrandDataContext";
 
 const LoadingSpinner = () => {
-  const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 90) return prev; // cap at 90 until data arrives
-        return prev + Math.random() * 8 + 2;
-      });
-    }, 300);
-    return () => clearInterval(interval);
-  }, []);
+  const { countdown } = useBrandData();
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background gap-6">
@@ -29,14 +19,16 @@ const LoadingSpinner = () => {
       <div className="w-64">
         <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-muted">
           <div
-            className="h-full rounded-full bg-primary transition-all duration-300 ease-out"
-            style={{ width: `${Math.min(progress, 95)}%` }}
+            className="h-full rounded-full bg-primary transition-all duration-1000 ease-linear"
+            style={{ width: `${Math.max(0, ((60 - countdown) / 60) * 100)}%` }}
           />
         </div>
       </div>
 
       <p className="text-sm text-muted-foreground font-medium">
-        Analyzing your brand...
+        {countdown > 0
+          ? `Ready in ${countdown} seconds...`
+          : "Loading your report..."}
       </p>
     </div>
   );
