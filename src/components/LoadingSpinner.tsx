@@ -15,13 +15,13 @@ const LoadingSpinner = () => {
       {/* Countdown row */}
       <div className="flex items-baseline gap-4 select-none">
         <span
-          className="text-2xl md:text-3xl font-medium tracking-tight"
-          style={{ color: "#a09e99", fontFamily: "'DM Sans', sans-serif" }}
+          className="font-medium tracking-tight"
+          style={{ color: "#a09e99", fontFamily: "'DM Sans', sans-serif", fontSize: "16px" }}
         >
           Ready in
         </span>
         <span
-          className="font-bold leading-none"
+          className="font-normal leading-none"
           style={{
             fontSize: "clamp(100px, 20vw, 260px)",
             color: BLUE,
@@ -32,8 +32,8 @@ const LoadingSpinner = () => {
           {countdown}
         </span>
         <span
-          className="text-2xl md:text-3xl font-medium tracking-tight"
-          style={{ color: "#a09e99", fontFamily: "'DM Sans', sans-serif" }}
+          className="font-medium tracking-tight"
+          style={{ color: "#a09e99", fontFamily: "'DM Sans', sans-serif", fontSize: "16px" }}
         >
           seconds...
         </span>
@@ -54,7 +54,7 @@ const LoadingSpinner = () => {
 
       {/* KIOSK logo */}
       <div className="mt-16" style={{ color: BLUE }}>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 563 268.8" width="180" style={{ color: "inherit" }}>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 563 268.8" width="90" style={{ color: "inherit" }}>
           <defs><style>{`.st0{fill:none}.st1{fill:currentColor}`}</style></defs>
           <path className="st0" d="M91.5,73.5c0-.2,0-.3,0-.4,0,.1,0,.3,0,.4l-1.1,5.3s0,.1,0,.4c0-.2,0-.4,0-.4l1.1-5.3Z"/>
           <path className="st0" d="M253.2,184c3.2-2.5,5.8-5.8,7.8-9.8,3.7-8.4,5.5-16.9,5.4-25.6,0-2.6-.2-5.1-.6-7.4-.6-2.3-1.5-4.4-2.8-6.2-1.2-1.8-2.8-3.2-4.8-4.3-2.1-1.1-4.8-1.6-8-1.6-4.8,0-8.8,1.2-11.9,3.7-3.2,2.6-5.8,5.9-7.9,9.9-1.9,4-3.3,8.2-4.2,12.6-.4,2.3-.8,4.5-1.1,6.6-.3,2.2-.4,4.4-.4,6.5,0,5,1.1,9.4,3.5,13.2,1.3,1.8,3,3.3,5.1,4.4,2,1.3,4.6,1.9,7.6,1.9,4.8,0,8.9-1.3,12.2-4Z"/>
