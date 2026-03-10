@@ -561,6 +561,7 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
   const startPolling = useCallback(
     (id: string) => {
       if (pollRef.current) return; // already polling
+      console.log('[ELK] Starting poll for record:', id);
       pollCountRef.current = 0;
 
       pollRef.current = setInterval(() => {
