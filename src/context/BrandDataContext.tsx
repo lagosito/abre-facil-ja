@@ -404,22 +404,20 @@ export const useBrandData = () => {
   };
 };
 
+const COUNTDOWN_SECONDS = 60;
+
 export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
   const [searchParams] = useSearchParams();
   const idParam = searchParams.get("id");
   const dParam = searchParams.get("d");
   const [data, setData] = useState<BrandData>(defaultData);
   const [loading, setLoading] = useState(!!idParam);
-  const [processing, setProcessing] = useState<ProcessingState>(idParam ? "processing" : "idle");
   const [loadingStage, setLoadingStage] = useState<LoadingStage>(idParam ? "waiting" : "complete");
+  const [countdown, setCountdown] = useState(idParam ? COUNTDOWN_SECONDS : 0);
   const [selectedObjectives, setSelectedObjectives] = useState<string[]>([]);
   const [selectedAddons, setSelectedAddons] = useState<string[]>([]);
   const [userEmail, setUserEmailState] = useState<string>("");
   const [hasInteracted, setHasInteracted] = useState(false);
-  const [retryKey, setRetryKey] = useState(0);
-  const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const pollSessionRef = useRef(0);
 
   const recordId = idParam;
   const autoSave = useAutoSave(recordId, data.chatId, data.brandName);
@@ -463,141 +461,74 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
     [autoSave]
   );
 
-  const stopPolling = useCallback(() => {
-    if (pollIntervalRef.current) {
-      clearInterval(pollIntervalRef.current);
-      pollIntervalRef.current = null;
-    }
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
-    }
-  }, []);
-
-  const fetchBrandData = useCallback(
-    async (id: string, sessionId: number) => {
-      const url = `https://lagosito.app.n8n.cloud/webhook/elk-get-dna?id=${encodeURIComponent(id)}`;
-
-      try {
-        const response = await fetch(url, { mode: "cors" });
-        console.log("[Polling]", response);
-
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
-
-        const brandDna = (await response.json()) as IncomingData;
-
-        if (sessionId !== pollSessionRef.current) {
-          return;
-        }
-
-        const hasPartialData = brandDna?._status === "analyzing" && brandDna?._partial === true;
-        const hasFullData = !!(brandDna?.brandName && brandDna.brandName.trim() !== "") && brandDna?._status !== "analyzing";
-
-        if (!hasPartialData && !hasFullData) {
-          setLoading(true);
-          setProcessing("processing");
-          setLoadingStage("waiting");
-          return;
-        }
-
-        const mapped = mapIncoming(brandDna);
-        pollSessionRef.current += 1;
-        stopPolling();
-        setData((prev) => ({ ...prev, ...mapped }));
-        setLoading(false);
-        setProcessing("idle");
-        setLoadingStage(hasPartialData ? "partial" : "complete");
-      } catch {
-        if (sessionId !== pollSessionRef.current) {
-          return;
-        }
-
-        setLoading(true);
-        setProcessing("processing");
-        setLoadingStage("waiting");
-      }
-    },
-    [stopPolling]
-  );
-
-  const retryProcessing = useCallback(() => {
-    if (!idParam) return;
-    stopPolling();
-    setLoading(true);
-    setProcessing("processing");
-    setLoadingStage("waiting");
-    setRetryKey((prev) => prev + 1);
-  }, [idParam, stopPolling]);
-
+  // Countdown timer + single fetch at 0
   useEffect(() => {
-    stopPolling();
-
-    if (idParam) {
-      setLoading(true);
-      setProcessing("processing");
-      setLoadingStage("waiting");
-
-      pollSessionRef.current += 1;
-      const sessionId = pollSessionRef.current;
-
-      void fetchBrandData(idParam, sessionId);
-
-      pollIntervalRef.current = setInterval(() => {
-        void fetchBrandData(idParam, sessionId);
-      }, 4000);
-
-      timeoutRef.current = setTimeout(() => {
-        if (sessionId !== pollSessionRef.current) {
-          return;
+    if (!idParam) {
+      // No id param — use ?d= or defaults
+      if (dParam) {
+        try {
+          const json = atob(dParam);
+          const parsed = JSON.parse(json) as IncomingData;
+          const mapped = mapIncoming(parsed);
+          setData({ ...defaultData, ...mapped });
+        } catch (e) {
+          console.warn("Failed to parse ?d= parameter:", e);
+          setData(defaultData);
         }
-
-        pollSessionRef.current += 1;
-        stopPolling();
-        setLoading(false);
-        setProcessing("timeout");
-        setLoadingStage("waiting");
-      }, 90000);
-
-      return () => {
-        pollSessionRef.current += 1;
-        stopPolling();
-      };
-    }
-
-    if (dParam) {
-      try {
-        const json = atob(dParam);
-        const parsed = JSON.parse(json) as IncomingData;
-        const mapped = mapIncoming(parsed);
-        setData({ ...defaultData, ...mapped });
-      } catch (e) {
-        console.warn("Failed to parse ?d= parameter:", e);
+      } else {
         setData(defaultData);
       }
-    } else {
-      setData(defaultData);
+      setLoading(false);
+      setLoadingStage("complete");
+      return;
     }
 
-    setLoading(false);
-    setProcessing("idle");
-    setLoadingStage("complete");
+    // Start countdown
+    setLoading(true);
+    setLoadingStage("waiting");
+    setCountdown(COUNTDOWN_SECONDS);
+
+    const interval = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    // Fetch data after countdown
+    const fetchTimer = setTimeout(async () => {
+      const url = `https://lagosito.app.n8n.cloud/webhook/elk-get-dna?id=${encodeURIComponent(idParam)}`;
+      try {
+        const response = await fetch(url, { mode: "cors" });
+        console.log("[ELK] Fetch response:", response.status);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const brandDna = (await response.json()) as IncomingData;
+        console.log("[ELK] Data received:", brandDna?.brandName);
+        const mapped = mapIncoming(brandDna);
+        setData((prev) => ({ ...prev, ...mapped }));
+      } catch (e) {
+        console.warn("[ELK] Fetch failed, showing default data:", e);
+      }
+      setLoading(false);
+      setLoadingStage("complete");
+    }, COUNTDOWN_SECONDS * 1000);
 
     return () => {
-      pollSessionRef.current += 1;
-      stopPolling();
+      clearInterval(interval);
+      clearTimeout(fetchTimer);
     };
-  }, [idParam, dParam, fetchBrandData, retryKey, stopPolling]);
+  }, [idParam, dParam]);
 
   return (
     <BrandDataContext.Provider
       value={{
         data,
         loading,
-        processing,
         loadingStage,
-        retryProcessing,
+        countdown,
         recordId,
         selectedObjectives,
         setSelectedObjectives,
