@@ -11,6 +11,7 @@ import Packages from "@/components/Packages";
 import CTABlocks from "@/components/CTABlocks";
 import EmailCapture from "@/components/EmailCapture";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import ProcessingScreen from "@/components/ProcessingScreen";
 import SectionSkeleton, { CalendarSkeleton } from "@/components/SectionSkeleton";
 import { BrandDataProvider, useBrandData } from "@/context/BrandDataContext";
 import { useEffect, useState } from "react";
@@ -42,7 +43,9 @@ const FadeInSection = ({ children, delay = 0 }: { children: React.ReactNode; del
 );
 
 const PageContent = () => {
-  const { loading, loadingStage } = useBrandData();
+  const { loading, loadingStage, processing } = useBrandData();
+
+  if (processing === "timeout") return <ProcessingScreen />;
 
   // Show progress bar loading screen before ANY data arrives
   if (loading) return <LoadingSpinner />;
