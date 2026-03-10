@@ -32,8 +32,8 @@ const LoadingSpinner = () => {
           {countdown}
         </span>
         <span
-          className="text-2xl md:text-3xl font-medium tracking-tight"
-          style={{ color: "#a09e99", fontFamily: "'DM Sans', sans-serif" }}
+          className="font-medium tracking-tight"
+          style={{ color: "#a09e99", fontFamily: "'DM Sans', sans-serif", fontSize: "16px" }}
         >
           seconds...
         </span>
