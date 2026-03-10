@@ -350,14 +350,11 @@ function useAutoSave(recordId: string | null, chatId: string, brandName: string)
 }
 
 /* ── Context ── */
-type ProcessingState = "idle" | "processing" | "timeout";
-
 interface BrandDataContextValue {
   data: BrandData;
   loading: boolean;
-  processing: ProcessingState;
   loadingStage: LoadingStage;
-  retryProcessing: () => void;
+  countdown: number;
   recordId: string | null;
   selectedObjectives: string[];
   setSelectedObjectives: React.Dispatch<React.SetStateAction<string[]>>;
@@ -373,9 +370,8 @@ interface BrandDataContextValue {
 const BrandDataContext = createContext<BrandDataContextValue>({
   data: defaultData,
   loading: false,
-  processing: "idle",
   loadingStage: "complete",
-  retryProcessing: () => {},
+  countdown: 0,
   recordId: null,
   selectedObjectives: [],
   setSelectedObjectives: () => {},
