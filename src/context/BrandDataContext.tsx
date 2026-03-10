@@ -546,7 +546,7 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
           return true;
         })
         .catch((e) => {
-          console.warn("[ELK] Failed to fetch brand data:", e);
+          console.log('[ELK] Poll error:', e);
           // Keep loading screen, keep polling
           if (!isPolling) {
             setProcessing("processing");
