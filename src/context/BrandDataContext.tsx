@@ -389,9 +389,8 @@ export const useBrandData = () => {
   return {
     ...ctx.data,
     loading: ctx.loading,
-    processing: ctx.processing,
     loadingStage: ctx.loadingStage,
-    retryProcessing: ctx.retryProcessing,
+    countdown: ctx.countdown,
     recordId: ctx.recordId,
     selectedObjectives: ctx.selectedObjectives,
     setSelectedObjectives: ctx.setSelectedObjectives,
