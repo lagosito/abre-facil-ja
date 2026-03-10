@@ -532,17 +532,8 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
     // Also poll immediately
     poll();
 
-    // Timeout after 60s
-    const timeoutTimer = setTimeout(() => {
-      if (!stopped) {
-        stopped = true;
-        clearInterval(countdownInterval);
-        clearInterval(pollInterval);
-        setCountdown(0);
-        setLoading(true);
-        setLoadingStage("error");
-      }
-    }, COUNTDOWN_SECONDS * 1000);
+    // When countdown reaches 0, just keep polling (no error)
+    const timeoutTimer: ReturnType<typeof setTimeout> | null = null;
 
     return () => {
       stopped = true;

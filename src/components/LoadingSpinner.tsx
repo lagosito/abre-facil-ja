@@ -3,30 +3,7 @@ import { useBrandData } from "@/context/BrandDataContext";
 const BLUE = "#455eff";
 
 const LoadingSpinner = () => {
-  const { countdown, loadingStage } = useBrandData();
-
-  if (loadingStage === "error") {
-    return (
-      <div
-        className="min-h-screen flex flex-col items-center justify-center px-6 gap-4"
-        style={{ background: "#ffffff" }}
-      >
-        <p
-          className="text-lg font-medium"
-          style={{ color: "#a09e99", fontFamily: "'DM Sans', sans-serif" }}
-        >
-          Something went wrong — please try again.
-        </p>
-        <button
-          onClick={() => window.location.reload()}
-          className="px-6 py-2 rounded-full text-sm font-medium text-white"
-          style={{ background: BLUE, fontFamily: "'DM Sans', sans-serif" }}
-        >
-          Retry
-        </button>
-      </div>
-    );
-  }
+  const { countdown } = useBrandData();
 
   const progress = Math.max(0, ((60 - countdown) / 60) * 100);
 
@@ -35,7 +12,6 @@ const LoadingSpinner = () => {
       className="min-h-screen flex flex-col items-center justify-center px-6"
       style={{ background: "#ffffff" }}
     >
-      {/* Countdown row */}
       <div className="flex items-baseline gap-4 select-none">
         <span
           className="font-medium tracking-tight"
@@ -52,7 +28,7 @@ const LoadingSpinner = () => {
             fontFamily: "'Instrument Serif', serif",
           }}
         >
-          {countdown}
+          {countdown > 0 ? countdown : "..."}
         </span>
         <span
           className="font-medium tracking-tight"
@@ -62,7 +38,6 @@ const LoadingSpinner = () => {
         </span>
       </div>
 
-      {/* Progress bar */}
       <div className="w-full max-w-md mt-8">
         <div
           className="relative h-1.5 w-full overflow-hidden rounded-full"
@@ -70,12 +45,11 @@ const LoadingSpinner = () => {
         >
           <div
             className="h-full rounded-full transition-all duration-1000 ease-linear"
-            style={{ width: `${progress}%`, background: BLUE }}
+            style={{ width: `${Math.min(progress, 100)}%`, background: BLUE }}
           />
         </div>
       </div>
 
-      {/* KIOSK logo */}
       <div className="mt-16" style={{ color: BLUE }}>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 563 268.8" width="90" style={{ color: "inherit" }}>
           <defs><style>{`.st0{fill:none}.st1{fill:currentColor}`}</style></defs>
