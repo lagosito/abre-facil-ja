@@ -531,7 +531,7 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
 
           if (isPartial) {
             // Partial data — show report with skeletons, keep polling
-            console.log('[ELK] Partial data — showing report with skeletons');
+            console.log('[ELK] Partial data detected, _partial:', parsed?._partial);
             setLoadingStage("partial");
             if (!pollRef.current) {
               startPolling(id);
