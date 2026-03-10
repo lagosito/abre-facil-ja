@@ -500,16 +500,14 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
   const fetchBrandData = useCallback(
     (id: string, isPolling = false) => {
       const url = `https://lagosito.app.n8n.cloud/webhook/elk-get-dna?id=${encodeURIComponent(id)}`;
-      if (!isPolling) {
-        console.log('[ELK] First fetch URL:', url);
-      }
+      console.log('[ELK] Polling URL:', url);
       return fetch(url, { mode: "cors" })
         .then((res) => {
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           return res.json();
         })
         .then((parsed: IncomingData) => {
-          console.log('[ELK] Poll response:', parsed);
+          console.log('[ELK] Poll response:', JSON.stringify(parsed).substring(0, 200));
           console.log('[ELK] Is partial:', parsed?._partial, 'Has brandName:', !!parsed?.brandName, 'status:', parsed?.status);
 
           const hasBrandName = !!parsed?.brandName;
