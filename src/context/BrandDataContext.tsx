@@ -136,7 +136,7 @@ interface IncomingData {
   _status?: string;
 }
 
-export type LoadingStage = "waiting" | "complete";
+export type LoadingStage = "waiting" | "complete" | "error";
 
 function isLightColor(hex: string): boolean {
   const c = hex.replace("#", "");
