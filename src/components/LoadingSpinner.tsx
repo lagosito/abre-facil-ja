@@ -1,55 +1,71 @@
-import { useBrandData } from "@/context/BrandDataContext";
+import { useState, useEffect } from "react";
 
 const BLUE = "#455eff";
 
-const LoadingSpinner = () => {
-  const { countdown } = useBrandData();
+const loadingMessages = [
+  "Scanning your brand colors... oh, nice palette 🎨",
+  "Checking your Instagram... looking good out there 📸",
+  "Analyzing your fonts and visual identity... clean ✨",
+  "Reading your website content... interesting stuff 👀",
+  "Building your Brand DNA... this is the good part 🧬",
+  "Crafting your content strategy... almost there 🎯",
+  "Putting the final touches on your report... 🪄",
+  "Your brand report is almost ready... ✅",
+];
 
-  const progress = Math.max(0, ((60 - countdown) / 60) * 100);
+const LoadingSpinner = () => {
+  const [messageIndex, setMessageIndex] = useState(0);
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setVisible(false);
+      setTimeout(() => {
+        setMessageIndex((prev) => (prev + 1) % loadingMessages.length);
+        setVisible(true);
+      }, 300);
+    }, 3500);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center px-6"
       style={{ background: "#ffffff" }}
     >
-      <div className="flex items-baseline gap-4 select-none">
-        <span
-          className="font-medium tracking-tight"
-          style={{ color: "#a09e99", fontFamily: "'DM Sans', sans-serif", fontSize: "16px" }}
-        >
-          Ready in
-        </span>
-        <span
-          className="font-normal leading-none"
-          style={{
-            fontSize: "clamp(100px, 20vw, 260px)",
-            color: BLUE,
-            lineHeight: 0.85,
-            fontFamily: "'Instrument Serif', serif",
-          }}
-        >
-          {countdown > 0 ? countdown : "..."}
-        </span>
-        <span
-          className="font-medium tracking-tight"
-          style={{ color: "#a09e99", fontFamily: "'DM Sans', sans-serif", fontSize: "16px" }}
-        >
-          seconds...
-        </span>
-      </div>
-
-      <div className="w-full max-w-md mt-8">
+      {/* Progress bar */}
+      <div className="w-full max-w-md mb-10">
         <div
           className="relative h-1.5 w-full overflow-hidden rounded-full"
           style={{ background: "#ddd9d2" }}
         >
           <div
-            className="h-full rounded-full transition-all duration-1000 ease-linear"
-            style={{ width: `${Math.min(progress, 100)}%`, background: BLUE }}
+            className="h-full rounded-full"
+            style={{
+              background: BLUE,
+              animation: "shimmer-progress 2s ease-in-out infinite",
+              width: "40%",
+            }}
           />
         </div>
       </div>
 
+      {/* Rotating message */}
+      <p
+        className="text-center max-w-md"
+        style={{
+          fontFamily: "'DM Sans', sans-serif",
+          fontSize: "16px",
+          color: "#a09e99",
+          opacity: visible ? 1 : 0,
+          transition: "opacity 300ms ease",
+          minHeight: "1.5em",
+        }}
+      >
+        {loadingMessages[messageIndex]}
+      </p>
+
+      {/* Logo */}
       <div className="mt-16" style={{ color: BLUE }}>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 563 268.8" width="90" style={{ color: "inherit" }}>
           <defs><style>{`.st0{fill:none}.st1{fill:currentColor}`}</style></defs>
