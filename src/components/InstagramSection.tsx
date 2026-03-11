@@ -163,7 +163,7 @@ const InstagramSection = () => {
             {contentInsights ? (
               <InsightsGrid data={contentInsights} />
             ) : (
-              <p className="text-sm text-muted-foreground italic">No Instagram account found.</p>
+              <p className="text-sm text-muted-foreground italic">Connect your Instagram to unlock content insights.</p>
             )}
           </div>
 
