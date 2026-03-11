@@ -66,7 +66,7 @@ const ExpandableText = ({ text, lineClamp = 3 }: { text: string; lineClamp?: num
 };
 
 const BriefingCard = ({ icon, title, content }: { icon: string; title: string; content: string }) => (
-  <div className="bg-muted/50 rounded-lg p-4 animate-fade-up hover:-translate-y-0.5 hover:shadow-md transition-all">
+  <div className="bg-card rounded-lg p-4 animate-fade-up hover:-translate-y-0.5 hover:shadow-md transition-all">
     <div className="flex items-center gap-2 mb-2">
       <span className="text-lg">{icon}</span>
       <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-foreground/70">{title}</div>

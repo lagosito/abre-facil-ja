@@ -26,7 +26,7 @@ const AddonCard = ({ icon, title, desc, price, tag, comingSoon }: AddonCardProps
   return (
     <div
       onClick={toggle}
-      className={`bg-surface border-[1.5px] border-dashed rounded-lg p-6 flex flex-col transition-all animate-fade-up relative ${
+      className={`bg-card border-[1.5px] border-dashed rounded-lg p-6 flex flex-col transition-all animate-fade-up relative ${
         comingSoon
           ? "opacity-60 cursor-default border-border"
           : selected
