@@ -8,7 +8,7 @@ const Navbar = () => {
         el <span className="text-primary">Kiosk</span>
       </a>
       <div className="hidden md:block font-mono text-[13px] text-muted-foreground">
-        [ Brand Intelligence Report — {brandName} ]
+        [ Brand Intelligence Report ]
       </div>
       <button className="bg-primary text-primary-foreground px-5 py-2.5 rounded-pill text-sm font-semibold hover:brightness-90 transition-all">
         Choose Plan ↗
