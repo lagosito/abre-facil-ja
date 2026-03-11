@@ -147,8 +147,8 @@ function isLightColor(hex: string): boolean {
 }
 
 const defaultData: BrandData = {
-  brandName: "Blumenhaus Martina",
-  website: "blumenhaus-martina.de",
+  brandName: "Your Brand",
+  website: "www.your-website.com",
   brandEssence: "Wo jede Blume eine Geschichte erzählt.",
   firstName: "",
   chatId: "",
