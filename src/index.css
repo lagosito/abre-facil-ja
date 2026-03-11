@@ -124,6 +124,12 @@
   100% { background-position: 200% 0; }
 }
 
+@keyframes shimmer-progress {
+  0% { transform: translateX(-100%); }
+  50% { transform: translateX(150%); }
+  100% { transform: translateX(-100%); }
+}
+
 .analyzing-banner {
   background: linear-gradient(90deg, hsl(var(--primary) / 0.05), hsl(var(--primary) / 0.12), hsl(var(--primary) / 0.05));
   background-size: 200% 100%;
