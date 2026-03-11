@@ -153,7 +153,7 @@ const InstagramSection = () => {
             {growthProjection ? (
               <GrowthChart data={growthProjection} />
             ) : (
-              <p className="text-sm text-muted-foreground italic">No Instagram account found.</p>
+              <p className="text-sm text-muted-foreground italic">Connect your Instagram to unlock growth projections.</p>
             )}
           </div>
 
