@@ -1,7 +1,4 @@
-import { useBrandData } from "@/context/BrandDataContext";
-
 const Navbar = () => {
-  const { brandName } = useBrandData();
   return (
     <nav className="sticky top-0 z-50 bg-background/85 backdrop-blur-xl border-b border-border px-6 md:px-12 h-[60px] flex items-center justify-between">
       <a href="https://www.elkiosk.ai/" className="font-serif italic text-[22px] tracking-tight cursor-pointer no-underline text-foreground">
