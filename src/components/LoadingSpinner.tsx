@@ -9,8 +9,20 @@ const loadingMessages = [
   "Reading your website content... interesting stuff 👀",
   "Building your Brand DNA... this is the good part 🧬",
   "Crafting your content strategy... almost there 🎯",
-  "Putting the final touches on your report... 🪄",
-  "Your brand report is almost ready... ✅",
+  "Pulling your best performing posts... nice work 👏",
+  "Checking your engagement rate... not bad at all 📊",
+  "Looking at your posting frequency... we see you 👁️",
+  "Comparing you to your competitors... spoiler: you're doing ok 😏",
+  "Identifying your brand voice... it's got character 🎙️",
+  "Mapping out your content pillars... solid foundation 🏗️",
+  "Calculating your best posting times... timing is everything ⏰",
+  "Reviewing your visual consistency... cohesion check 🖼️",
+  "Checking what your audience responds to... they like this 💡",
+  "Generating your publishing plan... filling the calendar 📅",
+  "Writing your AI content briefing... details matter ✍️",
+  "Putting the final touches on your report... almost done 🪄",
+  "Just a few more seconds... worth the wait, promise ⚡",
+  "Your brand report is almost ready... 🎉",
 ];
 
 const LoadingSpinner = () => {
@@ -33,8 +45,24 @@ const LoadingSpinner = () => {
       className="min-h-screen flex flex-col items-center justify-center px-6"
       style={{ background: "#ffffff" }}
     >
+      {/* Rotating message — above progress bar */}
+      <p
+        className="text-center max-w-md mb-10"
+        style={{
+          fontFamily: "'Instrument Serif', serif",
+          fontSize: "24px",
+          fontWeight: 400,
+          color: "#6b7280",
+          opacity: visible ? 1 : 0,
+          transition: "opacity 300ms ease",
+          minHeight: "1.5em",
+        }}
+      >
+        {loadingMessages[messageIndex]}
+      </p>
+
       {/* Progress bar */}
-      <div className="w-full max-w-md mb-10">
+      <div className="w-full max-w-md mb-16">
         <div
           className="relative h-1.5 w-full overflow-hidden rounded-full"
           style={{ background: "#ddd9d2" }}
@@ -50,23 +78,8 @@ const LoadingSpinner = () => {
         </div>
       </div>
 
-      {/* Rotating message */}
-      <p
-        className="text-center max-w-md"
-        style={{
-          fontFamily: "'DM Sans', sans-serif",
-          fontSize: "16px",
-          color: "#a09e99",
-          opacity: visible ? 1 : 0,
-          transition: "opacity 300ms ease",
-          minHeight: "1.5em",
-        }}
-      >
-        {loadingMessages[messageIndex]}
-      </p>
-
       {/* Logo */}
-      <div className="mt-16" style={{ color: BLUE }}>
+      <div style={{ color: BLUE }}>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 563 268.8" width="90" style={{ color: "inherit" }}>
           <defs><style>{`.st0{fill:none}.st1{fill:currentColor}`}</style></defs>
           <path className="st0" d="M91.5,73.5c0-.2,0-.3,0-.4,0,.1,0,.3,0,.4l-1.1,5.3s0,.1,0,.4c0-.2,0-.4,0-.4l1.1-5.3Z"/>
