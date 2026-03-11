@@ -44,7 +44,7 @@ const InstagramSection = () => {
         <div className="col-span-12 md:col-span-8 space-y-3.5">
           {/* Stats bar */}
           <div className="bg-card rounded-lg p-6 animate-fade-up hover:-translate-y-0.5 hover:shadow-lg transition-all">
-            <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-muted-foreground mb-3.5">{instagramHandle}</div>
+            <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-muted-foreground mb-3.5">{instagramHandle || "Your Instagram Account"}</div>
             <div className="flex gap-7 flex-wrap">
               {instagramStats.map((s) => (
                 <div key={s.lbl}>
@@ -153,7 +153,7 @@ const InstagramSection = () => {
             {growthProjection ? (
               <GrowthChart data={growthProjection} />
             ) : (
-              <p className="text-sm text-muted-foreground italic">No Instagram account found.</p>
+              <p className="text-sm text-muted-foreground italic">Connect your Instagram to unlock growth projections.</p>
             )}
           </div>
 
@@ -163,7 +163,7 @@ const InstagramSection = () => {
             {contentInsights ? (
               <InsightsGrid data={contentInsights} />
             ) : (
-              <p className="text-sm text-muted-foreground italic">No Instagram account found.</p>
+              <p className="text-sm text-muted-foreground italic">Connect your Instagram to unlock content insights.</p>
             )}
           </div>
 
