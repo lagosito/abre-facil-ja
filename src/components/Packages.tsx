@@ -1,22 +1,23 @@
 import { useBrandData } from "@/context/BrandDataContext";
 import SectionHeader from "./SectionHeader";
-
-const STRIPE_LINKS: Record<string, string> = {
-  starter: "https://buy.stripe.com/7sY8wOdAafZVg0pbyz2sM06",
-  essential: "https://buy.stripe.com/8x200i1Rs1519C19qr2sM07",
-  advanced: "https://buy.stripe.com/3cI4gy7bM00X4hH1XZ2sM08",
-};
-
-const getStripeLink = (name: string): string => {
-  const lower = name.toLowerCase();
-  if (lower.includes("starter")) return STRIPE_LINKS.starter;
-  if (lower.includes("essential")) return STRIPE_LINKS.essential;
-  if (lower.includes("advanced")) return STRIPE_LINKS.advanced;
-  return STRIPE_LINKS.starter;
-};
+import AddonCard from "./AddonCard";
 
 const Packages = () => {
   const { packages, recommendedExplain } = useBrandData();
+
+  const stripeLinks: Record<string, string> = {
+    "🌱 Starter Plan": "https://buy.stripe.com/7sY8wOdAafZVg0pbyz2sM06",
+    "⭐ Essential Plan": "https://buy.stripe.com/8x200i1Rs1519C19qr2sM07",
+    "🚀 Advanced Plan": "https://buy.stripe.com/3cI4gy7bM00X4hH1XZ2sM08",
+  };
+
+  const getStripeLink = (name: string): string => {
+    const lower = name.toLowerCase();
+    if (lower.includes("starter")) return stripeLinks["🌱 Starter Plan"];
+    if (lower.includes("essential")) return stripeLinks["⭐ Essential Plan"];
+    if (lower.includes("advanced")) return stripeLinks["🚀 Advanced Plan"];
+    return stripeLinks[name] || "#";
+  };
 
   return (
     <section className="mb-16">
@@ -35,7 +36,7 @@ const Packages = () => {
           >
             {pkg.recommended && (
               <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-3.5 py-1 rounded-pill text-[10px] font-bold uppercase tracking-[0.06em] whitespace-nowrap">
-                ✦ Recommended for you
+                ❖ Recommended for you
               </div>
             )}
             <div className="font-serif italic text-2xl mb-1">{pkg.name}</div>
