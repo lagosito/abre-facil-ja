@@ -36,19 +36,18 @@ const Packages = () => {
             <div className="font-serif text-[44px] leading-none">
               {pkg.price}<span className="font-sans text-sm text-muted-foreground">/month</span>
             </div>
-            <button
-              onClick={() => handlePackageClick(pkg)}
-              disabled={buttonStates[pkg.name] === "loading"}
-              className={`block w-full py-3 rounded-pill text-sm font-bold my-5 transition-all ${
-                buttonStates[pkg.name] === "success"
-                  ? "bg-green-500 text-primary-foreground"
-                  : pkg.recommended
-                    ? "bg-primary text-primary-foreground hover:brightness-90"
-                    : "bg-transparent border-[1.5px] border-border text-foreground hover:border-primary hover:text-primary"
+            <a
+              href={stripeLinks[pkg.name]}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`block w-full py-3 rounded-pill text-sm font-bold my-5 text-center transition-all ${
+                pkg.recommended
+                  ? "bg-primary text-primary-foreground hover:brightness-90"
+                  : "bg-transparent border-[1.5px] border-border text-foreground hover:border-primary hover:text-primary"
               }`}
             >
-              {getButtonContent(pkg)}
-            </button>
+              Buy
+            </a>
             <div className="flex flex-col gap-2">
               {pkg.features.map((f, i) => (
                 <div key={i} className={`flex items-center gap-2 text-[13px] ${f.locked ? "text-muted-foreground" : ""}`}>
