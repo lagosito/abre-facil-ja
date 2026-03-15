@@ -515,7 +515,7 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
         if (!response.ok) return;
         const brandDna = (await response.json()) as IncomingData;
         console.log("[ELK] Poll response:", brandDna?.brandName);
-        if (brandDna?.brandName) {
+        if (brandDna?.brandName && !brandDna._partial && brandDna._status !== "processing" && brandDna.status !== "processing") {
           finishSuccess(brandDna);
         }
       } catch (e) {
