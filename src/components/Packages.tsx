@@ -1,15 +1,22 @@
 import { useBrandData } from "@/context/BrandDataContext";
 import SectionHeader from "./SectionHeader";
-import AddonCard from "./AddonCard";
+
+const STRIPE_LINKS: Record<string, string> = {
+  starter: "https://buy.stripe.com/7sY8wOdAafZVg0pbyz2sM06",
+  essential: "https://buy.stripe.com/8x200i1Rs1519C19qr2sM07",
+  advanced: "https://buy.stripe.com/3cI4gy7bM00X4hH1XZ2sM08",
+};
+
+const getStripeLink = (name: string): string => {
+  const lower = name.toLowerCase();
+  if (lower.includes("starter")) return STRIPE_LINKS.starter;
+  if (lower.includes("essential")) return STRIPE_LINKS.essential;
+  if (lower.includes("advanced")) return STRIPE_LINKS.advanced;
+  return "#";
+};
 
 const Packages = () => {
   const { packages, recommendedExplain } = useBrandData();
-
-  const stripeLinks: Record<string, string> = {
-    "🌱 Starter Plan": "https://buy.stripe.com/7sY8wOdAafZVg0pbyz2sM06",
-    "⭐ Essential Plan": "https://buy.stripe.com/8x200i1Rs1519C19qr2sM07",
-    "🚀 Advanced Plan": "https://buy.stripe.com/3cI4gy7bM00X4hH1XZ2sM08",
-  };
 
   return (
     <section className="mb-16">
@@ -37,7 +44,7 @@ const Packages = () => {
               {pkg.price}<span className="font-sans text-sm text-muted-foreground">/month</span>
             </div>
             <a
-              href={stripeLinks[pkg.name]}
+              href={getStripeLink(pkg.name)}
               target="_blank"
               rel="noopener noreferrer"
               className={`block w-full py-3 rounded-pill text-sm font-bold my-5 text-center transition-all ${
