@@ -146,10 +146,63 @@ function isLightColor(hex: string): boolean {
   return (r * 299 + g * 587 + b * 114) / 1000 > 150;
 }
 
+const defaultPackages: PackageData[] = [
+  {
+    name: "Starter",
+    desc: "For businesses taking their first steps in social media.",
+    price: "€349",
+    recommended: false,
+    features: [
+      { text: "12 Posts / Month", locked: false },
+      { text: "2 Platforms (IG + FB)", locked: false },
+      { text: "Brand DNA Board", locked: false },
+      { text: "4 Reels / Stories", locked: false },
+      { text: "Content Calendar", locked: false },
+      { text: "Analytics Dashboard", locked: true },
+      { text: "Ads Analyst", locked: true },
+      { text: "UGC Videos", locked: true },
+    ],
+  },
+  {
+    name: "Essential",
+    desc: "For growing businesses that take content seriously and want measurable results.",
+    price: "€599",
+    recommended: true,
+    features: [
+      { text: "24 Posts / Month", locked: false },
+      { text: "3 Platforms (+ LinkedIn)", locked: false },
+      { text: "Brand DNA Board", locked: false },
+      { text: "7 Reels / Stories", locked: false },
+      { text: "Analytics Dashboard", locked: false },
+      { text: "Ads Analyst ✦", locked: false },
+      { text: "UGC Videos", locked: true },
+      { text: "TikTok Integration", locked: true },
+      { text: "Motion Graphics", locked: true },
+    ],
+  },
+  {
+    name: "Advanced",
+    desc: "For businesses that want to fully scale their social media presence.",
+    price: "€999",
+    recommended: false,
+    features: [
+      { text: "40 Posts / Month", locked: false },
+      { text: "4 Platforms (+ TikTok)", locked: false },
+      { text: "Brand DNA Board", locked: false },
+      { text: "12 Reels with Motion Graphics", locked: false },
+      { text: "Analytics Dashboard", locked: false },
+      { text: "Ads Analyst", locked: false },
+      { text: "UGC Generator ✦", locked: false },
+      { text: "Trend Scout", locked: false },
+      { text: "10 Revision Rounds", locked: false },
+    ],
+  },
+];
+
 const defaultData: BrandData = {
   brandName: "Your Brand",
   website: "www.your-website.com",
-  brandEssence: "Wo jede Blume eine Geschichte erzählt.",
+  brandEssence: "Where every brand tells its story.",
   firstName: "",
   chatId: "",
   brandLogoUrl: "",
@@ -161,21 +214,21 @@ const defaultData: BrandData = {
     { hex: "#111111", light: false },
   ],
   fonts: { display: "Instrument Serif", body: "DM Sans" },
-  values: ["Authentisch", "Nachhaltig", "Lokal"],
+  values: ["Authentic", "Sustainable", "Local"],
   aesthetic: ["Natural", "Warm", "Artisanal"],
-  tones: ["Persönlich", "Einladend"],
-  businessOverview: "Blumenhaus Martina ist ein inhabergeführtes Blumengeschäft in Hamburg-Altona, das seit 2015 frische Saisonsblumen, handgefertigte Sträuße und nachhaltige Pflanzenpflege anbietet.",
-  aiBriefing: "Die visuelle Kommunikation sollte die Wärme und Handwerkskunst des Ladens widerspiegeln.",
+  tones: ["Personal", "Inviting"],
+  businessOverview: "A brand-driven business focused on delivering quality and meaningful experiences to its customers.",
+  aiBriefing: "Visual communication should reflect the warmth and craftsmanship of the brand.",
   targetAudience: "",
   contentOpportunities: "",
   positioning: "",
   platforms: "",
-  instagramHandle: "@blumenhaus.martina",
+  instagramHandle: "@yourbrand",
   instagramStats: [
     { val: "2.4K", lbl: "Followers" },
     { val: "3.2%", lbl: "Engagement" },
-    { val: "8", lbl: "Posts / Monat" },
-    { val: "↗ +4%", lbl: "Wachstum" },
+    { val: "8", lbl: "Posts / Month" },
+    { val: "↗ +4%", lbl: "Growth" },
   ],
   instagramPosts: [
     { bg: "linear-gradient(135deg,#2D4A3E,#4a7c68)", likes: 84, comments: 6 },
@@ -186,68 +239,17 @@ const defaultData: BrandData = {
     { bg: "linear-gradient(135deg,#F2C4A0,#f5d5ba)", likes: 78, comments: 5 },
   ],
   objectives: [
-    { icon: "🎯", label: "Hauptziel", value: "Mehr lokale Sichtbarkeit" },
-    { icon: "📱", label: "Hauptkanal", value: "Instagram + Stories" },
-    { icon: "📸", label: "Assets vorhanden", value: "Eigene Fotos, kein Video" },
-    { icon: "💸", label: "Paid Ads", value: "Noch nicht aktiv" },
+    { icon: "🎯", label: "Main Goal", value: "More local visibility" },
+    { icon: "📱", label: "Main Channel", value: "Instagram + Stories" },
+    { icon: "📸", label: "Assets Available", value: "Own photos, no video" },
+    { icon: "💸", label: "Paid Ads", value: "Not yet active" },
   ],
   growthProjection: null,
   contentInsights: null,
-  calendarMonth: "März",
-  calendarExplain: "Basierend auf deinen Zielen und deiner Brand-DNA haben wir einen ersten Content-Plan für März erstellt.",
-  packages: [
-    {
-      name: "Starter",
-      desc: "Für Unternehmen, die einen ersten Schritt im Social Media machen möchten.",
-      price: "€349",
-      recommended: false,
-      features: [
-        { text: "12 Posts / Monat", locked: false },
-        { text: "2 Plattformen (IG + FB)", locked: false },
-        { text: "Brand DNA Board", locked: false },
-        { text: "4 Reels / Stories", locked: false },
-        { text: "Content-Kalender", locked: false },
-        { text: "Analytics Dashboard", locked: true },
-        { text: "Ads Analyst", locked: true },
-        { text: "UGC Videos", locked: true },
-      ],
-    },
-    {
-      name: "Essential",
-      desc: "Für wachsende Unternehmen, die Content ernst nehmen und messbare Ergebnisse wollen.",
-      price: "€599",
-      recommended: true,
-      features: [
-        { text: "24 Posts / Monat", locked: false },
-        { text: "3 Plattformen (+ LinkedIn)", locked: false },
-        { text: "Brand DNA Board", locked: false },
-        { text: "7 Reels / Stories", locked: false },
-        { text: "Analytics Dashboard", locked: false },
-        { text: "Ads Analyst ✦", locked: false },
-        { text: "UGC Videos", locked: true },
-        { text: "TikTok Integration", locked: true },
-        { text: "Motion Graphics", locked: true },
-      ],
-    },
-    {
-      name: "Advanced",
-      desc: "Für Unternehmen, die ihre Social-Media-Präsenz vollständig skalieren möchten.",
-      price: "€999",
-      recommended: false,
-      features: [
-        { text: "40 Posts / Monat", locked: false },
-        { text: "4 Plattformen (+ TikTok)", locked: false },
-        { text: "Brand DNA Board", locked: false },
-        { text: "12 Reels mit Motion Graphics", locked: false },
-        { text: "Analytics Dashboard", locked: false },
-        { text: "Ads Analyst", locked: false },
-        { text: "UGC Generator ✦", locked: false },
-        { text: "Trend Scout", locked: false },
-        { text: "10 Revisionsrunden", locked: false },
-      ],
-    },
-  ],
-  recommendedExplain: "Basierend auf deinen Zielen, deinem aktuellen Stand und deiner Branche empfehlen wir dir das Essential-Paket.",
+  calendarMonth: "March",
+  calendarExplain: "Based on your goals and Brand DNA, we've created an initial content plan for March.",
+  packages: defaultPackages,
+  recommendedExplain: "Based on your goals, current performance, and industry, we recommend the Essential Plan.",
 };
 
 function mapIncoming(incoming: IncomingData): Partial<BrandData> {
@@ -261,14 +263,24 @@ function mapIncoming(incoming: IncomingData): Partial<BrandData> {
   if (incoming.logoBgColor) mapped.logoBgColor = incoming.logoBgColor;
 
   if (incoming.website) mapped.website = incoming.website;
+  if (incoming.websiteUrl) mapped.website = incoming.websiteUrl;
   if (incoming.brandEssence) mapped.brandEssence = incoming.brandEssence;
+  if (incoming.tagline) mapped.brandEssence = incoming.tagline;
   if (incoming.colors?.length) mapped.colors = incoming.colors;
   if (incoming.fonts) mapped.fonts = incoming.fonts;
   if (incoming.values?.length) mapped.values = incoming.values;
+  if (incoming.brandValues?.length) mapped.values = incoming.brandValues;
   if (incoming.aesthetic?.length) mapped.aesthetic = incoming.aesthetic;
   if (incoming.tones?.length) mapped.tones = incoming.tones;
+  if (incoming.toneOfVoice?.length) mapped.tones = incoming.toneOfVoice;
   if (incoming.businessOverview) mapped.businessOverview = incoming.businessOverview;
+  if (incoming.overview) mapped.businessOverview = incoming.overview;
   if (incoming.aiBriefing) mapped.aiBriefing = incoming.aiBriefing;
+  if (incoming.contentStrategy) mapped.aiBriefing = incoming.contentStrategy;
+  if (incoming.targetAudience) mapped.targetAudience = incoming.targetAudience;
+  if (incoming.contentOpportunities) mapped.contentOpportunities = incoming.contentOpportunities;
+  if (incoming.positioning) mapped.positioning = incoming.positioning;
+  if (incoming.platforms) mapped.platforms = incoming.platforms;
   if (incoming.instagramHandle) mapped.instagramHandle = incoming.instagramHandle;
   if (incoming.instagramStats?.length) mapped.instagramStats = incoming.instagramStats;
   if (incoming.instagramPosts?.length) mapped.instagramPosts = incoming.instagramPosts;
@@ -276,8 +288,6 @@ function mapIncoming(incoming: IncomingData): Partial<BrandData> {
   if (incoming.growthProjection) mapped.growthProjection = incoming.growthProjection;
   if (incoming.contentInsights) mapped.contentInsights = incoming.contentInsights;
 
-  if (incoming.tagline) mapped.brandEssence = incoming.tagline;
-  if (incoming.websiteUrl) mapped.website = incoming.websiteUrl;
   if (incoming.primaryColor || incoming.secondaryColor || incoming.accentColor || incoming.darkColor) {
     const colors: BrandColors[] = [];
     if (incoming.primaryColor) colors.push({ hex: incoming.primaryColor, light: isLightColor(incoming.primaryColor) });
@@ -287,14 +297,12 @@ function mapIncoming(incoming: IncomingData): Partial<BrandData> {
     mapped.colors = colors;
   }
   if (incoming.fontName) mapped.fonts = { display: incoming.fontName, body: "DM Sans" };
-  if (incoming.brandValues) mapped.values = incoming.brandValues;
-  if (incoming.toneOfVoice) mapped.tones = incoming.toneOfVoice;
-  if (incoming.overview) mapped.businessOverview = incoming.overview;
-  if (incoming.contentStrategy) mapped.aiBriefing = incoming.contentStrategy;
-  if (incoming.targetAudience) mapped.targetAudience = incoming.targetAudience;
-  if (incoming.contentOpportunities) mapped.contentOpportunities = incoming.contentOpportunities;
-  if (incoming.positioning) mapped.positioning = incoming.positioning;
-  if (incoming.platforms) mapped.platforms = incoming.platforms;
+
+  // Always use default packages (real packages come from AI recommendation)
+  mapped.packages = defaultPackages;
+  mapped.recommendedExplain = "Based on your goals, current performance, and industry, we recommend the Essential Plan.";
+  mapped.calendarMonth = "March";
+  mapped.calendarExplain = "Based on your Brand DNA and goals, we've created an initial content plan.";
 
   return mapped;
 }
@@ -329,7 +337,6 @@ function useAutoSave(recordId: string | null, chatId: string, brandName: string)
         savedAt: new Date().toISOString(),
       });
 
-      // Skip if nothing changed
       if (payload === lastPayloadRef.current) return;
 
       if (timerRef.current) clearTimeout(timerRef.current);
@@ -461,10 +468,8 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
     [autoSave]
   );
 
-  // Countdown timer + single fetch at 0
   useEffect(() => {
     if (!idParam) {
-      // No id param — use ?d= or defaults
       if (dParam) {
         try {
           const json = atob(dParam);
@@ -483,7 +488,6 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
 
-    // Start countdown + smart polling every 5s
     setLoading(true);
     setLoadingStage("waiting");
     setCountdown(COUNTDOWN_SECONDS);
@@ -505,7 +509,8 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
       clearInterval(pollInterval);
       clearTimeout(timeoutTimer);
       const mapped = mapIncoming(brandDna);
-      setData((prev) => ({ ...prev, ...mapped }));
+      // Use defaultData as base but override everything with real data
+      setData({ ...defaultData, ...mapped });
       setCountdown(0);
       setLoading(false);
       setLoadingStage("complete");
@@ -527,12 +532,9 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
       }
     };
 
-    // Poll every 5 seconds
     const pollInterval = setInterval(poll, 5000);
-    // Also poll immediately
     poll();
 
-    // When countdown reaches 0, just keep polling (no error)
     const timeoutTimer: ReturnType<typeof setTimeout> | null = null;
 
     return () => {
