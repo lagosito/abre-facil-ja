@@ -72,7 +72,7 @@ const Packages = () => {
     const state = buttonStates[pkg.name] || "idle";
     if (state === "loading") return <Loader2 className="w-4 h-4 animate-spin mx-auto" />;
     if (state === "success") return <span className="flex items-center justify-center gap-1.5"><Check className="w-4 h-4" /> Sent!</span>;
-    return pkg.recommended ? "Get started ↗" : "Choose plan";
+    return "Buy";
   };
 
   return (
