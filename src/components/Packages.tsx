@@ -22,8 +22,19 @@ const Packages = () => {
   } = useBrandData();
   const [buttonStates, setButtonStates] = useState<Record<string, "idle" | "loading" | "success">>({});
 
+  const stripeLinks: Record<string, string> = {
+    "🌱 Starter Plan": "https://buy.stripe.com/7sY8wOdAafZVg0pbyz2sM06",
+    "⭐ Essential Plan": "https://buy.stripe.com/8x200i1Rs1519C19qr2sM07",
+    "🚀 Advanced Plan": "https://buy.stripe.com/3cI4gy7bM00X4hH1XZ2sM08",
+  };
+
   const handlePackageClick = async (pkg: { name: string; price: string; recommended: boolean }) => {
     if (buttonStates[pkg.name] === "loading" || buttonStates[pkg.name] === "success") return;
+
+    const stripeUrl = stripeLinks[pkg.name];
+    if (stripeUrl) {
+      window.open(stripeUrl, "_blank", "noopener,noreferrer");
+    }
 
     setButtonStates((s) => ({ ...s, [pkg.name]: "loading" }));
     try {
