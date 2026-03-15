@@ -57,7 +57,7 @@ const Packages = () => {
             </a>
             <div className="flex flex-col gap-2">
               {pkg.features.map((f, i) => (
-                <div key={i} className={`flex items-center gap-2 text-[13px] ${f.locked ? "text-muted-foreground" : ""`}>
+                <div key={i} className={`flex items-center gap-2 text-[13px] ${f.locked ? "text-muted-foreground" : ""}`}>
                   <span className={`font-bold text-sm ${f.locked ? "text-border" : "text-primary"}`}>✓</span>
                   {f.text}
                 </div>
