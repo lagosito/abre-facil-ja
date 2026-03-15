@@ -20,7 +20,8 @@ const Hero = () => {
         </span>
       </div>
       <h1 className="font-serif text-[clamp(44px,6.5vw,80px)] leading-[0.95] tracking-tight font-normal mb-7">
-        Your <em className="text-primary italic">Content Engine</em>
+        <em className="text-primary italic">{displayName}</em>{" "}
+        <em className="italic">Content Engine</em>
         <br />
         <span className="text-muted-foreground">is ready.</span>
       </h1>
