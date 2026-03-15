@@ -3,22 +3,9 @@ import SectionHeader from "./SectionHeader";
 import AddonCard from "./AddonCard";
 
 const Packages = () => {
-  const {
-    packages,
-    recommendedExplain,
-    chatId,
-    brandName,
-    website,
-    selectedObjectives,
-    selectedAddons,
-    userEmail,
-    recordId,
-    colors,
-    fonts,
-    values,
-    tones,
-  } = useBrandData();
-const stripeLinks: Record<string, string> = {
+  const { packages, recommendedExplain } = useBrandData();
+
+  const stripeLinks: Record<string, string> = {
     "🌱 Starter Plan": "https://buy.stripe.com/7sY8wOdAafZVg0pbyz2sM06",
     "⭐ Essential Plan": "https://buy.stripe.com/8x200i1Rs1519C19qr2sM07",
     "🚀 Advanced Plan": "https://buy.stripe.com/3cI4gy7bM00X4hH1XZ2sM08",
