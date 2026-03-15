@@ -1,8 +1,6 @@
-import { useState } from "react";
 import { useBrandData } from "@/context/BrandDataContext";
 import SectionHeader from "./SectionHeader";
 import AddonCard from "./AddonCard";
-import { Loader2, Check } from "lucide-react";
 
 const Packages = () => {
   const {
