@@ -2,6 +2,7 @@ import { useBrandData } from "@/context/BrandDataContext";
 
 const Hero = () => {
   const { brandName, website, contentInsights } = useBrandData();
+  const displayName = brandName || "Your";
 
   const contentGap = contentInsights
     ? Math.round(
