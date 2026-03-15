@@ -1,78 +1,14 @@
-import { useState } from "react";
 import { useBrandData } from "@/context/BrandDataContext";
 import SectionHeader from "./SectionHeader";
 import AddonCard from "./AddonCard";
-import { Loader2, Check } from "lucide-react";
 
 const Packages = () => {
-  const {
-    packages,
-    recommendedExplain,
-    chatId,
-    brandName,
-    website,
-    selectedObjectives,
-    selectedAddons,
-    userEmail,
-    recordId,
-    colors,
-    fonts,
-    values,
-    tones,
-  } = useBrandData();
-  const [buttonStates, setButtonStates] = useState<Record<string, "idle" | "loading" | "success">>({});
+  const { packages, recommendedExplain } = useBrandData();
 
   const stripeLinks: Record<string, string> = {
     "🌱 Starter Plan": "https://buy.stripe.com/7sY8wOdAafZVg0pbyz2sM06",
     "⭐ Essential Plan": "https://buy.stripe.com/8x200i1Rs1519C19qr2sM07",
     "🚀 Advanced Plan": "https://buy.stripe.com/3cI4gy7bM00X4hH1XZ2sM08",
-  };
-
-  const handlePackageClick = async (pkg: { name: string; price: string; recommended: boolean }) => {
-    if (buttonStates[pkg.name] === "loading" || buttonStates[pkg.name] === "success") return;
-
-    const stripeUrl = stripeLinks[pkg.name];
-    if (stripeUrl) {
-      window.open(stripeUrl, "_blank", "noopener,noreferrer");
-    }
-
-    setButtonStates((s) => ({ ...s, [pkg.name]: "loading" }));
-    try {
-      await fetch("https://lagosito.app.n8n.cloud/webhook/elk-pkg", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          chatId,
-          package: pkg.name,
-          price: pkg.price,
-          brandName,
-          websiteUrl: website,
-          selectedObjectives,
-          recordId,
-          userEmail,
-          selectedAddons,
-          customizations: {
-            colors,
-            fonts,
-            values,
-            tones,
-          },
-          purchasedAt: new Date().toISOString(),
-        }),
-      });
-      setButtonStates((s) => ({ ...s, [pkg.name]: "success" }));
-      setTimeout(() => setButtonStates((s) => ({ ...s, [pkg.name]: "idle" })), 3000);
-    } catch (e) {
-      console.error("Failed to send package selection:", e);
-      setButtonStates((s) => ({ ...s, [pkg.name]: "idle" }));
-    }
-  };
-
-  const getButtonContent = (pkg: { name: string; recommended: boolean }) => {
-    const state = buttonStates[pkg.name] || "idle";
-    if (state === "loading") return <Loader2 className="w-4 h-4 animate-spin mx-auto" />;
-    if (state === "success") return <span className="flex items-center justify-center gap-1.5"><Check className="w-4 h-4" /> Sent!</span>;
-    return "Buy";
   };
 
   return (
@@ -100,19 +36,18 @@ const Packages = () => {
             <div className="font-serif text-[44px] leading-none">
               {pkg.price}<span className="font-sans text-sm text-muted-foreground">/month</span>
             </div>
-            <button
-              onClick={() => handlePackageClick(pkg)}
-              disabled={buttonStates[pkg.name] === "loading"}
-              className={`block w-full py-3 rounded-pill text-sm font-bold my-5 transition-all ${
-                buttonStates[pkg.name] === "success"
-                  ? "bg-green-500 text-primary-foreground"
-                  : pkg.recommended
-                    ? "bg-primary text-primary-foreground hover:brightness-90"
-                    : "bg-transparent border-[1.5px] border-border text-foreground hover:border-primary hover:text-primary"
+            <a
+              href={stripeLinks[pkg.name]}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`block w-full py-3 rounded-pill text-sm font-bold my-5 text-center transition-all ${
+                pkg.recommended
+                  ? "bg-primary text-primary-foreground hover:brightness-90"
+                  : "bg-transparent border-[1.5px] border-border text-foreground hover:border-primary hover:text-primary"
               }`}
             >
-              {getButtonContent(pkg)}
-            </button>
+              Buy
+            </a>
             <div className="flex flex-col gap-2">
               {pkg.features.map((f, i) => (
                 <div key={i} className={`flex items-center gap-2 text-[13px] ${f.locked ? "text-muted-foreground" : ""}`}>
