@@ -49,13 +49,10 @@ const BrandIdentity = () => {
 
   const primaryColor = data.logoBgColor || data.colors[0]?.hex || '#111111';
   const primaryLuminance = getLuminance(primaryColor);
-  const cardBg = primaryLuminance < 0.08
-    ? (data.colors[1]?.hex || '#1a1a1a')
-    : primaryColor;
-  const cardBgLuminance = getLuminance(cardBg);
-  const isLightBg = cardBgLuminance > 0.5;
-  const cardTextColor = isLightBg ? '#1a1a1a' : '#ffffff';
-  const cardTextMuted = isLightBg ? 'rgba(26,26,26,0.4)' : 'rgba(255,255,255,0.4)';
+  const isLightBrand = primaryLuminance > 0.5;
+  const cardBg = isLightBrand ? '#ffffff' : '#0a0a0a';
+  const cardTextColor = isLightBrand ? '#1a1a1a' : '#ffffff';
+  const cardTextMuted = isLightBrand ? 'rgba(26,26,26,0.4)' : 'rgba(255,255,255,0.4)';
 
   return (
     <section className="mb-16">
