@@ -75,11 +75,6 @@ const BrandIdentity = () => {
                 src={data.brandLogoUrl}
                 alt={`${data.brandName} Logo`}
                 className="relative z-10 max-h-[80px] max-w-[200px] object-contain"
-                style={{
-                  filter: isLightBg
-                    ? 'brightness(0)'
-                    : 'brightness(0) invert(1)',
-                }}
                 onLoad={(e) => {
                   const img = e.currentTarget;
                   const w = img.naturalWidth;
