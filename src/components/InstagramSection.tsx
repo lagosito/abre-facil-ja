@@ -43,17 +43,29 @@ const InstagramSection = () => {
         {/* Left column */}
         <div className="col-span-12 md:col-span-8 space-y-3.5">
           {/* Stats bar */}
-          <div className="bg-card rounded-lg p-6 animate-fade-up hover:-translate-y-0.5 hover:shadow-lg transition-all">
-            <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-muted-foreground mb-3.5">{instagramHandle || "@your_instagram"}</div>
-            <div className="flex gap-7 flex-wrap">
-              {instagramStats.map((s) => (
-                <div key={s.lbl}>
-                  <div className="font-serif italic text-[30px] leading-none">{s.val}</div>
-                  <div className="text-[10px] uppercase tracking-[0.08em] font-bold text-muted-foreground mt-0.5">{s.lbl}</div>
+          {(() => {
+            const hasStats = instagramStats.some((s) => s.val && s.val.trim() !== "");
+            if (!hasStats) {
+              return (
+                <div className="bg-card rounded-lg p-6 animate-fade-up hover:-translate-y-0.5 hover:shadow-lg transition-all">
+                  <div className="font-serif italic text-xl text-muted-foreground">Sadly, we couldn't find your Instagram.</div>
                 </div>
-              ))}
-            </div>
-          </div>
+              );
+            }
+            return (
+              <div className="bg-card rounded-lg p-6 animate-fade-up hover:-translate-y-0.5 hover:shadow-lg transition-all">
+                <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-muted-foreground mb-3.5">{instagramHandle || "@your_instagram"}</div>
+                <div className="flex gap-7 flex-wrap">
+                  {instagramStats.map((s) => (
+                    <div key={s.lbl}>
+                      <div className="font-serif italic text-[30px] leading-none">{s.val}</div>
+                      <div className="text-[10px] uppercase tracking-[0.08em] font-bold text-muted-foreground mt-0.5">{s.lbl}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
 
           {/* Competitive Benchmark Card */}
           {contentInsights && (
