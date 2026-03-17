@@ -170,13 +170,8 @@ const defaultData: BrandData = {
   contentOpportunities: "",
   positioning: "",
   platforms: "",
-  instagramHandle: "@blumenhaus.martina",
-  instagramStats: [
-    { val: "2.4K", lbl: "Followers" },
-    { val: "3.2%", lbl: "Engagement" },
-    { val: "8", lbl: "Posts / Monat" },
-    { val: "↗ +4%", lbl: "Wachstum" },
-  ],
+  instagramHandle: "",
+  instagramStats: [],
   instagramPosts: [
     { bg: "linear-gradient(135deg,#2D4A3E,#4a7c68)", likes: 84, comments: 6 },
     { bg: "linear-gradient(135deg,#F2C4A0,#e8a07a)", likes: 112, comments: 14 },
