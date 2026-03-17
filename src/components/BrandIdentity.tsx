@@ -40,6 +40,23 @@ const BrandIdentity = () => {
 
   const essenceParts = data.brandEssence.split(/(<em>.*?<\/em>)/);
 
+  const getLuminance = (hex: string) => {
+    const r = parseInt(hex.slice(1, 3), 16) / 255;
+    const g = parseInt(hex.slice(3, 5), 16) / 255;
+    const b = parseInt(hex.slice(5, 7), 16) / 255;
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  };
+
+  const primaryColor = data.logoBgColor || data.colors[0]?.hex || '#111111';
+  const primaryLuminance = getLuminance(primaryColor);
+  const cardBg = primaryLuminance < 0.08
+    ? (data.colors[1]?.hex || '#1a1a1a')
+    : primaryColor;
+  const cardBgLuminance = getLuminance(cardBg);
+  const isLightBg = cardBgLuminance > 0.5;
+  const cardTextColor = isLightBg ? '#1a1a1a' : '#ffffff';
+  const cardTextMuted = isLightBg ? 'rgba(26,26,26,0.4)' : 'rgba(255,255,255,0.4)';
+
   return (
     <section className="mb-16">
       <SectionHeader
@@ -50,15 +67,18 @@ const BrandIdentity = () => {
 
       <div className="grid grid-cols-12 gap-3.5">
         {/* Identity Card */}
-        <div className="col-span-12 md:col-span-5 text-background rounded-lg p-6 min-h-[220px] flex flex-col animate-fade-up hover:-translate-y-0.5 hover:shadow-lg transition-all" style={{ backgroundColor: data.logoBgColor || '#111111' }}>
-          <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-background/40 mb-3.5">Brand</div>
+        <div className="col-span-12 md:col-span-5 rounded-lg p-6 min-h-[220px] flex flex-col animate-fade-up hover:-translate-y-0.5 hover:shadow-lg transition-all" style={{ backgroundColor: cardBg, color: cardTextColor }}>
+          <div className="text-[10px] uppercase tracking-[0.1em] font-bold mb-3.5" style={{ color: cardTextMuted }}>Brand</div>
           <div className="mt-auto">
             {data.brandLogoUrl && !hideLogo ? (
               <img
                 src={data.brandLogoUrl}
                 alt={`${data.brandName} Logo`}
                 className="max-h-[80px] max-w-[200px] object-contain"
-                style={{ mixBlendMode: 'screen' }}
+                style={{
+                  mixBlendMode: isLightBg ? 'multiply' : 'screen',
+                  filter: isLightBg ? 'invert(1)' : 'none',
+                }}
                 onLoad={(e) => {
                   const img = e.currentTarget;
                   const w = img.naturalWidth;
@@ -79,7 +99,7 @@ const BrandIdentity = () => {
                 ))}
               </div>
             )}
-            <div className="font-mono text-[11px] text-background/40 mt-2">{data.website.replace(/^https?:\/\/(www\.)?/, "")}</div>
+            <div className="font-mono text-[11px] mt-2" style={{ color: cardTextMuted }}>{data.website.replace(/^https?:\/\/(www\.)?/, "")}</div>
           </div>
         </div>
 
