@@ -47,12 +47,12 @@ const BrandIdentity = () => {
     return 0.2126 * r + 0.7152 * g + 0.0722 * b;
   };
 
-  const primaryColor = data.logoBgColor || data.colors[0]?.hex || '#111111';
+  const primaryColor = data.colors[0]?.hex || '#000000';
   const primaryLuminance = getLuminance(primaryColor);
-  const isLightBrand = primaryLuminance > 0.5;
-  const cardBg = isLightBrand ? '#ffffff' : '#0a0a0a';
-  const cardTextColor = isLightBrand ? '#1a1a1a' : '#ffffff';
-  const cardTextMuted = isLightBrand ? 'rgba(26,26,26,0.4)' : 'rgba(255,255,255,0.4)';
+  const cardBg = primaryColor;
+  const isLightBg = primaryLuminance > 0.5;
+  const cardTextColor = isLightBg ? '#1a1a1a' : '#ffffff';
+  const cardTextMuted = isLightBg ? 'rgba(26,26,26,0.4)' : 'rgba(255,255,255,0.4)';
 
   return (
     <section className="mb-16">
