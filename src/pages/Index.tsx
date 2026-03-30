@@ -3,6 +3,7 @@ import Hero from "@/components/Hero";
 import BrandIdentity from "@/components/BrandIdentity";
 import BrandBriefing from "@/components/BrandBriefing";
 import InstagramSection from "@/components/InstagramSection";
+import GoalsSection from "@/components/GoalsSection";
 import ContentCalendar from "@/components/ContentCalendar";
 import ContentStyleSection from "@/components/ContentStyleSection";
 import AddonCard from "@/components/AddonCard";
@@ -26,6 +27,7 @@ const PageContent = () => {
         <BrandIdentity />
         <BrandBriefing />
         <InstagramSection />
+        <GoalsSection />
         <ContentCalendar />
         <ContentStyleSection />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 mb-16">
