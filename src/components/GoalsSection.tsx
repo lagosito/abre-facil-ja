@@ -3,21 +3,6 @@ import { useBrandData } from "@/context/BrandDataContext";
 import SectionHeader from "./SectionHeader";
 import { Check, Plus } from "lucide-react";
 
-const GOAL_HINTS: Record<string, string> = {
-  "Mehr lokale Sichtbarkeit": "Before/after carousel with local landmarks",
-  "Instagram + Stories": "Behind-the-scenes Story series",
-  "Eigene Fotos, kein Video": "Flat-lay product photo grid",
-  "Noch nicht aktiv": "Product demo Reel with CTA",
-  "Mehr Follower": "UGC testimonial clip",
-  "Brand Awareness": "Branded how-to static post",
-  "Mehr Verkäufe": "Limited-offer countdown Story",
-  "Community aufbauen": "Q&A carousel with audience polls",
-  "Website Traffic": "Link-in-bio teaser Reel",
-  "Lead Generation": "Free checklist carousel with CTA",
-  "Kundenbindung": "Customer spotlight Story highlight",
-};
-
-const DEFAULT_HINT = "Creative content idea";
 
 const GoalsSection = () => {
   const { objectives, selectedObjectives, setSelectedObjectives, markInteraction, triggerSave } = useBrandData();
