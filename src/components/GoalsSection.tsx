@@ -6,7 +6,7 @@ import { Check, Plus } from "lucide-react";
 
 const GoalsSection = () => {
   const { objectives, selectedObjectives, setSelectedObjectives, markInteraction, triggerSave } = useBrandData();
-  const [customObjectives, setCustomObjectives] = useState<{ icon: string; label: string; value: string }[]>([]);
+  const [customObjectives, setCustomObjectives] = useState<{ icon: string; label: string; value: string; contentIdea?: string }[]>([]);
   const [newGoal, setNewGoal] = useState("");
 
   const allObjectives = [...objectives, ...customObjectives];
