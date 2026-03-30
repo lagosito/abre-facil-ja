@@ -208,13 +208,6 @@ const InstagramSection = () => {
   );
 };
 
-/* ── Growth Bar Chart ── */
-      </div>
-    </section>
-  );
-};
-
-/* ── Growth Bar Chart ── */
 import type { GrowthProjection } from "@/context/BrandDataContext";
 
 const GrowthChart = ({ data }: { data: GrowthProjection }) => {
