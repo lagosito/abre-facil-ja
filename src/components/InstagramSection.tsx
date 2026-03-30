@@ -199,8 +199,6 @@ const InstagramSection = () => {
               lockedItems={[]}
             />
           </div>
-        </div>
-
       </div>
     </section>
   );
