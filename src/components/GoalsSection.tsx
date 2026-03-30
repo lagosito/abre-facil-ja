@@ -32,9 +32,6 @@ const GoalsSection = () => {
     triggerSave({ selectedObjectives: next });
   };
 
-  const getHint = (label: string, value: string) => {
-    return GOAL_HINTS[label] || GOAL_HINTS[value] || DEFAULT_HINT;
-  };
 
   return (
     <section className="mb-16">
