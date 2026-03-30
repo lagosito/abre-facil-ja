@@ -44,7 +44,6 @@ const GoalsSection = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
         {allObjectives.map((o) => {
           const selected = selectedObjectives.includes(o.label);
-          const hint = getHint(o.label, o.value);
           return (
             <button
               key={o.label}
@@ -63,7 +62,7 @@ const GoalsSection = () => {
               <div className="min-w-0">
                 <div className="text-[10px] uppercase tracking-[0.08em] font-bold text-muted-foreground">{o.label}</div>
                 {o.value && <div className="text-sm font-medium mt-0.5">{o.value}</div>}
-                <div className="text-[11px] text-muted-foreground mt-1">{hint}</div>
+                {o.contentIdea && <div className="text-[11px] text-[#9ca3af] mt-1">{o.contentIdea}</div>}
               </div>
             </button>
           );
