@@ -3,25 +3,10 @@ import { useBrandData } from "@/context/BrandDataContext";
 import SectionHeader from "./SectionHeader";
 import { Check, Plus } from "lucide-react";
 
-const GOAL_HINTS: Record<string, string> = {
-  "Mehr lokale Sichtbarkeit": "Before/after carousel with local landmarks",
-  "Instagram + Stories": "Behind-the-scenes Story series",
-  "Eigene Fotos, kein Video": "Flat-lay product photo grid",
-  "Noch nicht aktiv": "Product demo Reel with CTA",
-  "Mehr Follower": "UGC testimonial clip",
-  "Brand Awareness": "Branded how-to static post",
-  "Mehr Verkäufe": "Limited-offer countdown Story",
-  "Community aufbauen": "Q&A carousel with audience polls",
-  "Website Traffic": "Link-in-bio teaser Reel",
-  "Lead Generation": "Free checklist carousel with CTA",
-  "Kundenbindung": "Customer spotlight Story highlight",
-};
-
-const DEFAULT_HINT = "Creative content idea";
 
 const GoalsSection = () => {
   const { objectives, selectedObjectives, setSelectedObjectives, markInteraction, triggerSave } = useBrandData();
-  const [customObjectives, setCustomObjectives] = useState<{ icon: string; label: string; value: string }[]>([]);
+  const [customObjectives, setCustomObjectives] = useState<{ icon: string; label: string; value: string; contentIdea?: string }[]>([]);
   const [newGoal, setNewGoal] = useState("");
 
   const allObjectives = [...objectives, ...customObjectives];
@@ -47,9 +32,6 @@ const GoalsSection = () => {
     triggerSave({ selectedObjectives: next });
   };
 
-  const getHint = (label: string, value: string) => {
-    return GOAL_HINTS[label] || GOAL_HINTS[value] || DEFAULT_HINT;
-  };
 
   return (
     <section className="mb-16">
@@ -62,7 +44,6 @@ const GoalsSection = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
         {allObjectives.map((o) => {
           const selected = selectedObjectives.includes(o.label);
-          const hint = getHint(o.label, o.value);
           return (
             <button
               key={o.label}
@@ -81,7 +62,7 @@ const GoalsSection = () => {
               <div className="min-w-0">
                 <div className="text-[10px] uppercase tracking-[0.08em] font-bold text-muted-foreground">{o.label}</div>
                 {o.value && <div className="text-sm font-medium mt-0.5">{o.value}</div>}
-                <div className="text-[11px] text-muted-foreground mt-1">{hint}</div>
+                {o.contentIdea && <div className="text-[11px] text-[#9ca3af] mt-1">{o.contentIdea}</div>}
               </div>
             </button>
           );

@@ -47,6 +47,7 @@ export interface Objective {
   icon: string;
   label: string;
   value: string;
+  contentIdea?: string;
 }
 
 export interface PackageFeature {
