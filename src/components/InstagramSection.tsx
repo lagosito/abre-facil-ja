@@ -5,26 +5,6 @@ import PremiumAddonCard from "./PremiumAddonCard";
 const InstagramSection = () => {
   const { instagramHandle, instagramStats, growthProjection, contentInsights } = useBrandData();
 
-  const toggleObjective = (label: string) => {
-    markInteraction();
-    const next = selectedObjectives.includes(label)
-      ? selectedObjectives.filter((l) => l !== label)
-      : [...selectedObjectives, label];
-    setSelectedObjectives(next);
-    triggerSave({ selectedObjectives: next });
-  };
-
-  const addCustomGoal = () => {
-    markInteraction();
-    const trimmed = newGoal.trim();
-    if (!trimmed) return;
-    const custom = { icon: "✏️", label: trimmed, value: "" };
-    setCustomObjectives((prev) => [...prev, custom]);
-    const next = [...selectedObjectives, trimmed];
-    setSelectedObjectives(next);
-    setNewGoal("");
-    triggerSave({ selectedObjectives: next });
-  };
 
   return (
     <section className="mb-16">
