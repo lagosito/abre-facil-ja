@@ -1,15 +1,9 @@
-import { useState } from "react";
 import { useBrandData } from "@/context/BrandDataContext";
 import SectionHeader from "./SectionHeader";
 import PremiumAddonCard from "./PremiumAddonCard";
-import { Check, Plus } from "lucide-react";
 
 const InstagramSection = () => {
-  const { instagramHandle, instagramStats, growthProjection, contentInsights, objectives, selectedObjectives, setSelectedObjectives, markInteraction, triggerSave } = useBrandData();
-  const [customObjectives, setCustomObjectives] = useState<{ icon: string; label: string; value: string }[]>([]);
-  const [newGoal, setNewGoal] = useState("");
-
-  const allObjectives = [...objectives, ...customObjectives];
+  const { instagramHandle, instagramStats, growthProjection, contentInsights } = useBrandData();
 
   const toggleObjective = (label: string) => {
     markInteraction();
