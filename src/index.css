@@ -89,6 +89,11 @@
     @apply bg-background text-foreground;
     font-family: var(--font-sans);
   }
+
+  .bg-card {
+    border: 0.5px solid rgba(0, 0, 0, 0.12);
+    box-shadow: none !important;
+  }
 }
 
 @layer utilities {
