@@ -14,6 +14,7 @@ const InstagramSection = () => {
         explain="We compared your current Instagram account with industry data. These numbers show the starting point — and highlight where El Kiosk can make the biggest impact."
       />
       <div className="grid grid-cols-12 gap-3.5">
+        <div className="col-span-12 space-y-3.5">
         {/* Left column */}
         <div className="col-span-12 md:col-span-8 space-y-3.5">
           {/* Stats bar */}
