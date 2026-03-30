@@ -20,11 +20,11 @@ const Hero = () => {
           {website.replace(/^https?:\/\/(www\.)?/, "")}
         </span>
       </div>
-      <h1 className="font-serif text-[clamp(44px,6.5vw,80px)] leading-[0.95] tracking-tight font-bold mb-7">
-        <em className="text-primary italic">{displayName}</em>{" "}
-        <em className="italic">Content Engine</em>
+      <h1 className="font-serif text-[clamp(44px,6.5vw,80px)] leading-[0.95] tracking-tight font-bold mb-7 text-foreground">
+        <span className="text-primary">{displayName}</span>{" "}
+        Content Engine
         <br />
-        <span className="text-muted-foreground">is ready.</span>
+        is ready.
       </h1>
       <p className="text-base text-muted-foreground max-w-[600px] leading-relaxed">
         We've analyzed your brand, extracted your Brand DNA, and built a complete
