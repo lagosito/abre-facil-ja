@@ -6,7 +6,7 @@
 
 @layer base {
   :root {
-    --background: 40 9% 95%;
+    --background: 0 0% 100%;
     --foreground: 0 0% 7%;
 
     --card: 0 0% 100%;
@@ -88,6 +88,11 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-sans);
+  }
+
+  .bg-card {
+    border: 0.5px solid rgba(0, 0, 0, 0.12);
+    box-shadow: none !important;
   }
 }
 

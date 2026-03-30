@@ -68,7 +68,7 @@ const ContentStyleSection = () => {
   return (
     <section className="mb-16 animate-fade-up">
       <SectionHeader
-        num="06"
+        num="07"
         title="Your Content Style"
         explain="You've defined your goals. Now show us how your content should look — so we produce the right thing from day one."
       />
