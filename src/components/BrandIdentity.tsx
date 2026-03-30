@@ -17,8 +17,41 @@ const BrandIdentity = () => {
   const [newTone, setNewTone] = useState("");
   const [selectedFont, setSelectedFont] = useState(data.fonts.display);
   const [hideLogo, setHideLogo] = useState(false);
+  const [logoIsLight, setLogoIsLight] = useState<boolean | null>(null);
 
-  useEffect(() => { setHideLogo(false); }, [data.brandLogoUrl]);
+  useEffect(() => { setHideLogo(false); setLogoIsLight(null); }, [data.brandLogoUrl]);
+
+  // Detect logo brightness via canvas sampling
+  useEffect(() => {
+    if (!data.brandLogoUrl) return;
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      try {
+        const canvas = document.createElement("canvas");
+        const size = 64;
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+        ctx.drawImage(img, 0, 0, size, size);
+        const { data: px } = ctx.getImageData(0, 0, size, size);
+        let totalLum = 0;
+        let opaqueCount = 0;
+        for (let i = 0; i < px.length; i += 4) {
+          if (px[i + 3] < 128) continue; // skip transparent pixels
+          totalLum += 0.2126 * (px[i] / 255) + 0.7152 * (px[i + 1] / 255) + 0.0722 * (px[i + 2] / 255);
+          opaqueCount++;
+        }
+        if (opaqueCount > 0) {
+          setLogoIsLight(totalLum / opaqueCount > 0.5);
+        }
+      } catch {
+        // CORS or other error — fallback to primary color logic
+      }
+    };
+    img.src = data.brandLogoUrl;
+  }, [data.brandLogoUrl]);
   useEffect(() => { setSwatches(data.colors); }, [data.colors]);
   useEffect(() => { setValues(data.values); }, [data.values]);
   useEffect(() => { setTones(data.tones); }, [data.tones]);
@@ -49,8 +82,13 @@ const BrandIdentity = () => {
 
   const primaryColor = data.colors[0]?.hex || '#000000';
   const primaryLuminance = getLuminance(primaryColor);
-  const cardBg = primaryColor;
-  const isLightBg = primaryLuminance > 0.5;
+
+  // If we detected logo brightness, pick bg for contrast; otherwise use primary color logic
+  const useLogoBrightness = logoIsLight !== null && !hideLogo && data.brandLogoUrl;
+  const cardBg = useLogoBrightness
+    ? (logoIsLight ? '#0a0a0a' : '#ffffff')  // dark bg for light logo, light bg for dark logo
+    : primaryColor;
+  const isLightBg = useLogoBrightness ? !logoIsLight : primaryLuminance > 0.5;
   const cardTextColor = isLightBg ? '#1a1a1a' : '#ffffff';
   const cardTextMuted = isLightBg ? 'rgba(26,26,26,0.4)' : 'rgba(255,255,255,0.4)';
 
