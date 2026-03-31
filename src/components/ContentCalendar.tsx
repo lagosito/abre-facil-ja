@@ -1,8 +1,6 @@
 import { useMemo } from "react";
 import { useBrandData } from "@/context/BrandDataContext";
 import SectionHeader from "./SectionHeader";
-import AddonCard from "./AddonCard";
-import PremiumAddonCard from "./PremiumAddonCard";
 
 type DayType = "empty" | "normal" | "post" | "reel" | "story";
 
