@@ -22,7 +22,7 @@ const Packages = () => {
   return (
     <section className="mb-16">
       <SectionHeader
-        num="06"
+        num="07"
         title="Pick Your Plan"
         explain={recommendedExplain}
       />
