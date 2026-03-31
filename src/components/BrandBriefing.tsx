@@ -87,43 +87,6 @@ const BrandBriefing = () => {
           )}
         </div>
 
-        {/* Right column — Premium Add-ons */}
-        <div className="col-span-12 md:col-span-4 space-y-3.5">
-          <PremiumAddonCard
-            id="campaign-blueprint"
-            icon="📋"
-            title="Campaign Blueprint"
-            price="€49"
-            tag="STRATEGY"
-            highlight
-            purchasable
-            buttonLabel="Buy now — €49"
-            previewText="Complete campaign strategy: goal, target audience, messaging, timeline, channel mix, and budget recommendation. Like from a Senior Strategist — generated in minutes."
-            lockedItems={[]}
-          />
-          <PremiumAddonCard
-            id="ads-analyst"
-            icon="🔍"
-            title="Ads Analyst"
-            price="€29"
-            tag="ANALYSIS"
-            purchasable
-            buttonLabel="Buy now — €29"
-            previewText="See what your competitors are currently running on Meta — creatives, copy, duration. Directly from the Meta Ad Library, fully automated."
-            lockedItems={[]}
-          />
-          <PremiumAddonCard
-            id="ad-creative-pack"
-            icon="🎯"
-            title="Ad Creative Pack"
-            price="€39"
-            tag="CREATIVES"
-            purchasable
-            buttonLabel="Buy now — €39"
-            previewText="5 ad concepts with headline, copy, CTA, and visual direction — tailored for Meta & Google. Ready for designers or AI generation."
-            lockedItems={[]}
-          />
-        </div>
       </div>
     </section>
   );
