@@ -100,7 +100,7 @@ const ContentCalendar = () => {
   return (
     <section className="mb-16">
       <SectionHeader
-        num="05"
+        num="06"
         title="Your Automated Publishing Plan"
         explain="Based on your Brand DNA, industry benchmark, and goals, El Kiosk has created an optimized content plan. This calendar shows what will be automatically produced and scheduled after activation."
       />
