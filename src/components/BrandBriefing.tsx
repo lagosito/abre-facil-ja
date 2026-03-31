@@ -48,9 +48,7 @@ const BrandBriefing = () => {
         explain="Your AI-generated brand strategy — based on your website, industry, and Instagram profile. These insights form the foundation for all content we create."
       />
 
-      <div className="grid grid-cols-12 gap-3.5">
-        {/* Left column */}
-        <div className="col-span-12 md:col-span-8 space-y-3.5">
+      <div className="space-y-3.5">
           {/* Business Overview */}
           {businessOverview && (
             <div className="bg-card rounded-lg p-6 animate-fade-up hover:-translate-y-0.5 hover:shadow-lg transition-all">
