@@ -85,10 +85,10 @@ const BrandIdentity = () => {
 
   // Gradient background using brand colors
   const color1 = data.colors[0]?.hex || '#000000';
-  const color2 = data.colors[1]?.hex || `${color1}99`;
-  const cardBg = `linear-gradient(135deg, ${color1}, ${color2})`;
-  const gradientAvgLuminance = (getLuminance(color1) + getLuminance(data.colors[1]?.hex || color1)) / 2;
-  const isLightBg = gradientAvgLuminance > 0.5;
+  const color2 = data.colors[1]?.hex || color1;
+  const color3 = data.colors[2]?.hex || color2;
+  const cardBg = `linear-gradient(to top right, ${color1}, ${color2}, ${color3})`;
+  const isLightBg = (getLuminance(color1) + getLuminance(color2) + getLuminance(color3)) / 3 > 0.5;
   const cardTextColor = isLightBg ? '#1a1a1a' : '#ffffff';
   const cardTextMuted = isLightBg ? 'rgba(26,26,26,0.4)' : 'rgba(255,255,255,0.4)';
 
