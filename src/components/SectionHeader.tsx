@@ -7,7 +7,7 @@ interface SectionHeaderProps {
 const SectionHeader = ({ num, title, explain }: SectionHeaderProps) =>
 <>
     <div className="flex items-baseline gap-4 mb-3">
-      <span className="font-serif italic text-sm text-primary">{num}</span>
+      <span className="font-serif text-sm font-normal text-primary">{num}</span>
       <span className="font-serif text-lg tracking-normal font-normal text-primary">{title}</span>
     </div>
     <div className="h-px bg-border mb-2.5" />
