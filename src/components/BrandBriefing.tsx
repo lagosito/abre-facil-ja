@@ -82,8 +82,6 @@ const BrandBriefing = () => {
               ))}
             </div>
           )}
-        </div>
-
       </div>
     </section>
   );
