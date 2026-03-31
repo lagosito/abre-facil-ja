@@ -1,7 +1,6 @@
 import { useState, useMemo } from "react";
 import { useBrandData } from "@/context/BrandDataContext";
 import SectionHeader from "./SectionHeader";
-import PremiumAddonCard from "./PremiumAddonCard";
 
 const ExpandableText = ({ text, lineClamp = 4 }: { text: string; lineClamp?: number }) => {
   const [expanded, setExpanded] = useState(false);
@@ -49,9 +48,7 @@ const BrandBriefing = () => {
         explain="Your AI-generated brand strategy — based on your website, industry, and Instagram profile. These insights form the foundation for all content we create."
       />
 
-      <div className="grid grid-cols-12 gap-3.5">
-        {/* Left column */}
-        <div className="col-span-12 md:col-span-8 space-y-3.5">
+      <div className="space-y-3.5">
           {/* Business Overview */}
           {businessOverview && (
             <div className="bg-card rounded-lg p-6 animate-fade-up hover:-translate-y-0.5 hover:shadow-lg transition-all">
@@ -85,45 +82,6 @@ const BrandBriefing = () => {
               ))}
             </div>
           )}
-        </div>
-
-        {/* Right column — Premium Add-ons */}
-        <div className="col-span-12 md:col-span-4 space-y-3.5">
-          <PremiumAddonCard
-            id="campaign-blueprint"
-            icon="📋"
-            title="Campaign Blueprint"
-            price="€49"
-            tag="STRATEGY"
-            highlight
-            purchasable
-            buttonLabel="Buy now — €49"
-            previewText="Complete campaign strategy: goal, target audience, messaging, timeline, channel mix, and budget recommendation. Like from a Senior Strategist — generated in minutes."
-            lockedItems={[]}
-          />
-          <PremiumAddonCard
-            id="ads-analyst"
-            icon="🔍"
-            title="Ads Analyst"
-            price="€29"
-            tag="ANALYSIS"
-            purchasable
-            buttonLabel="Buy now — €29"
-            previewText="See what your competitors are currently running on Meta — creatives, copy, duration. Directly from the Meta Ad Library, fully automated."
-            lockedItems={[]}
-          />
-          <PremiumAddonCard
-            id="ad-creative-pack"
-            icon="🎯"
-            title="Ad Creative Pack"
-            price="€39"
-            tag="CREATIVES"
-            purchasable
-            buttonLabel="Buy now — €39"
-            previewText="5 ad concepts with headline, copy, CTA, and visual direction — tailored for Meta & Google. Ready for designers or AI generation."
-            lockedItems={[]}
-          />
-        </div>
       </div>
     </section>
   );

@@ -1,8 +1,6 @@
 import { useMemo } from "react";
 import { useBrandData } from "@/context/BrandDataContext";
 import SectionHeader from "./SectionHeader";
-import AddonCard from "./AddonCard";
-import PremiumAddonCard from "./PremiumAddonCard";
 
 type DayType = "empty" | "normal" | "post" | "reel" | "story";
 
@@ -161,22 +159,6 @@ const ContentCalendar = () => {
           <CalendarGrid days={cal2.grid} />
         </div>
 
-        {/* Add-ons */}
-        <div className="col-span-12 grid grid-cols-1 md:grid-cols-3 gap-3.5">
-          <PremiumAddonCard
-            id="seasonal-planner"
-            icon="📅"
-            title="Seasonal Campaign Planner"
-            price="€19"
-            tag="PLANNING"
-            purchasable
-            buttonLabel="Buy now — €19"
-            previewText="Annual calendar with industry-relevant campaign occasions: Black Friday, holidays, Awareness Days — including content ideas for each occasion."
-            lockedItems={[]}
-          />
-          <AddonCard icon="📈" title="Trend Scout" price="€49/month" tag="ADD-ON" desc="Every week: what's going viral in your industry on Instagram — delivered as content ideas directly into your calendar." />
-          <AddonCard icon="✉️" title="Newsletter Autopilot" price="€49/month" tag="ADD-ON" desc="Weekly or bi-weekly newsletter — automatically generated with industry news, brand updates, and CTA. You just approve." />
-        </div>
       </div>
     </section>
   );
