@@ -42,6 +42,13 @@ const BrandBriefing = () => {
     return cards;
   }, [businessOverview, aiBriefing, targetAudience, positioning, platforms, contentOpportunities]);
 
+  return (
+    <section className="mb-16">
+      <SectionHeader
+        num="02"
+        title="Brand Briefing"
+        explain="Your AI-generated brand strategy — based on your website, industry, and Instagram profile. These insights form the foundation for all content we create."
+      />
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
         {allCards.map((card) => (
           <div
