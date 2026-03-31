@@ -151,54 +151,6 @@ const InstagramSection = () => {
             )}
           </div>
 
-          {/* Premium Add-ons */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-            <PremiumAddonCard
-              id="ad-creative-pack"
-              icon="🎯"
-              title="Ad Creative Pack"
-              price="€39"
-              tag="CREATIVES"
-              purchasable
-              buttonLabel="Buy now — €39"
-              previewText="5 ad concepts with headline, copy, CTA, and visual direction — tailored for Meta & Google. Ready for designers or AI generation."
-              lockedItems={[]}
-            />
-            <PremiumAddonCard
-              id="campaign-blueprint"
-              icon="📋"
-              title="Campaign Blueprint"
-              price="€49"
-              tag="STRATEGY"
-              highlight
-              purchasable
-              buttonLabel="Buy now — €49"
-              previewText="Complete campaign strategy: goal, target audience, messaging, timeline, channel mix, and budget recommendation. Like from a Senior Strategist — generated in minutes."
-              lockedItems={[]}
-            />
-            <PremiumAddonCard
-              id="seasonal-planner"
-              icon="📅"
-              title="Seasonal Campaign Planner"
-              price="€19"
-              tag="PLANNING"
-              purchasable
-              buttonLabel="Buy now — €19"
-              previewText="Annual calendar with industry-relevant campaign occasions: Black Friday, holidays, Awareness Days — including content ideas for each occasion."
-              lockedItems={[]}
-            />
-            <PremiumAddonCard
-              id="ads-analyst"
-              icon="🔍"
-              title="Ads Analyst"
-              price="€29"
-              tag="ANALYSIS"
-              purchasable
-              buttonLabel="Buy now — €29"
-              previewText="See what your competitors are currently running on Meta — creatives, copy, duration. Directly from the Meta Ad Library, fully automated."
-              lockedItems={[]}
-            />
-          </div>
       </div>
     </section>
   );

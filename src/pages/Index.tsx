@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import BrandIdentity from "@/components/BrandIdentity";
+import PremiumAddonCard from "@/components/PremiumAddonCard";
 import BrandBriefing from "@/components/BrandBriefing";
 import InstagramSection from "@/components/InstagramSection";
 import GoalsSection from "@/components/GoalsSection";
