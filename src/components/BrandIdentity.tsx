@@ -83,12 +83,12 @@ const BrandIdentity = () => {
   const primaryColor = data.colors[0]?.hex || '#000000';
   const primaryLuminance = getLuminance(primaryColor);
 
-  // If we detected logo brightness, pick bg for contrast; otherwise use primary color logic
-  const useLogoBrightness = logoIsLight !== null && !hideLogo && data.brandLogoUrl;
-  const cardBg = useLogoBrightness
-    ? (logoIsLight ? '#0a0a0a' : '#ffffff')  // dark bg for light logo, light bg for dark logo
-    : primaryColor;
-  const isLightBg = useLogoBrightness ? !logoIsLight : primaryLuminance > 0.5;
+  // Gradient background using brand colors
+  const color1 = data.colors[0]?.hex || '#000000';
+  const color2 = data.colors[1]?.hex || `${color1}99`;
+  const cardBg = `linear-gradient(135deg, ${color1}, ${color2})`;
+  const gradientAvgLuminance = (getLuminance(color1) + getLuminance(data.colors[1]?.hex || color1)) / 2;
+  const isLightBg = gradientAvgLuminance > 0.5;
   const cardTextColor = isLightBg ? '#1a1a1a' : '#ffffff';
   const cardTextMuted = isLightBg ? 'rgba(26,26,26,0.4)' : 'rgba(255,255,255,0.4)';
 
@@ -102,7 +102,7 @@ const BrandIdentity = () => {
 
       <div className="grid grid-cols-12 gap-3.5">
         {/* Identity Card */}
-        <div className="col-span-12 md:col-span-5 rounded-lg p-6 min-h-[220px] flex flex-col animate-fade-up hover:-translate-y-0.5 hover:shadow-lg transition-all" style={{ backgroundColor: cardBg, color: cardTextColor }}>
+        <div className="col-span-12 md:col-span-5 rounded-lg p-6 min-h-[220px] flex flex-col animate-fade-up hover:-translate-y-0.5 hover:shadow-lg transition-all" style={{ background: cardBg, color: cardTextColor }}>
           <div className="text-[10px] uppercase tracking-[0.1em] font-bold mb-3.5" style={{ color: cardTextMuted }}>Brand</div>
           <div className="mt-auto">
             {data.brandLogoUrl && !hideLogo ? (
