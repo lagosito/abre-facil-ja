@@ -47,17 +47,9 @@ const AddonCard = ({ icon, title, desc, price, tag, comingSoon }: AddonCardProps
       <div className="font-serif italic text-[22px] mb-1.5">{title}</div>
       {price && <div className="text-xs font-bold text-muted-foreground mb-1.5">{price}</div>}
       <div className="text-[13px] text-muted-foreground leading-relaxed flex-1">{desc}</div>
-      {comingSoon ? (
-        <button disabled className="inline-flex items-center gap-[7px] mt-4 px-4 py-2 rounded-pill text-xs font-bold bg-muted text-muted-foreground cursor-not-allowed">
-          Coming soon
-        </button>
-      ) : (
-        <button className={`inline-flex items-center gap-[7px] mt-4 px-4 py-2 rounded-pill text-xs font-bold transition-all ${
-          selected ? "bg-primary text-primary-foreground" : "border border-border bg-transparent text-foreground hover:border-primary"
-        }`}>
-          {selected ? "✓ Added" : "➕ Add to plan"}
-        </button>
-      )}
+      <button disabled className="inline-flex items-center gap-[7px] mt-4 px-4 py-2 rounded-pill text-xs font-bold bg-muted text-muted-foreground cursor-not-allowed">
+        Coming soon
+      </button>
     </div>
   );
 };
