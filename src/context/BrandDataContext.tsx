@@ -464,6 +464,22 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
     [autoSave]
   );
 
+  const applyCustomizations = useCallback((incoming: IncomingData) => {
+    const raw = incoming.customizations ?? incoming.Customizations;
+    if (!raw) return;
+    let parsed: UserCustomizations | null = null;
+    try {
+      parsed = typeof raw === "string" ? JSON.parse(raw) : (raw as UserCustomizations);
+    } catch {
+      return;
+    }
+    if (!parsed || typeof parsed !== "object") return;
+    setSavedCustomizations(parsed);
+    if (Array.isArray(parsed.selectedObjectives)) setSelectedObjectives(parsed.selectedObjectives);
+    if (Array.isArray(parsed.selectedAddons)) setSelectedAddons(parsed.selectedAddons);
+    if (typeof parsed.userEmail === "string" && parsed.userEmail) setUserEmailState(parsed.userEmail);
+  }, []);
+
   useEffect(() => {
     if (!idParam) {
       if (dParam) {
@@ -472,6 +488,7 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
           const parsed = JSON.parse(json) as IncomingData;
           const mapped = mapIncoming(parsed);
           setData({ ...defaultData, ...mapped });
+          applyCustomizations(parsed);
         } catch (e) {
           console.warn("Failed to parse ?d= parameter:", e);
           setData(defaultData);
@@ -506,6 +523,7 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
       clearTimeout(timeoutTimer);
       const mapped = mapIncoming(brandDna);
       setData((prev) => ({ ...prev, ...mapped }));
+      applyCustomizations(brandDna);
       setCountdown(0);
       setLoading(false);
       setLoadingStage("complete");
