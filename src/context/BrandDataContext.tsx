@@ -420,6 +420,7 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
   const [selectedAddons, setSelectedAddons] = useState<string[]>([]);
   const [userEmail, setUserEmailState] = useState<string>("");
   const [hasInteracted, setHasInteracted] = useState(false);
+  const [savedCustomizations, setSavedCustomizations] = useState<UserCustomizations | null>(null);
 
   const recordId = idParam;
   const autoSave = useAutoSave(recordId, data.chatId, data.brandName);
