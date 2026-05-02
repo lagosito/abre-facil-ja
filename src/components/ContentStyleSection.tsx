@@ -41,17 +41,23 @@ const ContentStyleSection = () => {
   };
 
   const handleSave = async () => {
-    if (!recordId || formats.length === 0 || !style) return;
+    if (!recordId) {
+      toast({ title: "Not ready", description: "Report not loaded yet.", variant: "destructive" });
+      return;
+    }
     setSaving(true);
     try {
       await fetch("https://lagosito.app.n8n.cloud/webhook/elk-save-customizations", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "text/plain" },
         body: JSON.stringify({
           recordId,
-          contentFormats: formats,
-          visualStyle: style,
-          benchmark: benchmark.trim(),
+          customizations: {
+            contentFormats: formats,
+            visualStyle: style,
+            benchmark: benchmark.trim(),
+          },
+          savedAt: new Date().toISOString(),
         }),
       });
       setSaved(true);
@@ -63,7 +69,7 @@ const ContentStyleSection = () => {
     }
   };
 
-  const canSave = formats.length > 0 && !!style && !saved;
+  const canSave = !!recordId && !saved;
 
   return (
     <section className="mb-16 animate-fade-up">
