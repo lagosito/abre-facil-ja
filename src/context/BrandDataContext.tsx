@@ -133,6 +133,8 @@ interface IncomingData {
   objectives?: Objective[];
   status?: string;
   brandDna?: string;
+  customizations?: UserCustomizations | string;
+  Customizations?: UserCustomizations | string;
   _partial?: boolean;
   _status?: string;
 }
