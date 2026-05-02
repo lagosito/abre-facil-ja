@@ -133,6 +133,8 @@ interface IncomingData {
   objectives?: Objective[];
   status?: string;
   brandDna?: string;
+  customizations?: Record<string, unknown> | string;
+  Customizations?: Record<string, unknown> | string;
   _partial?: boolean;
   _status?: string;
 }
@@ -299,13 +301,16 @@ function mapIncoming(incoming: IncomingData): Partial<BrandData> {
 const SAVE_WEBHOOK = "https://lagosito.app.n8n.cloud/webhook/elk-save-customizations";
 const SAVE_DEBOUNCE_MS = 2000;
 
-interface UserCustomizations {
+export interface UserCustomizations {
   colors?: BrandColors[];
   fonts?: { display: string; body: string };
   values?: string[];
   tones?: string[];
   selectedObjectives?: string[];
   selectedAddons?: string[];
+  contentFormats?: string[];
+  visualStyle?: string | string[] | null;
+  benchmark?: string;
   userEmail?: string;
 }
 
@@ -360,6 +365,7 @@ interface BrandDataContextValue {
   hasInteracted: boolean;
   markInteraction: () => void;
   triggerSave: (customizations: UserCustomizations) => void;
+  savedCustomizations: UserCustomizations | null;
 }
 
 const BrandDataContext = createContext<BrandDataContextValue>({
@@ -377,6 +383,7 @@ const BrandDataContext = createContext<BrandDataContextValue>({
   hasInteracted: false,
   markInteraction: () => {},
   triggerSave: () => {},
+  savedCustomizations: null,
 });
 
 export const useBrandData = () => {
@@ -396,6 +403,7 @@ export const useBrandData = () => {
     hasInteracted: ctx.hasInteracted,
     markInteraction: ctx.markInteraction,
     triggerSave: ctx.triggerSave,
+    savedCustomizations: ctx.savedCustomizations,
   };
 };
 
@@ -413,6 +421,7 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
   const [selectedAddons, setSelectedAddons] = useState<string[]>([]);
   const [userEmail, setUserEmailState] = useState<string>("");
   const [hasInteracted, setHasInteracted] = useState(false);
+  const [savedCustomizations, setSavedCustomizations] = useState<UserCustomizations | null>(null);
 
   const recordId = idParam;
   const autoSave = useAutoSave(recordId, data.chatId, data.brandName);
@@ -456,6 +465,22 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
     [autoSave]
   );
 
+  const applyCustomizations = useCallback((incoming: IncomingData) => {
+    const raw = incoming.customizations ?? incoming.Customizations;
+    if (!raw) return;
+    let parsed: UserCustomizations | null = null;
+    try {
+      parsed = typeof raw === "string" ? JSON.parse(raw) : (raw as UserCustomizations);
+    } catch {
+      return;
+    }
+    if (!parsed || typeof parsed !== "object") return;
+    setSavedCustomizations(parsed);
+    if (Array.isArray(parsed.selectedObjectives)) setSelectedObjectives(parsed.selectedObjectives);
+    if (Array.isArray(parsed.selectedAddons)) setSelectedAddons(parsed.selectedAddons);
+    if (typeof parsed.userEmail === "string" && parsed.userEmail) setUserEmailState(parsed.userEmail);
+  }, []);
+
   useEffect(() => {
     if (!idParam) {
       if (dParam) {
@@ -464,6 +489,7 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
           const parsed = JSON.parse(json) as IncomingData;
           const mapped = mapIncoming(parsed);
           setData({ ...defaultData, ...mapped });
+          applyCustomizations(parsed);
         } catch (e) {
           console.warn("Failed to parse ?d= parameter:", e);
           setData(defaultData);
@@ -498,6 +524,7 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
       clearTimeout(timeoutTimer);
       const mapped = mapIncoming(brandDna);
       setData((prev) => ({ ...prev, ...mapped }));
+      applyCustomizations(brandDna);
       setCountdown(0);
       setLoading(false);
       setLoadingStage("complete");
@@ -549,6 +576,7 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
         hasInteracted,
         markInteraction,
         triggerSave,
+        savedCustomizations,
       }}
     >
       {children}

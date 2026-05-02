@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SectionHeader from "./SectionHeader";
 import { useBrandData } from "@/context/BrandDataContext";
 import { useToast } from "@/hooks/use-toast";
@@ -19,14 +19,62 @@ const STYLE_OPTIONS = [
   { label: "Organic / Authentic", icon: "🌿" },
 ];
 
+// Map saved snake_case/lowercase keys back to display labels
+const FORMAT_KEY_MAP: Record<string, string> = {
+  static_posts: "Static Posts",
+  reels: "Reels / Short Videos",
+  short_videos: "Reels / Short Videos",
+  illustrations: "Illustrations / Graphics",
+  graphics: "Illustrations / Graphics",
+  ugc: "UGC-Style",
+  "ugc-style": "UGC-Style",
+  infographics: "Infographics",
+};
+const STYLE_KEY_MAP: Record<string, string> = {
+  clean_minimal: "Clean & Minimal",
+  bold_vibrant: "Bold & Vibrant",
+  editorial: "Editorial / Magazine",
+  magazine: "Editorial / Magazine",
+  organic: "Organic / Authentic",
+  authentic: "Organic / Authentic",
+};
+
+const matchLabel = (val: string, options: { label: string }[], keyMap: Record<string, string>): string | null => {
+  if (!val) return null;
+  const exact = options.find((o) => o.label.toLowerCase() === val.toLowerCase());
+  if (exact) return exact.label;
+  return keyMap[val.toLowerCase().replace(/\s+/g, "_")] ?? null;
+};
+
 const ContentStyleSection = () => {
-  const { recordId, markInteraction, triggerSave } = useBrandData();
+  const { recordId, markInteraction, triggerSave, savedCustomizations } = useBrandData();
   const { toast } = useToast();
   const [formats, setFormats] = useState<string[]>([]);
   const [style, setStyle] = useState<string | null>(null);
   const [benchmark, setBenchmark] = useState("");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+
+  // Pre-populate from saved customizations
+  useEffect(() => {
+    if (!savedCustomizations) return;
+    if (Array.isArray(savedCustomizations.contentFormats)) {
+      const mapped = savedCustomizations.contentFormats
+        .map((f) => matchLabel(f, FORMAT_OPTIONS, FORMAT_KEY_MAP))
+        .filter((v): v is string => !!v);
+      if (mapped.length) setFormats(mapped);
+    }
+    const vs = savedCustomizations.visualStyle;
+    if (vs) {
+      const first = Array.isArray(vs) ? vs[0] : vs;
+      if (typeof first === "string") {
+        const mapped = matchLabel(first, STYLE_OPTIONS, STYLE_KEY_MAP);
+        if (mapped) setStyle(mapped);
+      }
+    }
+    if (typeof savedCustomizations.benchmark === "string") setBenchmark(savedCustomizations.benchmark);
+  }, [savedCustomizations]);
+
 
   const toggleFormat = (label: string) => {
     markInteraction();
