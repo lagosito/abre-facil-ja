@@ -403,6 +403,7 @@ export const useBrandData = () => {
     hasInteracted: ctx.hasInteracted,
     markInteraction: ctx.markInteraction,
     triggerSave: ctx.triggerSave,
+    savedCustomizations: ctx.savedCustomizations,
   };
 };
 
