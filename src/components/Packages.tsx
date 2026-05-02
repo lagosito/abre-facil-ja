@@ -6,9 +6,9 @@ const Packages = () => {
   const { packages, recommendedExplain } = useBrandData();
 
   const stripeLinks: Record<string, string> = {
-    "🌱 Starter Plan": "https://buy.stripe.com/7sY8wOdAafZVg0pbyz2sM06",
-    "⭐ Essential Plan": "https://buy.stripe.com/8x200i1Rs1519C19qr2sM07",
-    "🚀 Advanced Plan": "https://buy.stripe.com/3cI4gy7bM00X4hH1XZ2sM08",
+    "🌱 Starter Plan": "https://buy.stripe.com/dRmbJ0bs2eVRdSh8mn2sM09",
+    "⭐ Essential Plan": "https://buy.stripe.com/28EaEWcw6aFBdShdGH2sM0b",
+    "🚀 Advanced Plan": "https://buy.stripe.com/9B66oG8fQcNJcOd4672sM0d",
   };
 
   const getStripeLink = (name: string): string => {
