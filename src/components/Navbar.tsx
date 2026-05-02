@@ -7,9 +7,16 @@ const Navbar = () => {
       <div className="hidden md:block font-mono text-[13px] text-muted-foreground">
         [ Brand Intelligence Report ]
       </div>
-      <button className="bg-primary text-primary-foreground px-5 py-2.5 rounded-pill text-sm font-semibold hover:brightness-90 transition-all">
+      <a
+        href="#packages"
+        onClick={(e) => {
+          e.preventDefault();
+          document.getElementById("packages")?.scrollIntoView({ behavior: "smooth" });
+        }}
+        className="bg-primary text-primary-foreground px-5 py-2.5 rounded-pill text-sm font-semibold hover:brightness-90 transition-all no-underline"
+      >
         Choose Plan ↗
-      </button>
+      </a>
     </nav>
   );
 };

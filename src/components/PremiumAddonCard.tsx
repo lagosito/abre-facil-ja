@@ -71,25 +71,9 @@ const PremiumAddonCard = ({ id, icon, title, price, tag, highlight, previewText,
         ))}
       </div>
 
-      {comingSoon ? (
-        <button disabled className="w-full py-2.5 rounded-pill text-xs font-bold transition-all bg-muted text-muted-foreground cursor-not-allowed">
-          Coming soon
-        </button>
-      ) : purchasable ? (
-        <button className="w-full py-2.5 rounded-pill text-xs font-bold transition-all bg-foreground text-background hover:opacity-90">
-          {buttonLabel || "Buy now"}
-        </button>
-      ) : (
-        <button
-          className={`w-full py-2.5 rounded-pill text-xs font-bold transition-all ${
-            selected
-              ? "bg-primary text-primary-foreground"
-              : "border border-border bg-transparent text-foreground hover:border-primary"
-          }`}
-        >
-          {selected ? "✓ Added" : "➕ Add to plan"}
-        </button>
-      )}
+      <button disabled className="w-full py-2.5 rounded-pill text-xs font-bold transition-all bg-muted text-muted-foreground cursor-not-allowed">
+        Coming soon
+      </button>
     </div>
   );
 };
