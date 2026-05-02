@@ -383,6 +383,7 @@ const BrandDataContext = createContext<BrandDataContextValue>({
   hasInteracted: false,
   markInteraction: () => {},
   triggerSave: () => {},
+  savedCustomizations: null,
 });
 
 export const useBrandData = () => {
