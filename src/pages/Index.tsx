@@ -35,7 +35,6 @@ const PageContent = () => {
         </div>
         <AddonsSection />
         <WhatHappensNext />
-        <CTABlocks />
       </div>
       <EmailCapture />
     </>
