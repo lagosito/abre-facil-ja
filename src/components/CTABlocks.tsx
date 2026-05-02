@@ -8,7 +8,9 @@ const CTABlocks = () => (
       </div>
       <div className="flex gap-3 mt-6 md:mt-0">
         <a
-          href="mailto:info@elkiosk.ai"
+          href="https://t.me/elkiosk_onboarding_bot"
+          target="_blank"
+          rel="noopener noreferrer"
           className="bg-primary-foreground/10 text-background px-7 py-3.5 rounded-pill text-sm font-semibold border border-primary-foreground/20 hover:bg-primary-foreground/[0.18] transition-all no-underline"
         >
           Questions? Write us →

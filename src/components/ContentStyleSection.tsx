@@ -20,7 +20,7 @@ const STYLE_OPTIONS = [
 ];
 
 const ContentStyleSection = () => {
-  const { recordId } = useBrandData();
+  const { recordId, markInteraction, triggerSave } = useBrandData();
   const { toast } = useToast();
   const [formats, setFormats] = useState<string[]>([]);
   const [style, setStyle] = useState<string | null>(null);
@@ -29,14 +29,19 @@ const ContentStyleSection = () => {
   const [saved, setSaved] = useState(false);
 
   const toggleFormat = (label: string) => {
-    setFormats((prev) =>
-      prev.includes(label) ? prev.filter((f) => f !== label) : [...prev, label]
-    );
+    markInteraction();
+    setFormats((prev) => {
+      const next = prev.includes(label) ? prev.filter((f) => f !== label) : [...prev, label];
+      triggerSave({ contentFormats: next, visualStyle: style ?? undefined, benchmark: benchmark.trim() } as any);
+      return next;
+    });
     setSaved(false);
   };
 
   const selectStyle = (label: string) => {
+    markInteraction();
     setStyle(label);
+    triggerSave({ contentFormats: formats, visualStyle: label, benchmark: benchmark.trim() } as any);
     setSaved(false);
   };
 
@@ -69,7 +74,8 @@ const ContentStyleSection = () => {
     }
   };
 
-  const canSave = !!recordId && !saved;
+  const hasSelection = formats.length > 0 || style !== null || benchmark.trim().length > 0;
+  const canSave = !!recordId && !saved && hasSelection;
 
   return (
     <section className="mb-16 animate-fade-up">
