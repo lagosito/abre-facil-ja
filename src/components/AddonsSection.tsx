@@ -18,8 +18,7 @@ const AddonsSection = () => {
           price="€49"
           tag="STRATEGY"
           highlight
-          purchasable
-          buttonLabel="Buy now — €49"
+          comingSoon
           previewText="Full content campaign strategy with objectives, messaging, and calendar."
           lockedItems={[]}
         />
@@ -29,8 +28,7 @@ const AddonsSection = () => {
           title="Ads Analyst"
           price="€29"
           tag="ANALYSIS"
-          purchasable
-          buttonLabel="Buy now — €29"
+          comingSoon
           previewText="Performance audit and recommendations for your current ad spend."
           lockedItems={[]}
         />
@@ -40,8 +38,7 @@ const AddonsSection = () => {
           title="Ad Creative Pack"
           price="€39"
           tag="CREATIVES"
-          purchasable
-          buttonLabel="Buy now — €39"
+          comingSoon
           previewText="5 ready-to-run ad creatives matched to your brand."
           lockedItems={[]}
         />
@@ -51,8 +48,7 @@ const AddonsSection = () => {
           title="Seasonal Campaign Planner"
           price="€19"
           tag="PLANNING"
-          purchasable
-          buttonLabel="Buy now — €19"
+          comingSoon
           previewText="Plan content around key dates and seasonal moments."
           lockedItems={[]}
         />
@@ -62,6 +58,7 @@ const AddonsSection = () => {
           price="€49/mo"
           tag="ADD-ON"
           desc="Weekly trend reports tailored to your industry and audience."
+          comingSoon
         />
         <AddonCard
           icon="✉️"
@@ -69,6 +66,7 @@ const AddonsSection = () => {
           price="€49/mo"
           tag="ADD-ON"
           desc="Monthly email newsletter written and designed for your brand."
+          comingSoon
         />
       </div>
     </section>
