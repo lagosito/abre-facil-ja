@@ -9,7 +9,7 @@ import ContentStyleSection from "@/components/ContentStyleSection";
 import WhatHappensNext from "@/components/WhatHappensNext";
 import Packages from "@/components/Packages";
 import AddonsSection from "@/components/AddonsSection";
-import CTABlocks from "@/components/CTABlocks";
+
 import EmailCapture from "@/components/EmailCapture";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { BrandDataProvider, useBrandData } from "@/context/BrandDataContext";
