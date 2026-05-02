@@ -365,6 +365,7 @@ interface BrandDataContextValue {
   hasInteracted: boolean;
   markInteraction: () => void;
   triggerSave: (customizations: UserCustomizations) => void;
+  savedCustomizations: UserCustomizations | null;
 }
 
 const BrandDataContext = createContext<BrandDataContextValue>({
