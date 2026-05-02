@@ -198,7 +198,7 @@ const defaultData: BrandData = {
       price: "€349",
       recommended: false,
       features: [
-        { text: "12 Posts / Monat", locked: false },
+        { text: "10 Posts / Monat", locked: false },
         { text: "2 Plattformen (IG + FB)", locked: false },
         { text: "Brand DNA Board", locked: false },
         { text: "4 Reels / Stories", locked: false },
@@ -214,7 +214,7 @@ const defaultData: BrandData = {
       price: "€599",
       recommended: true,
       features: [
-        { text: "24 Posts / Monat", locked: false },
+        { text: "20 Posts / Monat", locked: false },
         { text: "3 Plattformen (+ LinkedIn)", locked: false },
         { text: "Brand DNA Board", locked: false },
         { text: "7 Reels / Stories", locked: false },
