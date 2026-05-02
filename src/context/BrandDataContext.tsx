@@ -575,6 +575,7 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
         hasInteracted,
         markInteraction,
         triggerSave,
+        savedCustomizations,
       }}
     >
       {children}
