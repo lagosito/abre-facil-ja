@@ -301,13 +301,16 @@ function mapIncoming(incoming: IncomingData): Partial<BrandData> {
 const SAVE_WEBHOOK = "https://lagosito.app.n8n.cloud/webhook/elk-save-customizations";
 const SAVE_DEBOUNCE_MS = 2000;
 
-interface UserCustomizations {
+export interface UserCustomizations {
   colors?: BrandColors[];
   fonts?: { display: string; body: string };
   values?: string[];
   tones?: string[];
   selectedObjectives?: string[];
   selectedAddons?: string[];
+  contentFormats?: string[];
+  visualStyle?: string | string[] | null;
+  benchmark?: string;
   userEmail?: string;
 }
 
