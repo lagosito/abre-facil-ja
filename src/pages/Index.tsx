@@ -28,7 +28,9 @@ const PageContent = () => {
         <Hero />
         <BrandIdentity />
         <BrandBriefing />
-        <ICPIntelligence />
+        <ICPErrorBoundary>
+          <ICPIntelligence />
+        </ICPErrorBoundary>
         <InstagramSection />
         <GoalsSection />
         <ContentStyleSection />
