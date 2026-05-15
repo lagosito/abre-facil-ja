@@ -2,13 +2,18 @@ import { useEffect, useState, useCallback } from "react";
 import { useBrandData } from "@/context/BrandDataContext";
 import SectionHeader from "./SectionHeader";
 
+interface BreakdownItem {
+  score: number;
+  max: number;
+  reasons?: string[];
+}
 interface ICPBreakdown {
-  company_size?: number;
-  industry_fit?: number;
-  digital_maturity?: number;
-  pain_signals?: number;
-  revenue_signals?: number;
-  content_quality?: number;
+  company_size?: BreakdownItem | number;
+  industry_fit?: BreakdownItem | number;
+  digital_maturity?: BreakdownItem | number;
+  pain_signals?: BreakdownItem | number;
+  revenue_signals?: BreakdownItem | number;
+  content_quality?: BreakdownItem | number;
 }
 interface ICPScore {
   total: number;
