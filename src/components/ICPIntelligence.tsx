@@ -245,8 +245,10 @@ const ICPIntelligence = () => {
                     ICP Score Breakdown
                   </div>
                   <div className="space-y-2.5">
-                    {BREAKDOWN_CONFIG.map(({ key, label, max }) => {
-                      const value = score.breakdown?.[key] ?? 0;
+                    {BREAKDOWN_CONFIG.map(({ key, label, max: defaultMax }) => {
+                      const raw = score.breakdown?.[key];
+                      const value = typeof raw === "number" ? raw : (raw?.score ?? 0);
+                      const max = typeof raw === "object" && raw?.max ? raw.max : defaultMax;
                       const pct = Math.min(100, (value / max) * 100);
                       return (
                         <div key={key}>
