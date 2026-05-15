@@ -3,6 +3,7 @@ import Hero from "@/components/Hero";
 import BrandIdentity from "@/components/BrandIdentity";
 import BrandBriefing from "@/components/BrandBriefing";
 import ICPIntelligence from "@/components/ICPIntelligence";
+import ICPErrorBoundary from "@/components/ICPErrorBoundary";
 import InstagramSection from "@/components/InstagramSection";
 import GoalsSection from "@/components/GoalsSection";
 import ContentCalendar from "@/components/ContentCalendar";
@@ -27,7 +28,9 @@ const PageContent = () => {
         <Hero />
         <BrandIdentity />
         <BrandBriefing />
-        <ICPIntelligence />
+        <ICPErrorBoundary>
+          <ICPIntelligence />
+        </ICPErrorBoundary>
         <InstagramSection />
         <GoalsSection />
         <ContentStyleSection />
