@@ -36,7 +36,7 @@ const GoalsSection = () => {
   return (
     <section className="mb-16">
       <SectionHeader
-        num="04"
+        num="05"
         title="Select Your Goals"
         explain="Pick the objectives that matter most to your brand. We'll tailor your content strategy and publishing plan accordingly."
       />

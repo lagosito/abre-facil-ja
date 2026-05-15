@@ -2,6 +2,7 @@ import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import BrandIdentity from "@/components/BrandIdentity";
 import BrandBriefing from "@/components/BrandBriefing";
+import ICPIntelligence from "@/components/ICPIntelligence";
 import InstagramSection from "@/components/InstagramSection";
 import GoalsSection from "@/components/GoalsSection";
 import ContentCalendar from "@/components/ContentCalendar";
@@ -26,6 +27,7 @@ const PageContent = () => {
         <Hero />
         <BrandIdentity />
         <BrandBriefing />
+        <ICPIntelligence />
         <InstagramSection />
         <GoalsSection />
         <ContentStyleSection />

@@ -9,7 +9,7 @@ const InstagramSection = () => {
   return (
     <section className="mb-16">
       <SectionHeader
-        num="03"
+        num="04"
         title="Your Instagram — Current Snapshot"
         explain="We compared your current Instagram account with industry data. These numbers show the starting point — and highlight where El Kiosk can make the biggest impact."
       />

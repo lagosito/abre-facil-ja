@@ -6,7 +6,7 @@ const AddonsSection = () => {
   return (
     <section className="mb-16">
       <SectionHeader
-        num="08"
+        num="09"
         title="Add-ons"
         explain="Boost your brand strategy with powerful extras. One-time reports and recurring services — pick what fits your goals."
       />
