@@ -3,12 +3,12 @@ import { useBrandData } from "@/context/BrandDataContext";
 import SectionHeader from "./SectionHeader";
 
 interface ICPBreakdown {
-  industry_fit: number;
-  digital_readiness: number;
-  content_potential: number;
-  market_position: number;
-  pain_intensity: number;
-  budget_signals: number;
+  company_size?: number;
+  industry_fit?: number;
+  digital_maturity?: number;
+  pain_signals?: number;
+  revenue_signals?: number;
+  content_quality?: number;
 }
 interface ICPScore {
   total: number;
@@ -19,14 +19,18 @@ interface ICPScore {
 interface Signal {
   type: string;
   detail: string;
+  detected_at?: string;
   confidence: number;
-  relevance: number;
+  relevance_score: number;
 }
 interface Persona {
   name: string;
   role: string;
   seniority: string;
-  department: string;
+  department?: string;
+  age_range?: string;
+  background?: string;
+  goals?: string[];
   pain_points: string[];
   buying_triggers: string[];
   objections: string[];
@@ -34,37 +38,42 @@ interface Persona {
   outreach_angle: string;
   preferred_channels: string[];
   decision_power: string;
+  estimated_budget_authority?: string;
 }
 interface Lookalike {
-  company: string;
+  company_name: string;
   url: string;
-  why: string;
-  similarity: number;
+  industry?: string;
+  description?: string;
+  why_similar: string;
+  estimated_size?: string;
+  estimated_region?: string;
 }
 interface ICPResponse {
+  brand_dna?: Record<string, unknown>;
   icp_score?: ICPScore;
   signals?: Signal[];
-  buyer_personas?: Persona[];
+  personas?: Persona[];
   lookalikes?: Lookalike[];
 }
 
-const BREAKDOWN_LABELS: Record<keyof ICPBreakdown, string> = {
-  industry_fit: "Branchenfit",
-  digital_readiness: "Digitalbereitschaft",
-  content_potential: "Content-Potenzial",
-  market_position: "Marktposition",
-  pain_intensity: "Pain-Intensität",
-  budget_signals: "Budget-Signale",
-};
+const BREAKDOWN_CONFIG: { key: keyof ICPBreakdown; label: string; max: number }[] = [
+  { key: "company_size", label: "Company Size", max: 20 },
+  { key: "industry_fit", label: "Industry Fit", max: 25 },
+  { key: "digital_maturity", label: "Digital Maturity", max: 15 },
+  { key: "pain_signals", label: "Pain Signals", max: 20 },
+  { key: "revenue_signals", label: "Revenue Signals", max: 10 },
+  { key: "content_quality", label: "Content Quality", max: 10 },
+];
 
 const SIGNAL_ICONS: Record<string, string> = {
   funding: "💰",
-  hiring: "🧑‍💼",
-  leadership_change: "👔",
+  hiring: "👥",
+  leadership_change: "🔄",
   product_launch: "🚀",
   partnership: "🤝",
   expansion: "🌍",
-  tech_adoption: "🛠️",
+  tech_adoption: "⚡",
   content_activity: "📝",
 };
 
@@ -76,7 +85,7 @@ const CHANNEL_ICONS: Record<string, string> = {
 
 const tierStyle = (total: number) => {
   if (total >= 80) return { color: "#10b981", label: "HOT", icon: "🔥" };
-  if (total >= 50) return { color: "#f59e0b", label: "WARM", icon: "♨️" };
+  if (total >= 50) return { color: "#f59e0b", label: "WARM", icon: "🌡️" };
   return { color: "#ef4444", label: "COLD", icon: "❄️" };
 };
 
@@ -127,7 +136,7 @@ const SkeletonCard = ({ className = "" }: { className?: string }) => (
   </div>
 );
 
-const CACHE_PREFIX = "icp_v1:";
+const CACHE_PREFIX = "icp_v2:";
 
 const ICPIntelligence = () => {
   const { website } = useBrandData();
@@ -154,7 +163,7 @@ const ICPIntelligence = () => {
       const url = website.startsWith("http") ? website : `https://${website}`;
       const res = await fetch("https://node-banana-v2.vercel.app/api/brand-dna", {
         method: "POST",
-        headers: { "Content-Type": "text/plain" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           url,
           full_pipeline: true,
@@ -172,7 +181,7 @@ const ICPIntelligence = () => {
       }
     } catch (e) {
       console.warn("ICP fetch failed:", e);
-      setError("Analyse nicht verfügbar");
+      setError("Analysis unavailable");
     } finally {
       setLoading(false);
     }
@@ -190,7 +199,7 @@ const ICPIntelligence = () => {
       <SectionHeader
         num="03"
         title="ICP Intelligence"
-        explain="KI-Analyse deines Ideal Customer Profils — wer sind deine besten Kunden und warum."
+        explain="AI-powered analysis of your Ideal Customer Profile — who are your best customers and why."
       />
 
       {loading && !data && (
@@ -200,6 +209,9 @@ const ICPIntelligence = () => {
             <SkeletonCard />
             <SkeletonCard />
             <SkeletonCard />
+          </div>
+          <div className="text-xs text-muted-foreground text-center italic">
+            Analyzing your ICP — this takes ~45 seconds…
           </div>
         </div>
       )}
@@ -211,7 +223,7 @@ const ICPIntelligence = () => {
             onClick={fetchICP}
             className="bg-primary text-primary-foreground px-4 py-2 rounded-pill text-sm font-semibold hover:brightness-90"
           >
-            Erneut versuchen
+            Retry
           </button>
         </div>
       )}
@@ -228,18 +240,21 @@ const ICPIntelligence = () => {
                     ICP Score Breakdown
                   </div>
                   <div className="space-y-2.5">
-                    {(Object.keys(BREAKDOWN_LABELS) as (keyof ICPBreakdown)[]).map((key) => {
+                    {BREAKDOWN_CONFIG.map(({ key, label, max }) => {
                       const value = score.breakdown?.[key] ?? 0;
+                      const pct = Math.min(100, (value / max) * 100);
                       return (
                         <div key={key}>
                           <div className="flex justify-between text-xs mb-1">
-                            <span className="font-medium">{BREAKDOWN_LABELS[key]}</span>
-                            <span className="font-mono text-muted-foreground">{value}</span>
+                            <span className="font-medium">{label}</span>
+                            <span className="font-mono text-muted-foreground">
+                              {value}/{max}
+                            </span>
                           </div>
                           <div className="h-1.5 bg-muted rounded-full overflow-hidden">
                             <div
                               className="h-full rounded-full transition-all duration-1000"
-                              style={{ width: `${value}%`, background: tier.color }}
+                              style={{ width: `${pct}%`, background: tier.color }}
                             />
                           </div>
                         </div>
@@ -254,7 +269,7 @@ const ICPIntelligence = () => {
                   style={{ background: `${tier.color}15`, borderLeft: `3px solid ${tier.color}` }}
                 >
                   <div className="text-[10px] uppercase tracking-[0.1em] font-bold mb-1.5" style={{ color: tier.color }}>
-                    Empfohlene Aktion
+                    Recommended Action
                   </div>
                   {score.recommended_action}
                 </div>
@@ -265,7 +280,7 @@ const ICPIntelligence = () => {
           {/* 3B — Signals */}
           <div>
             <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-muted-foreground mb-2.5">
-              Erkannte Signale
+              Signals Detected
             </div>
             {data.signals && data.signals.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
@@ -280,30 +295,30 @@ const ICPIntelligence = () => {
                     <div className="text-sm leading-relaxed mb-3">{s.detail}</div>
                     <div className="flex gap-2 text-[10px]">
                       <span className="px-2 py-0.5 rounded-full bg-muted font-mono">
-                        {Math.round(s.confidence * 100)}% conf.
+                        {Math.round((s.confidence ?? 0) * 100)}% conf.
                       </span>
                       <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary font-mono">
-                        rel. {s.relevance}
+                        rel. {s.relevance_score}
                       </span>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="bg-card rounded-lg p-6 text-sm text-muted-foreground italic animate-pulse">
-                Keine aktuellen Signale erkannt
+              <div className="bg-card rounded-lg p-6 text-sm text-muted-foreground italic">
+                No signals detected
               </div>
             )}
           </div>
 
           {/* 3C — Personas */}
-          {data.buyer_personas && data.buyer_personas.length > 0 && (
+          {data.personas && data.personas.length > 0 && (
             <div>
               <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-muted-foreground mb-2.5">
                 Buyer Personas
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-                {data.buyer_personas.slice(0, 2).map((p, i) => (
+                {data.personas.slice(0, 2).map((p, i) => (
                   <div key={i} className="bg-card rounded-lg p-6 animate-fade-up">
                     <div className="flex items-start justify-between mb-1">
                       <div>
@@ -337,7 +352,7 @@ const ICPIntelligence = () => {
                     {p.objections?.length > 0 && (
                       <>
                         <div className="text-[10px] uppercase tracking-[0.08em] font-bold text-muted-foreground mt-4 mb-2">
-                          Einwände
+                          Objections
                         </div>
                         <div className="space-y-1.5">
                           {p.objections.map((obj, j) => {
@@ -399,13 +414,20 @@ const ICPIntelligence = () => {
               <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-muted-foreground mb-2.5">
                 Lookalike Companies
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
-                {data.lookalikes.slice(0, 3).map((l, i) => (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                {data.lookalikes.slice(0, 6).map((l, i) => (
                   <div key={i} className="bg-card rounded-lg p-5 animate-fade-up hover:-translate-y-0.5 transition-all">
-                    <div className="font-serif text-xl mb-1">{l.company}</div>
+                    <div className="flex items-start justify-between gap-2 mb-1">
+                      <div className="font-serif text-xl">{l.company_name}</div>
+                      {l.estimated_size && (
+                        <span className="text-[10px] uppercase tracking-[0.08em] font-bold px-2 py-1 rounded-full bg-muted whitespace-nowrap">
+                          {l.estimated_size}
+                        </span>
+                      )}
+                    </div>
                     {l.url && (
                       <a
-                        href={l.url}
+                        href={l.url.startsWith("http") ? l.url : `https://${l.url}`}
                         target="_blank"
                         rel="noreferrer"
                         className="text-xs text-primary hover:underline break-all"
@@ -413,28 +435,23 @@ const ICPIntelligence = () => {
                         {l.url.replace(/^https?:\/\/(www\.)?/, "")}
                       </a>
                     )}
-                    <div className="mt-3 mb-3">
-                      <div className="flex justify-between text-[10px] mb-1">
-                        <span className="uppercase tracking-[0.08em] font-bold text-muted-foreground">Similarity</span>
-                        <span className="font-mono">{l.similarity}%</span>
+                    {l.industry && (
+                      <div className="mt-2">
+                        <span className="text-[10px] uppercase tracking-[0.08em] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+                          {l.industry}
+                        </span>
                       </div>
-                      <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-primary rounded-full transition-all duration-1000"
-                          style={{ width: `${l.similarity}%` }}
-                        />
-                      </div>
-                    </div>
-                    <div className="text-xs text-muted-foreground leading-relaxed">{l.why}</div>
+                    )}
+                    <div className="mt-3 text-xs text-muted-foreground leading-relaxed">{l.why_similar}</div>
                   </div>
                 ))}
               </div>
               <div className="mt-4 text-right">
                 <a
-                  href="mailto:info@elkiosk.ai?subject=Mehr Lookalike Unternehmen"
+                  href="mailto:info@elkiosk.ai?subject=More lookalike companies"
                   className="text-sm text-primary font-semibold hover:underline"
                 >
-                  Mehr Unternehmen wie diese entdecken →
+                  Discover more companies like these →
                 </a>
               </div>
             </div>
