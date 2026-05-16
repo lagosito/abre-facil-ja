@@ -312,6 +312,11 @@ const defaultData: BrandData = {
 
 function mapIncoming(incoming: IncomingData): Partial<BrandData> {
   const mapped: Partial<BrandData> = {};
+  const instagramHandle = readStringField(incoming, INSTAGRAM_FIELD_NAMES.handle);
+  const instagramStats = readArrayField<{ val: string; lbl: string }>(incoming, INSTAGRAM_FIELD_NAMES.stats);
+  const instagramPosts = readArrayField<InstagramPost>(incoming, INSTAGRAM_FIELD_NAMES.posts);
+  const growthProjection = readObjectField<GrowthProjection>(incoming, INSTAGRAM_FIELD_NAMES.growth);
+  const contentInsights = readObjectField<ContentInsights>(incoming, INSTAGRAM_FIELD_NAMES.insights);
 
   if (incoming.brandName) mapped.brandName = incoming.brandName;
   if (incoming.firstName) mapped.firstName = incoming.firstName;
@@ -329,12 +334,12 @@ function mapIncoming(incoming: IncomingData): Partial<BrandData> {
   if (incoming.tones?.length) mapped.tones = incoming.tones;
   if (incoming.businessOverview) mapped.businessOverview = incoming.businessOverview;
   if (incoming.aiBriefing) mapped.aiBriefing = incoming.aiBriefing;
-  if (incoming.instagramHandle) mapped.instagramHandle = incoming.instagramHandle;
-  if (incoming.instagramStats?.length) mapped.instagramStats = incoming.instagramStats;
-  if (incoming.instagramPosts?.length) mapped.instagramPosts = incoming.instagramPosts;
+  if (instagramHandle) mapped.instagramHandle = instagramHandle;
+  if (instagramStats?.length) mapped.instagramStats = instagramStats;
+  if (instagramPosts?.length) mapped.instagramPosts = instagramPosts;
   if (incoming.objectives?.length) mapped.objectives = incoming.objectives;
-  if (incoming.growthProjection) mapped.growthProjection = incoming.growthProjection;
-  if (incoming.contentInsights) mapped.contentInsights = incoming.contentInsights;
+  if (growthProjection) mapped.growthProjection = growthProjection;
+  if (contentInsights) mapped.contentInsights = contentInsights;
 
   if (incoming.tagline) mapped.brandEssence = incoming.tagline;
   if (incoming.websiteUrl) mapped.website = incoming.websiteUrl;
