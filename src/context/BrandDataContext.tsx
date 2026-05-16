@@ -95,6 +95,8 @@ export interface BrandData {
 }
 
 interface IncomingData {
+  [key: string]: unknown;
+  fields?: Record<string, unknown>;
   brandName?: string;
   website?: string;
   brandEssence?: string;
@@ -147,6 +149,66 @@ function isLightColor(hex: string): boolean {
   const g = parseInt(c.substring(2, 4), 16);
   const b = parseInt(c.substring(4, 6), 16);
   return (r * 299 + g * 587 + b * 114) / 1000 > 150;
+}
+
+const INSTAGRAM_FIELD_NAMES = {
+  handle: ["instagramHandle", "instagram_handle", "Instagram Handle", "Instagram handle", "InstagramHandle"],
+  stats: ["instagramStats", "instagram_stats", "Instagram Stats", "Instagram stats", "InstagramStats"],
+  posts: ["instagramPosts", "instagram_posts", "Instagram Posts", "Instagram posts", "InstagramPosts"],
+  growth: ["growthProjection", "growth_projection", "Growth Projection", "Growth projection", "GrowthProjection"],
+  insights: ["contentInsights", "content_insights", "Content Insights", "Content insights", "ContentInsights"],
+};
+
+function getFieldSource(incoming: IncomingData): Record<string, unknown> {
+  const airtableFields = incoming.fields && typeof incoming.fields === "object" ? incoming.fields : null;
+  return airtableFields ? { ...incoming, ...airtableFields } : incoming;
+}
+
+function readRawField(incoming: IncomingData, keys: string[]) {
+  const source = getFieldSource(incoming);
+  return keys.map((key) => source[key]).find((value) => value !== undefined && value !== null && value !== "");
+}
+
+function parseJsonField<T>(value: unknown): T | undefined {
+  if (typeof value === "string") {
+    try {
+      return JSON.parse(value) as T;
+    } catch {
+      return undefined;
+    }
+  }
+  if (value && typeof value === "object") return value as T;
+  return undefined;
+}
+
+function readStringField(incoming: IncomingData, keys: string[]) {
+  const value = readRawField(incoming, keys);
+  return typeof value === "string" ? value : undefined;
+}
+
+function readArrayField<T>(incoming: IncomingData, keys: string[]) {
+  const parsed = parseJsonField<T[]>(readRawField(incoming, keys));
+  return Array.isArray(parsed) ? parsed : undefined;
+}
+
+function readObjectField<T>(incoming: IncomingData, keys: string[]) {
+  const parsed = parseJsonField<T>(readRawField(incoming, keys));
+  return parsed && !Array.isArray(parsed) ? parsed : undefined;
+}
+
+function logIncomingResponse(brandDna: IncomingData) {
+  const mergedFields = getFieldSource(brandDna);
+  console.log("[ELK] FULL n8n/Airtable response:", brandDna);
+  console.log("[ELK] Instagram mapping check:", {
+    topLevelKeys: Object.keys(brandDna),
+    airtableFieldKeys: brandDna.fields ? Object.keys(brandDna.fields) : [],
+    expectedDirectFields: {
+      instagramHandle: mergedFields.instagramHandle,
+      instagramStats: mergedFields.instagramStats,
+      growthProjection: mergedFields.growthProjection,
+      contentInsights: mergedFields.contentInsights,
+    },
+  });
 }
 
 const defaultData: BrandData = {
