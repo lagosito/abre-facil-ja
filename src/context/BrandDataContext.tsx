@@ -589,6 +589,7 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
       clearInterval(countdownInterval);
       clearInterval(pollInterval);
       clearTimeout(timeoutTimer);
+      logIncomingResponse(brandDna);
       const mapped = mapIncoming(brandDna);
       setData((prev) => ({ ...prev, ...mapped }));
       applyCustomizations(brandDna);
