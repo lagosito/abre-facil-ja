@@ -2,133 +2,153 @@ import { useEffect, useState, useCallback } from "react";
 import { useBrandData } from "@/context/BrandDataContext";
 import SectionHeader from "./SectionHeader";
 
-interface BreakdownItem {
-  score: number;
-  max: number;
-  reasons?: string[];
-}
-interface ICPBreakdown {
-  company_size?: BreakdownItem | number;
-  industry_fit?: BreakdownItem | number;
-  digital_maturity?: BreakdownItem | number;
-  pain_signals?: BreakdownItem | number;
-  revenue_signals?: BreakdownItem | number;
-  content_quality?: BreakdownItem | number;
-}
-interface ICPScore {
-  total: number;
-  tier: string;
-  breakdown: ICPBreakdown;
-  recommended_action: string;
-}
-interface Signal {
-  type: string;
-  detail: string;
-  detected_at?: string;
-  confidence: number;
-  relevance_score: number;
+interface BrandDNA {
+  company_name?: string;
+  industry?: string;
+  business_model?: string;
+  positioning?: string;
+  region?: string;
 }
 interface Persona {
-  name: string;
-  role: string;
-  seniority: string;
+  role?: string;
+  seniority?: string;
   department?: string;
-  age_range?: string;
-  background?: string;
-  goals?: string[];
-  pain_points: string[];
-  buying_triggers: string[];
-  objections: string[];
-  objection_responses: string[];
-  outreach_angle: string;
-  preferred_channels: string[];
-  decision_power: string;
-  estimated_budget_authority?: string;
+  pain_points?: string[];
+  buying_triggers?: string[];
+  objections?: string[];
+  preferred_channels?: string[];
 }
 interface Lookalike {
-  company_name: string;
-  url: string;
-  industry?: string;
-  description?: string;
-  why_similar: string;
-  estimated_size?: string;
-  estimated_region?: string;
+  company?: string;
+  company_name?: string;
+  url?: string;
+  why?: string;
+  why_similar?: string;
+  similarity?: number;
 }
 interface ICPResponse {
-  brand_dna?: Record<string, unknown>;
-  icp_score?: ICPScore;
-  signals?: Signal[];
+  brand_dna?: BrandDNA;
+  buyer_personas?: Persona[];
   personas?: Persona[];
   lookalikes?: Lookalike[];
+  icp_score?: { total?: number };
 }
 
-const BREAKDOWN_CONFIG: { key: keyof ICPBreakdown; label: string; max: number }[] = [
-  { key: "company_size", label: "Company Size", max: 20 },
-  { key: "industry_fit", label: "Industry Fit", max: 25 },
-  { key: "digital_maturity", label: "Digital Maturity", max: 15 },
-  { key: "pain_signals", label: "Pain Signals", max: 20 },
-  { key: "revenue_signals", label: "Revenue Signals", max: 10 },
-  { key: "content_quality", label: "Content Quality", max: 10 },
-];
+const CACHE_PREFIX = "icp_v3:";
 
-const SIGNAL_ICONS: Record<string, string> = {
-  funding: "💰",
-  hiring: "👥",
-  leadership_change: "🔄",
-  product_launch: "🚀",
-  partnership: "🤝",
-  expansion: "🌍",
-  tech_adoption: "⚡",
-  content_activity: "📝",
+// Heuristic to convert a role into a friendly descriptive type label
+const personaLabel = (p: Persona, i: number): { emoji: string; label: string } => {
+  const role = (p.role || "").toLowerCase();
+  const dept = (p.department || "").toLowerCase();
+  const text = `${role} ${dept}`;
+  if (/family|parent|mom|dad/.test(text)) return { emoji: "👨‍👩‍👧", label: "The conscious family" };
+  if (/digital|tech|developer|engineer|cto|cdo/.test(text)) return { emoji: "💻", label: "The digital native" };
+  if (/founder|ceo|owner|entrepreneur/.test(text)) return { emoji: "🚀", label: "The ambitious founder" };
+  if (/marketing|brand|creative/.test(text)) return { emoji: "🎨", label: "The brand builder" };
+  if (/manager|director|head|lead|chief|vp/.test(text)) return { emoji: "💼", label: "The busy professional" };
+  if (/student|young/.test(text)) return { emoji: "🎓", label: "The curious explorer" };
+  const fallbacks = [
+    { emoji: "✨", label: "The quality seeker" },
+    { emoji: "🌱", label: "The conscious buyer" },
+    { emoji: "⚡", label: "The decisive shopper" },
+  ];
+  return fallbacks[i % fallbacks.length];
 };
 
-const CHANNEL_ICONS: Record<string, string> = {
-  LinkedIn: "in",
-  Email: "✉",
-  Phone: "☎",
+const personaDescription = (p: Persona): string => {
+  const pain = p.pain_points?.[0];
+  if (pain) return pain.length > 160 ? pain.slice(0, 157) + "…" : pain;
+  return "Values premium quality and a smooth buying experience.";
 };
 
-const tierStyle = (total: number) => {
-  if (total >= 80) return { color: "#10b981", label: "HOT", icon: "🔥" };
-  if (total >= 50) return { color: "#f59e0b", label: "WARM", icon: "🌡️" };
-  return { color: "#ef4444", label: "COLD", icon: "❄️" };
-};
+const ConfirmationLine = ({ dna }: { dna: BrandDNA }) => {
+  const [editing, setEditing] = useState(false);
+  const initial =
+    dna.positioning && dna.industry && dna.region
+      ? `You are a ${dna.positioning.toLowerCase().includes("premium") ? "" : "premium "}${dna.industry.toLowerCase()} brand in ${dna.region} that ${dna.business_model?.toLowerCase() || "serves your customers"}.`
+      : `You are a premium brand that knows its customers.`;
+  const [text, setText] = useState(initial);
+  useEffect(() => setText(initial), [initial]);
 
-const ScoreGauge = ({ score }: { score: number }) => {
-  const [animated, setAnimated] = useState(0);
-  const tier = tierStyle(score);
-  const radius = 70;
-  const circ = 2 * Math.PI * radius;
-  const offset = circ - (animated / 100) * circ;
-
-  useEffect(() => {
-    const t = setTimeout(() => setAnimated(score), 100);
-    return () => clearTimeout(t);
-  }, [score]);
-
+  if (editing) {
+    return (
+      <textarea
+        autoFocus
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        onBlur={() => setEditing(false)}
+        className="w-full text-center font-serif italic text-2xl md:text-3xl bg-transparent text-muted-foreground resize-none outline-none border-b border-primary/30 px-4 py-2"
+        rows={2}
+      />
+    );
+  }
   return (
-    <div className="relative w-[180px] h-[180px] flex items-center justify-center">
-      <svg width="180" height="180" className="-rotate-90">
-        <circle cx="90" cy="90" r={radius} stroke="rgba(0,0,0,0.08)" strokeWidth="10" fill="none" />
-        <circle
-          cx="90"
-          cy="90"
-          r={radius}
-          stroke={tier.color}
-          strokeWidth="10"
-          fill="none"
-          strokeLinecap="round"
-          strokeDasharray={circ}
-          strokeDashoffset={offset}
-          style={{ transition: "stroke-dashoffset 1.4s ease-out" }}
-        />
-      </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <div className="font-serif text-[56px] leading-none">{Math.round(animated)}</div>
-        <div className="text-[10px] uppercase tracking-[0.15em] font-bold mt-1" style={{ color: tier.color }}>
-          {tier.icon} {tier.label}
+    <button
+      onClick={() => setEditing(true)}
+      className="w-full text-center font-serif italic text-2xl md:text-3xl text-muted-foreground hover:text-foreground transition-colors px-4 py-6 leading-snug"
+      title="Click to edit"
+    >
+      {text}
+    </button>
+  );
+};
+
+const PersonaAccordion = ({
+  persona,
+  label,
+  emoji,
+}: {
+  persona: Persona;
+  label: string;
+  emoji: string;
+}) => {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="bg-card rounded-lg overflow-hidden">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-muted/40 transition-colors"
+      >
+        <div className="flex items-center gap-3">
+          <span className="text-2xl">{emoji}</span>
+          <span className="font-semibold">{label}</span>
         </div>
-      </div>
+        <span className="text-muted-foreground text-lg">{open ? "−" : "+"}</span>
+      </button>
+      {open && (
+        <div className="px-5 pb-5 grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-[rgba(0,0,0,0.06)] pt-4">
+          <div>
+            <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-red-600 mb-2">
+              What frustrates them
+            </div>
+            <ul className="space-y-1.5 text-sm">
+              {(persona.pain_points || []).slice(0, 4).map((x, i) => (
+                <li key={i} className="leading-snug">• {x}</li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-emerald-600 mb-2">
+              What makes them buy
+            </div>
+            <ul className="space-y-1.5 text-sm">
+              {(persona.buying_triggers || []).slice(0, 4).map((x, i) => (
+                <li key={i} className="leading-snug">• {x}</li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-amber-600 mb-2">
+              What holds them back
+            </div>
+            <ul className="space-y-1.5 text-sm">
+              {(persona.objections || []).slice(0, 4).map((x, i) => (
+                <li key={i} className="leading-snug">• {x}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -141,14 +161,11 @@ const SkeletonCard = ({ className = "" }: { className?: string }) => (
   </div>
 );
 
-const CACHE_PREFIX = "icp_v2:";
-
 const ICPIntelligence = () => {
   const { website } = useBrandData();
   const [data, setData] = useState<ICPResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [expandedObj, setExpandedObj] = useState<Record<string, boolean>>({});
 
   const fetchICP = useCallback(async () => {
     if (!website) return;
@@ -186,7 +203,7 @@ const ICPIntelligence = () => {
       }
     } catch (e) {
       console.warn("ICP fetch failed:", e);
-      setError("Analysis unavailable");
+      setError("Analysis not available");
     } finally {
       setLoading(false);
     }
@@ -196,27 +213,47 @@ const ICPIntelligence = () => {
     fetchICP();
   }, [fetchICP]);
 
-  const score = data?.icp_score;
-  const tier = score ? tierStyle(score.total) : null;
+  const dna = data?.brand_dna || {};
+  const personas = (data?.buyer_personas || data?.personas || []).slice(0, 3);
+  const personaMeta = personas.map((p, i) => ({ persona: p, ...personaLabel(p, i) }));
+  const lookalikes = (data?.lookalikes || []).slice(0, 4);
+
+  const channels = Array.from(
+    new Set(
+      personas.flatMap((p) => p.preferred_channels || []).filter(Boolean),
+    ),
+  );
+
+  // Pick "best" persona for CTA: prefer one with most signals (pain+triggers); fallback to first
+  const topIdx =
+    personaMeta
+      .map((m, i) => ({
+        i,
+        s: (m.persona.pain_points?.length || 0) + (m.persona.buying_triggers?.length || 0),
+      }))
+      .sort((a, b) => b.s - a.s)[0]?.i ?? 0;
+  const topPersona = personaMeta[topIdx];
+  const topPain = topPersona?.persona.pain_points?.[0];
 
   return (
     <section className="mb-16">
       <SectionHeader
         num="03"
-        title="ICP Intelligence"
-        explain="AI-powered analysis of your Ideal Customer Profile — who are your best customers and why."
+        title="Your Ideal Customer"
+        explain="A simple, human picture of who buys from you, why they buy, and where to reach them."
       />
 
       {loading && !data && (
-        <div className="space-y-3.5">
-          <SkeletonCard className="h-[260px]" />
+        <div className="space-y-4">
+          <SkeletonCard className="h-[120px]" />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
             <SkeletonCard />
             <SkeletonCard />
             <SkeletonCard />
           </div>
+          <SkeletonCard className="h-[140px]" />
           <div className="text-xs text-muted-foreground text-center italic">
-            Analyzing your ICP — this takes ~45 seconds…
+            Analyzing your ideal customer — this takes ~40 seconds…
           </div>
         </div>
       )}
@@ -234,233 +271,133 @@ const ICPIntelligence = () => {
       )}
 
       {data && (
-        <div className="space-y-5">
-          {/* 3A — Score */}
-          {score && tier && (
-            <div className="bg-card rounded-lg p-6 animate-fade-up">
-              <div className="flex flex-col md:flex-row gap-7 items-start">
-                <ScoreGauge score={score.total} />
-                <div className="flex-1 w-full">
-                  <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-muted-foreground mb-3">
-                    ICP Score Breakdown
+        <div className="space-y-10">
+          {/* 3A — Confirmation */}
+          <div className="animate-fade-up">
+            <ConfirmationLine dna={dna} />
+          </div>
+
+          {/* 3B — Your ideal customer */}
+          {personaMeta.length > 0 && (
+            <div className="animate-fade-up">
+              <h3 className="font-serif text-2xl mb-4">Your ideal customer</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+                {personaMeta.map((m, i) => (
+                  <div key={i} className="bg-card rounded-lg p-5 hover:-translate-y-0.5 transition-all">
+                    <div className="text-3xl mb-3">{m.emoji}</div>
+                    <div className="font-semibold mb-2">{m.label}</div>
+                    <div className="text-sm text-muted-foreground leading-relaxed">
+                      {personaDescription(m.persona)}
+                    </div>
                   </div>
-                  <div className="space-y-2.5">
-                    {BREAKDOWN_CONFIG.map(({ key, label, max: defaultMax }) => {
-                      const raw = score.breakdown?.[key];
-                      const value = typeof raw === "number" ? raw : (raw?.score ?? 0);
-                      const max = typeof raw === "object" && raw?.max ? raw.max : defaultMax;
-                      const pct = Math.min(100, (value / max) * 100);
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* 3C — Why they buy */}
+          {personaMeta.length > 0 && (
+            <div className="animate-fade-up">
+              <h3 className="font-serif text-2xl mb-4">Why they buy from you</h3>
+              <div className="space-y-2.5">
+                {personaMeta.map((m, i) => (
+                  <PersonaAccordion key={i} persona={m.persona} label={m.label} emoji={m.emoji} />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* 3D — Where to find them */}
+          {(channels.length > 0 || lookalikes.length > 0) && (
+            <div className="animate-fade-up space-y-6">
+              <h3 className="font-serif text-2xl">Where to find them</h3>
+
+              {channels.length > 0 && (
+                <div>
+                  <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-muted-foreground mb-3">
+                    Channels
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {channels.map((c) => (
+                      <span
+                        key={c}
+                        className="px-3.5 py-1.5 rounded-full bg-card text-sm font-medium"
+                      >
+                        {c}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {lookalikes.length > 0 && (
+                <div>
+                  <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-muted-foreground mb-3">
+                    Brands like yours
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5">
+                    {lookalikes.map((l, i) => {
+                      const name = l.company_name || l.company || "Brand";
+                      const why = l.why_similar || l.why || "";
                       return (
-                        <div key={key}>
-                          <div className="flex justify-between text-xs mb-1">
-                            <span className="font-medium">{label}</span>
-                            <span className="font-mono text-muted-foreground">
-                              {value}/{max}
-                            </span>
-                          </div>
-                          <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                            <div
-                              className="h-full rounded-full transition-all duration-1000"
-                              style={{ width: `${pct}%`, background: tier.color }}
-                            />
+                        <div key={i} className="bg-card rounded-lg p-4 hover:-translate-y-0.5 transition-all">
+                          <div className="font-serif text-lg mb-1">{name}</div>
+                          {l.url && (
+                            <a
+                              href={l.url.startsWith("http") ? l.url : `https://${l.url}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-xs text-primary hover:underline break-all"
+                            >
+                              {l.url.replace(/^https?:\/\/(www\.)?/, "")}
+                            </a>
+                          )}
+                          <div className="mt-2 text-xs text-muted-foreground leading-relaxed">
+                            {why}
                           </div>
                         </div>
                       );
                     })}
                   </div>
                 </div>
-              </div>
-              {score.recommended_action && (
-                <div
-                  className="mt-5 p-4 rounded-lg text-sm leading-relaxed"
-                  style={{ background: `${tier.color}15`, borderLeft: `3px solid ${tier.color}` }}
-                >
-                  <div className="text-[10px] uppercase tracking-[0.1em] font-bold mb-1.5" style={{ color: tier.color }}>
-                    Recommended Action
-                  </div>
-                  {score.recommended_action}
-                </div>
               )}
             </div>
           )}
 
-          {/* 3B — Signals */}
-          <div>
-            <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-muted-foreground mb-2.5">
-              Signals Detected
-            </div>
-            {data.signals && data.signals.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
-                {data.signals.map((s, i) => (
-                  <div key={i} className="bg-card rounded-lg p-5 animate-fade-up hover:-translate-y-0.5 transition-all">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-lg">{SIGNAL_ICONS[s.type] || "📊"}</span>
-                      <span className="text-[10px] uppercase tracking-[0.08em] font-bold text-muted-foreground">
-                        {s.type.replace(/_/g, " ")}
-                      </span>
-                    </div>
-                    <div className="text-sm leading-relaxed mb-3">{s.detail}</div>
-                    <div className="flex gap-2 text-[10px]">
-                      <span className="px-2 py-0.5 rounded-full bg-muted font-mono">
-                        {Math.round((s.confidence ?? 0) * 100)}% conf.
-                      </span>
-                      <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary font-mono">
-                        rel. {s.relevance_score}
-                      </span>
-                    </div>
-                  </div>
-                ))}
+          {/* 3E — Your next step */}
+          {topPersona && (
+            <div
+              className="animate-fade-up rounded-lg p-6 md:p-8"
+              style={{
+                background:
+                  "linear-gradient(135deg, hsl(var(--primary) / 0.08), hsl(var(--primary) / 0.02))",
+                borderLeft: "3px solid hsl(var(--primary))",
+              }}
+            >
+              <div className="text-[10px] uppercase tracking-[0.12em] font-bold text-primary mb-2">
+                Your next step
               </div>
-            ) : (
-              <div className="bg-card rounded-lg p-6 text-sm text-muted-foreground italic">
-                No signals detected
+              <div className="text-lg md:text-xl leading-relaxed mb-5">
+                Based on this, we recommend focusing your next campaign on{" "}
+                <span className="font-semibold">
+                  {topPersona.emoji} {topPersona.label}
+                </span>
+                {topPain && (
+                  <>
+                    {" "}with a message about{" "}
+                    <span className="font-semibold italic">
+                      {topPain.replace(/\.$/, "").toLowerCase()}
+                    </span>
+                  </>
+                )}
+                .
               </div>
-            )}
-          </div>
-
-          {/* 3C — Personas */}
-          {data.personas && data.personas.length > 0 && (
-            <div>
-              <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-muted-foreground mb-2.5">
-                Buyer Personas
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-                {data.personas.slice(0, 2).map((p, i) => (
-                  <div key={i} className="bg-card rounded-lg p-6 animate-fade-up">
-                    <div className="flex items-start justify-between mb-1">
-                      <div>
-                        <div className="font-serif text-2xl">{p.name}</div>
-                        <div className="text-sm text-muted-foreground">{p.role}</div>
-                      </div>
-                      <span className="text-[10px] uppercase tracking-[0.08em] font-bold px-2 py-1 rounded-full bg-muted">
-                        {p.seniority}
-                      </span>
-                    </div>
-                    <div className="text-[10px] uppercase tracking-[0.08em] font-bold text-muted-foreground mt-4 mb-2">
-                      Pain Points
-                    </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {p.pain_points?.map((pp, j) => (
-                        <span key={j} className="text-xs px-2.5 py-1 rounded-full bg-red-500/10 text-red-600">
-                          {pp}
-                        </span>
-                      ))}
-                    </div>
-                    <div className="text-[10px] uppercase tracking-[0.08em] font-bold text-muted-foreground mt-4 mb-2">
-                      Buying Triggers
-                    </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {p.buying_triggers?.map((bt, j) => (
-                        <span key={j} className="text-xs px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-700">
-                          {bt}
-                        </span>
-                      ))}
-                    </div>
-                    {p.objections?.length > 0 && (
-                      <>
-                        <div className="text-[10px] uppercase tracking-[0.08em] font-bold text-muted-foreground mt-4 mb-2">
-                          Objections
-                        </div>
-                        <div className="space-y-1.5">
-                          {p.objections.map((obj, j) => {
-                            const k = `${i}-${j}`;
-                            const open = expandedObj[k];
-                            return (
-                              <div key={j} className="border border-[rgba(0,0,0,0.08)] rounded-md">
-                                <button
-                                  onClick={() => setExpandedObj((x) => ({ ...x, [k]: !x[k] }))}
-                                  className="w-full text-left px-3 py-2 text-xs flex justify-between items-center"
-                                >
-                                  <span>{obj}</span>
-                                  <span className="text-muted-foreground">{open ? "−" : "+"}</span>
-                                </button>
-                                {open && p.objection_responses?.[j] && (
-                                  <div className="px-3 pb-2 text-xs text-muted-foreground leading-relaxed">
-                                    {p.objection_responses[j]}
-                                  </div>
-                                )}
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </>
-                    )}
-                    {p.outreach_angle && (
-                      <div className="mt-4 p-3 rounded-md bg-primary/5 border-l-2 border-primary text-xs leading-relaxed">
-                        <div className="text-[10px] uppercase tracking-[0.08em] font-bold text-primary mb-1">
-                          Outreach Angle
-                        </div>
-                        {p.outreach_angle}
-                      </div>
-                    )}
-                    <div className="flex items-center justify-between mt-4">
-                      <div className="flex gap-1.5">
-                        {p.preferred_channels?.map((ch) => (
-                          <span
-                            key={ch}
-                            title={ch}
-                            className="w-6 h-6 rounded-full bg-muted text-[10px] font-bold flex items-center justify-center"
-                          >
-                            {CHANNEL_ICONS[ch] || ch[0]}
-                          </span>
-                        ))}
-                      </div>
-                      <span className="text-[10px] uppercase tracking-[0.08em] font-bold px-2 py-1 rounded-full bg-primary text-primary-foreground">
-                        {p.decision_power}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* 3D — Lookalikes */}
-          {data.lookalikes && data.lookalikes.length > 0 && (
-            <div>
-              <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-muted-foreground mb-2.5">
-                Lookalike Companies
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
-                {data.lookalikes.slice(0, 6).map((l, i) => (
-                  <div key={i} className="bg-card rounded-lg p-5 animate-fade-up hover:-translate-y-0.5 transition-all">
-                    <div className="flex items-start justify-between gap-2 mb-1">
-                      <div className="font-serif text-xl">{l.company_name}</div>
-                      {l.estimated_size && (
-                        <span className="text-[10px] uppercase tracking-[0.08em] font-bold px-2 py-1 rounded-full bg-muted whitespace-nowrap">
-                          {l.estimated_size}
-                        </span>
-                      )}
-                    </div>
-                    {l.url && (
-                      <a
-                        href={l.url.startsWith("http") ? l.url : `https://${l.url}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-xs text-primary hover:underline break-all"
-                      >
-                        {l.url.replace(/^https?:\/\/(www\.)?/, "")}
-                      </a>
-                    )}
-                    {l.industry && (
-                      <div className="mt-2">
-                        <span className="text-[10px] uppercase tracking-[0.08em] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary">
-                          {l.industry}
-                        </span>
-                      </div>
-                    )}
-                    <div className="mt-3 text-xs text-muted-foreground leading-relaxed">{l.why_similar}</div>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-4 text-right">
-                <a
-                  href="mailto:info@elkiosk.ai?subject=More lookalike companies"
-                  className="text-sm text-primary font-semibold hover:underline"
-                >
-                  Discover more companies like these →
-                </a>
-              </div>
+              <a
+                href="mailto:info@elkiosk.ai?subject=Create campaign"
+                className="inline-block bg-primary text-primary-foreground px-5 py-2.5 rounded-pill text-sm font-semibold hover:brightness-90 transition"
+              >
+                Create campaign →
+              </a>
             </div>
           )}
         </div>
