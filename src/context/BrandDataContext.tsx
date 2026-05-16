@@ -151,64 +151,8 @@ function isLightColor(hex: string): boolean {
   return (r * 299 + g * 587 + b * 114) / 1000 > 150;
 }
 
-const INSTAGRAM_FIELD_NAMES = {
-  handle: ["instagramHandle", "instagram_handle", "Instagram Handle", "Instagram handle", "InstagramHandle"],
-  stats: ["instagramStats", "instagram_stats", "Instagram Stats", "Instagram stats", "InstagramStats"],
-  posts: ["instagramPosts", "instagram_posts", "Instagram Posts", "Instagram posts", "InstagramPosts"],
-  growth: ["growthProjection", "growth_projection", "Growth Projection", "Growth projection", "GrowthProjection"],
-  insights: ["contentInsights", "content_insights", "Content Insights", "Content insights", "ContentInsights"],
-};
-
-function getFieldSource(incoming: IncomingData): Record<string, unknown> {
-  const airtableFields = incoming.fields && typeof incoming.fields === "object" ? incoming.fields : null;
-  return airtableFields ? { ...incoming, ...airtableFields } : incoming;
-}
-
-function readRawField(incoming: IncomingData, keys: string[]) {
-  const source = getFieldSource(incoming);
-  return keys.map((key) => source[key]).find((value) => value !== undefined && value !== null && value !== "");
-}
-
-function parseJsonField<T>(value: unknown): T | undefined {
-  if (typeof value === "string") {
-    try {
-      return JSON.parse(value) as T;
-    } catch {
-      return undefined;
-    }
-  }
-  if (value && typeof value === "object") return value as T;
-  return undefined;
-}
-
-function readStringField(incoming: IncomingData, keys: string[]) {
-  const value = readRawField(incoming, keys);
-  return typeof value === "string" ? value : undefined;
-}
-
-function readArrayField<T>(incoming: IncomingData, keys: string[]) {
-  const parsed = parseJsonField<T[]>(readRawField(incoming, keys));
-  return Array.isArray(parsed) ? parsed : undefined;
-}
-
-function readObjectField<T>(incoming: IncomingData, keys: string[]) {
-  const parsed = parseJsonField<T>(readRawField(incoming, keys));
-  return parsed && !Array.isArray(parsed) ? parsed : undefined;
-}
-
 function logIncomingResponse(brandDna: IncomingData) {
-  const mergedFields = getFieldSource(brandDna);
   console.log("[ELK] FULL n8n/Airtable response:", brandDna);
-  console.log("[ELK] Instagram mapping check:", {
-    topLevelKeys: Object.keys(brandDna),
-    airtableFieldKeys: brandDna.fields ? Object.keys(brandDna.fields) : [],
-    expectedDirectFields: {
-      instagramHandle: mergedFields.instagramHandle,
-      instagramStats: mergedFields.instagramStats,
-      growthProjection: mergedFields.growthProjection,
-      contentInsights: mergedFields.contentInsights,
-    },
-  });
 }
 
 const defaultData: BrandData = {
@@ -312,11 +256,6 @@ const defaultData: BrandData = {
 
 function mapIncoming(incoming: IncomingData): Partial<BrandData> {
   const mapped: Partial<BrandData> = {};
-  const instagramHandle = readStringField(incoming, INSTAGRAM_FIELD_NAMES.handle);
-  const instagramStats = readArrayField<{ val: string; lbl: string }>(incoming, INSTAGRAM_FIELD_NAMES.stats);
-  const instagramPosts = readArrayField<InstagramPost>(incoming, INSTAGRAM_FIELD_NAMES.posts);
-  const growthProjection = readObjectField<GrowthProjection>(incoming, INSTAGRAM_FIELD_NAMES.growth);
-  const contentInsights = readObjectField<ContentInsights>(incoming, INSTAGRAM_FIELD_NAMES.insights);
 
   if (incoming.brandName) mapped.brandName = incoming.brandName;
   if (incoming.firstName) mapped.firstName = incoming.firstName;
@@ -334,12 +273,12 @@ function mapIncoming(incoming: IncomingData): Partial<BrandData> {
   if (incoming.tones?.length) mapped.tones = incoming.tones;
   if (incoming.businessOverview) mapped.businessOverview = incoming.businessOverview;
   if (incoming.aiBriefing) mapped.aiBriefing = incoming.aiBriefing;
-  if (instagramHandle) mapped.instagramHandle = instagramHandle;
-  if (instagramStats?.length) mapped.instagramStats = instagramStats;
-  if (instagramPosts?.length) mapped.instagramPosts = instagramPosts;
+  if (incoming.instagramHandle) mapped.instagramHandle = incoming.instagramHandle;
+  if (incoming.instagramStats?.length) mapped.instagramStats = incoming.instagramStats;
+  if (incoming.instagramPosts?.length) mapped.instagramPosts = incoming.instagramPosts;
   if (incoming.objectives?.length) mapped.objectives = incoming.objectives;
-  if (growthProjection) mapped.growthProjection = growthProjection;
-  if (contentInsights) mapped.contentInsights = contentInsights;
+  if (incoming.growthProjection) mapped.growthProjection = incoming.growthProjection;
+  if (incoming.contentInsights) mapped.contentInsights = incoming.contentInsights;
 
   if (incoming.tagline) mapped.brandEssence = incoming.tagline;
   if (incoming.websiteUrl) mapped.website = incoming.websiteUrl;
