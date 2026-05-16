@@ -10,13 +10,21 @@ interface BrandDNA {
   region?: string;
 }
 interface Persona {
-  role?: string;
-  seniority?: string;
-  department?: string;
+  type_label?: string;
+  emoji?: string;
+  description?: string;
+  age_range?: string;
+  income_level?: string;
+  lifestyle?: string;
+  goals?: string[];
   pain_points?: string[];
   buying_triggers?: string[];
   objections?: string[];
   preferred_channels?: string[];
+  content_preferences?: string[];
+  // legacy fallbacks
+  role?: string;
+  department?: string;
 }
 interface Lookalike {
   company?: string;
@@ -24,49 +32,37 @@ interface Lookalike {
   url?: string;
   why?: string;
   why_similar?: string;
-  similarity?: number;
 }
 interface ICPResponse {
   brand_dna?: BrandDNA;
-  buyer_personas?: Persona[];
   personas?: Persona[];
+  buyer_personas?: Persona[];
   lookalikes?: Lookalike[];
-  icp_score?: { total?: number };
 }
 
-const CACHE_PREFIX = "icp_v3:";
+const CACHE_PREFIX = "icp_v4:";
 
-// Heuristic to convert a role into a friendly descriptive type label
-const personaLabel = (p: Persona, i: number): { emoji: string; label: string } => {
-  const role = (p.role || "").toLowerCase();
-  const dept = (p.department || "").toLowerCase();
-  const text = `${role} ${dept}`;
-  if (/family|parent|mom|dad/.test(text)) return { emoji: "👨‍👩‍👧", label: "The conscious family" };
-  if (/digital|tech|developer|engineer|cto|cdo/.test(text)) return { emoji: "💻", label: "The digital native" };
-  if (/founder|ceo|owner|entrepreneur/.test(text)) return { emoji: "🚀", label: "The ambitious founder" };
-  if (/marketing|brand|creative/.test(text)) return { emoji: "🎨", label: "The brand builder" };
-  if (/manager|director|head|lead|chief|vp/.test(text)) return { emoji: "💼", label: "The busy professional" };
-  if (/student|young/.test(text)) return { emoji: "🎓", label: "The curious explorer" };
-  const fallbacks = [
-    { emoji: "✨", label: "The quality seeker" },
-    { emoji: "🌱", label: "The conscious buyer" },
-    { emoji: "⚡", label: "The decisive shopper" },
-  ];
-  return fallbacks[i % fallbacks.length];
-};
+const FALLBACK_EMOJIS = ["✨", "🌱", "⚡", "💼"];
+const FALLBACK_LABELS = ["The quality seeker", "The conscious buyer", "The decisive shopper"];
 
-const personaDescription = (p: Persona): string => {
-  const pain = p.pain_points?.[0];
-  if (pain) return pain.length > 160 ? pain.slice(0, 157) + "…" : pain;
-  return "Values premium quality and a smooth buying experience.";
-};
+const personaMeta = (p: Persona, i: number) => ({
+  emoji: p.emoji || FALLBACK_EMOJIS[i % FALLBACK_EMOJIS.length],
+  label: p.type_label || p.role || FALLBACK_LABELS[i % FALLBACK_LABELS.length],
+  description:
+    p.description ||
+    p.pain_points?.[0] ||
+    "Values premium quality and a smooth buying experience.",
+});
 
 const ConfirmationLine = ({ dna }: { dna: BrandDNA }) => {
   const [editing, setEditing] = useState(false);
-  const initial =
-    dna.positioning && dna.industry && dna.region
-      ? `You are a ${dna.positioning.toLowerCase().includes("premium") ? "" : "premium "}${dna.industry.toLowerCase()} brand in ${dna.region} that ${dna.business_model?.toLowerCase() || "serves your customers"}.`
-      : `You are a premium brand that knows its customers.`;
+  const initial = (() => {
+    const ind = dna.industry?.toLowerCase() || "premium";
+    const region = dna.region || "your region";
+    const model = dna.business_model?.toLowerCase() || "serves your customers";
+    const isPremium = (dna.positioning || "").toLowerCase().includes("premium");
+    return `You are a ${isPremium ? "" : "premium "}${ind} brand in ${region} that ${model}.`;
+  })();
   const [text, setText] = useState(initial);
   useEffect(() => setText(initial), [initial]);
 
@@ -214,26 +210,16 @@ const ICPIntelligence = () => {
   }, [fetchICP]);
 
   const dna = data?.brand_dna || {};
-  const personas = (data?.buyer_personas || data?.personas || []).slice(0, 3);
-  const personaMeta = personas.map((p, i) => ({ persona: p, ...personaLabel(p, i) }));
+  const personas = (data?.personas || data?.buyer_personas || []).slice(0, 3);
+  const metas = personas.map((p, i) => ({ persona: p, ...personaMeta(p, i) }));
   const lookalikes = (data?.lookalikes || []).slice(0, 4);
 
   const channels = Array.from(
-    new Set(
-      personas.flatMap((p) => p.preferred_channels || []).filter(Boolean),
-    ),
+    new Set(personas.flatMap((p) => p.preferred_channels || []).filter(Boolean)),
   );
 
-  // Pick "best" persona for CTA: prefer one with most signals (pain+triggers); fallback to first
-  const topIdx =
-    personaMeta
-      .map((m, i) => ({
-        i,
-        s: (m.persona.pain_points?.length || 0) + (m.persona.buying_triggers?.length || 0),
-      }))
-      .sort((a, b) => b.s - a.s)[0]?.i ?? 0;
-  const topPersona = personaMeta[topIdx];
-  const topPain = topPersona?.persona.pain_points?.[0];
+  const top = metas[0];
+  const topPain = top?.persona.pain_points?.[0];
 
   return (
     <section className="mb-16">
@@ -278,17 +264,31 @@ const ICPIntelligence = () => {
           </div>
 
           {/* 3B — Your ideal customer */}
-          {personaMeta.length > 0 && (
+          {metas.length > 0 && (
             <div className="animate-fade-up">
               <h3 className="font-serif text-2xl mb-4">Your ideal customer</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
-                {personaMeta.map((m, i) => (
+                {metas.map((m, i) => (
                   <div key={i} className="bg-card rounded-lg p-5 hover:-translate-y-0.5 transition-all">
                     <div className="text-3xl mb-3">{m.emoji}</div>
                     <div className="font-semibold mb-2">{m.label}</div>
-                    <div className="text-sm text-muted-foreground leading-relaxed">
-                      {personaDescription(m.persona)}
+                    <div className="text-sm text-muted-foreground leading-relaxed mb-3">
+                      {m.description}
                     </div>
+                    {(m.persona.age_range || m.persona.income_level) && (
+                      <div className="flex flex-wrap gap-1.5 pt-3 border-t border-[rgba(0,0,0,0.06)]">
+                        {m.persona.age_range && (
+                          <span className="text-[11px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
+                            {m.persona.age_range}
+                          </span>
+                        )}
+                        {m.persona.income_level && (
+                          <span className="text-[11px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
+                            {m.persona.income_level}
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -296,11 +296,11 @@ const ICPIntelligence = () => {
           )}
 
           {/* 3C — Why they buy */}
-          {personaMeta.length > 0 && (
+          {metas.length > 0 && (
             <div className="animate-fade-up">
               <h3 className="font-serif text-2xl mb-4">Why they buy from you</h3>
               <div className="space-y-2.5">
-                {personaMeta.map((m, i) => (
+                {metas.map((m, i) => (
                   <PersonaAccordion key={i} persona={m.persona} label={m.label} emoji={m.emoji} />
                 ))}
               </div>
@@ -365,7 +365,7 @@ const ICPIntelligence = () => {
           )}
 
           {/* 3E — Your next step */}
-          {topPersona && (
+          {top && (
             <div
               className="animate-fade-up rounded-lg p-6 md:p-8"
               style={{
@@ -380,7 +380,7 @@ const ICPIntelligence = () => {
               <div className="text-lg md:text-xl leading-relaxed mb-5">
                 Based on this, we recommend focusing your next campaign on{" "}
                 <span className="font-semibold">
-                  {topPersona.emoji} {topPersona.label}
+                  {top.emoji} {top.label}
                 </span>
                 {topPain && (
                   <>
