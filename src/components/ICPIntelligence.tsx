@@ -237,7 +237,7 @@ const ICPIntelligence = () => {
         <div className="space-y-10">
           {/* 3A — Confirmation */}
           <div className="animate-fade-up">
-            <ConfirmationLine dna={dna} />
+            <BrandStatement dna={dna} />
           </div>
 
           {/* 3B — Your ideal customer */}
