@@ -8,6 +8,7 @@ interface BrandDNA {
   business_model?: string;
   positioning?: string;
   region?: string;
+  brand_statement?: string;
 }
 interface Persona {
   type_label?: string;
@@ -54,38 +55,14 @@ const personaMeta = (p: Persona, i: number) => ({
     "Values premium quality and a smooth buying experience.",
 });
 
-const ConfirmationLine = ({ dna }: { dna: BrandDNA }) => {
-  const [editing, setEditing] = useState(false);
-  const initial = (() => {
-    const ind = dna.industry?.toLowerCase() || "premium";
-    const region = dna.region || "your region";
-    const model = dna.business_model?.toLowerCase() || "serves your customers";
-    const isPremium = (dna.positioning || "").toLowerCase().includes("premium");
-    return `You are a ${isPremium ? "" : "premium "}${ind} brand in ${region} that ${model}.`;
-  })();
-  const [text, setText] = useState(initial);
-  useEffect(() => setText(initial), [initial]);
-
-  if (editing) {
-    return (
-      <textarea
-        autoFocus
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        onBlur={() => setEditing(false)}
-        className="w-full text-center font-serif italic text-2xl md:text-3xl bg-transparent text-muted-foreground resize-none outline-none border-b border-primary/30 px-4 py-2"
-        rows={2}
-      />
-    );
-  }
+const BrandStatement = ({ dna }: { dna: BrandDNA }) => {
+  const text = dna.brand_statement || "A premium brand serving discerning customers.";
   return (
-    <button
-      onClick={() => setEditing(true)}
-      className="w-full text-center font-serif italic text-2xl md:text-3xl text-muted-foreground hover:text-foreground transition-colors px-4 py-6 leading-snug"
-      title="Click to edit"
-    >
-      {text}
-    </button>
+    <div className="w-full text-center px-4 py-6">
+      <blockquote className="font-serif italic text-2xl md:text-3xl text-muted-foreground leading-snug">
+        "{text}"
+      </blockquote>
+    </div>
   );
 };
 
@@ -260,7 +237,7 @@ const ICPIntelligence = () => {
         <div className="space-y-10">
           {/* 3A — Confirmation */}
           <div className="animate-fade-up">
-            <ConfirmationLine dna={dna} />
+            <BrandStatement dna={dna} />
           </div>
 
           {/* 3B — Your ideal customer */}
