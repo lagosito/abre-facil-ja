@@ -27,7 +27,7 @@ const ExpandableText = ({ text, lineClamp = 4 }: { text: string; lineClamp?: num
 };
 
 const BrandBriefing = () => {
-  const { businessOverview, aiBriefing, targetAudience, contentOpportunities, positioning, platforms } = useBrandData();
+  const { businessOverview, aiBriefing, targetAudience, contentOpportunities, positioning, platforms, dos, donts } = useBrandData();
 
   const allCards = useMemo(() => {
     const cards: { icon: string; title: string; content: string }[] = [];
@@ -41,6 +41,8 @@ const BrandBriefing = () => {
 
     return cards;
   }, [businessOverview, aiBriefing, targetAudience, positioning, platforms, contentOpportunities]);
+
+  const hasGuidelines = (dos?.length ?? 0) > 0 || (donts?.length ?? 0) > 0;
 
   return (
     <section className="mb-16">
@@ -63,6 +65,43 @@ const BrandBriefing = () => {
           </div>
         ))}
       </div>
+
+      {hasGuidelines && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 mt-3.5">
+          {dos.length > 0 && (
+            <div className="bg-card rounded-lg p-6 animate-fade-up hover:-translate-y-0.5 hover:shadow-lg transition-all">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-base">✅</span>
+                <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-muted-foreground">Do's</div>
+              </div>
+              <ul className="space-y-1.5">
+                {dos.map((item) => (
+                  <li key={item} className="text-sm leading-relaxed flex gap-2">
+                    <span className="text-primary mt-1">•</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {donts.length > 0 && (
+            <div className="bg-card rounded-lg p-6 animate-fade-up hover:-translate-y-0.5 hover:shadow-lg transition-all">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-base">⛔</span>
+                <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-muted-foreground">Don'ts</div>
+              </div>
+              <ul className="space-y-1.5">
+                {donts.map((item) => (
+                  <li key={item} className="text-sm leading-relaxed flex gap-2">
+                    <span className="text-destructive mt-1">•</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
     </section>
   );
 };

@@ -76,6 +76,8 @@ export interface BrandData {
   values: string[];
   aesthetic: string[];
   tones: string[];
+  dos: string[];
+  donts: string[];
   businessOverview: string;
   aiBriefing: string;
   targetAudience: string;
@@ -98,6 +100,7 @@ interface IncomingData {
   [key: string]: unknown;
   fields?: Record<string, unknown>;
   brandName?: string;
+  clientName?: string;
   website?: string;
   brandEssence?: string;
   colors?: { hex: string; light: boolean }[];
@@ -105,6 +108,10 @@ interface IncomingData {
   values?: string[];
   aesthetic?: string[];
   tones?: string[];
+  dos?: string[] | string;
+  donts?: string[] | string;
+  toneTags?: string[] | string;
+  aestheticTags?: string[] | string;
   businessOverview?: string;
   aiBriefing?: string;
   instagramHandle?: string;
@@ -113,7 +120,9 @@ interface IncomingData {
   chatId?: string;
   firstName?: string;
   brand_logo_url?: string;
+  logo?: string;
   logoUrl?: string;
+  brandLogoUrl?: string;
   logoBgColor?: string;
   tagline?: string;
   websiteUrl?: string;
@@ -121,7 +130,10 @@ interface IncomingData {
   secondaryColor?: string;
   accentColor?: string;
   darkColor?: string;
+  lightColor?: string;
   fontName?: string;
+  displayFont?: string;
+  bodyFont?: string;
   brandValues?: string[];
   toneOfVoice?: string[];
   overview?: string;
@@ -151,8 +163,16 @@ function isLightColor(hex: string): boolean {
   return (r * 299 + g * 587 + b * 114) / 1000 > 150;
 }
 
-function logIncomingResponse(brandDna: IncomingData) {
-  console.log("[ELK] FULL n8n/Airtable response:", brandDna);
+function toList(value: unknown): string[] {
+  if (!value) return [];
+  if (Array.isArray(value)) return value.map(String).map((s) => s.trim()).filter(Boolean);
+  if (typeof value === "string") {
+    return value
+      .split(/[,\n;|•·]+/)
+      .map((s) => s.replace(/^[-–•\s]+/, "").trim())
+      .filter(Boolean);
+  }
+  return [];
 }
 
 const defaultData: BrandData = {
@@ -173,6 +193,8 @@ const defaultData: BrandData = {
   values: ["Authentisch", "Nachhaltig", "Lokal"],
   aesthetic: ["Natural", "Warm", "Artisanal"],
   tones: ["Persönlich", "Einladend"],
+  dos: [],
+  donts: [],
   businessOverview: "Blumenhaus Martina ist ein inhabergeführtes Blumengeschäft in Hamburg-Altona, das seit 2015 frische Saisonsblumen, handgefertigte Sträuße und nachhaltige Pflanzenpflege anbietet.",
   aiBriefing: "Die visuelle Kommunikation sollte die Wärme und Handwerkskunst des Ladens widerspiegeln.",
   targetAudience: "",
@@ -258,10 +280,13 @@ function mapIncoming(incoming: IncomingData): Partial<BrandData> {
   const mapped: Partial<BrandData> = {};
 
   if (incoming.brandName) mapped.brandName = incoming.brandName;
+  if (incoming.clientName) mapped.brandName = incoming.clientName;
   if (incoming.firstName) mapped.firstName = incoming.firstName;
   if (incoming.chatId) mapped.chatId = incoming.chatId;
   if (incoming.brand_logo_url) mapped.brandLogoUrl = incoming.brand_logo_url;
   if (incoming.logoUrl) mapped.brandLogoUrl = incoming.logoUrl;
+  if (incoming.brandLogoUrl) mapped.brandLogoUrl = incoming.brandLogoUrl;
+  if (incoming.logo) mapped.brandLogoUrl = incoming.logo;
   if (incoming.logoBgColor) mapped.logoBgColor = incoming.logoBgColor;
 
   if (incoming.website) mapped.website = incoming.website;
@@ -290,9 +315,20 @@ function mapIncoming(incoming: IncomingData): Partial<BrandData> {
     if (incoming.darkColor) colors.push({ hex: incoming.darkColor, light: isLightColor(incoming.darkColor) });
     mapped.colors = colors;
   }
-  if (incoming.fontName) mapped.fonts = { display: incoming.fontName, body: "DM Sans" };
+  if (incoming.displayFont || incoming.bodyFont) {
+    mapped.fonts = {
+      display: incoming.displayFont || incoming.fontName || defaultData.fonts.display,
+      body: incoming.bodyFont || "DM Sans",
+    };
+  } else if (incoming.fontName) {
+    mapped.fonts = { display: incoming.fontName, body: "DM Sans" };
+  }
   if (incoming.brandValues) mapped.values = incoming.brandValues;
   if (incoming.toneOfVoice) mapped.tones = incoming.toneOfVoice;
+  if (incoming.toneTags) mapped.tones = toList(incoming.toneTags);
+  if (incoming.aestheticTags) mapped.aesthetic = toList(incoming.aestheticTags);
+  if (incoming.dos) mapped.dos = toList(incoming.dos);
+  if (incoming.donts) mapped.donts = toList(incoming.donts);
   if (incoming.overview) mapped.businessOverview = incoming.overview;
   if (incoming.contentStrategy) mapped.aiBriefing = incoming.contentStrategy;
   if (incoming.targetAudience) mapped.targetAudience = incoming.targetAudience;
@@ -306,6 +342,7 @@ function mapIncoming(incoming: IncomingData): Partial<BrandData> {
 /* ── Auto-save webhook (debounced) ── */
 const SAVE_WEBHOOK = "https://lagosito.app.n8n.cloud/webhook/elk-save-customizations";
 const SAVE_DEBOUNCE_MS = 2000;
+const CLIENT_ENDPOINT = "https://node-banana-v2.vercel.app/api/client";
 
 export interface UserCustomizations {
   colors?: BrandColors[];
@@ -355,6 +392,29 @@ function useAutoSave(recordId: string | null, chatId: string, brandName: string)
   return save;
 }
 
+/* ── Dynamic Google Fonts loader ── */
+function useFontLoader(displayFont: string, bodyFont: string) {
+  useEffect(() => {
+    const families = Array.from(new Set([displayFont, bodyFont].filter(Boolean)));
+    if (!families.length) return;
+    const id = "elk-dynamic-fonts";
+    const href =
+      "https://fonts.googleapis.com/css2?" +
+      families
+        .map((f) => `family=${encodeURIComponent(f)}:ital,wght@0,400;0,500;0,600;0,700;1,400`)
+        .join("&") +
+      "&display=swap";
+    let link = document.getElementById(id) as HTMLLinkElement | null;
+    if (!link) {
+      link = document.createElement("link");
+      link.id = id;
+      link.rel = "stylesheet";
+      document.head.appendChild(link);
+    }
+    if (link.href !== href) link.href = href;
+  }, [displayFont, bodyFont]);
+}
+
 /* ── Context ── */
 interface BrandDataContextValue {
   data: BrandData;
@@ -362,6 +422,7 @@ interface BrandDataContextValue {
   loadingStage: LoadingStage;
   countdown: number;
   recordId: string | null;
+  errorMessage: string | null;
   selectedObjectives: string[];
   setSelectedObjectives: React.Dispatch<React.SetStateAction<string[]>>;
   selectedAddons: string[];
@@ -380,6 +441,7 @@ const BrandDataContext = createContext<BrandDataContextValue>({
   loadingStage: "complete",
   countdown: 0,
   recordId: null,
+  errorMessage: null,
   selectedObjectives: [],
   setSelectedObjectives: () => {},
   selectedAddons: [],
@@ -400,6 +462,7 @@ export const useBrandData = () => {
     loadingStage: ctx.loadingStage,
     countdown: ctx.countdown,
     recordId: ctx.recordId,
+    errorMessage: ctx.errorMessage,
     selectedObjectives: ctx.selectedObjectives,
     setSelectedObjectives: ctx.setSelectedObjectives,
     selectedAddons: ctx.selectedAddons,
@@ -419,10 +482,13 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
   const [searchParams] = useSearchParams();
   const idParam = searchParams.get("id");
   const dParam = searchParams.get("d");
+  const clientParam = searchParams.get("client");
+  const initialLoading = !!idParam || !!clientParam;
   const [data, setData] = useState<BrandData>(defaultData);
-  const [loading, setLoading] = useState(!!idParam);
-  const [loadingStage, setLoadingStage] = useState<LoadingStage>(idParam ? "waiting" : "complete");
+  const [loading, setLoading] = useState(initialLoading);
+  const [loadingStage, setLoadingStage] = useState<LoadingStage>(initialLoading ? "waiting" : "complete");
   const [countdown, setCountdown] = useState(idParam ? COUNTDOWN_SECONDS : 0);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [selectedObjectives, setSelectedObjectives] = useState<string[]>([]);
   const [selectedAddons, setSelectedAddons] = useState<string[]>([]);
   const [userEmail, setUserEmailState] = useState<string>("");
@@ -431,6 +497,8 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
 
   const recordId = idParam;
   const autoSave = useAutoSave(recordId, data.chatId, data.brandName);
+
+  useFontLoader(data.fonts.display, data.fonts.body);
 
   const markInteraction = useCallback(() => {
     setHasInteracted(true);
@@ -476,7 +544,7 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
     if (!raw) return;
     let parsed: UserCustomizations | null = null;
     try {
-      parsed = typeof raw === "string" ? JSON.parse(raw) : (raw as UserCustomizations);
+      parsed = typeof raw === "string" && raw ? JSON.parse(raw) : (raw as UserCustomizations);
     } catch {
       return;
     }
@@ -487,8 +555,49 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
     if (typeof parsed.userEmail === "string" && parsed.userEmail) setUserEmailState(parsed.userEmail);
   }, []);
 
+  // ── Fetch by client name ──
+  useEffect(() => {
+    if (!clientParam || idParam) return;
+    let cancelled = false;
+    setLoading(true);
+    setLoadingStage("waiting");
+    setErrorMessage(null);
+
+    (async () => {
+      try {
+        const url = `${CLIENT_ENDPOINT}?name=${encodeURIComponent(clientParam)}`;
+        const res = await fetch(url);
+        if (!res.ok) {
+          if (res.status === 404) throw new Error("not_found");
+          throw new Error(`HTTP ${res.status}`);
+        }
+        const json = await res.json();
+        const client = (json?.client ?? json) as IncomingData | null;
+        if (!client || typeof client !== "object") throw new Error("not_found");
+        if (cancelled) return;
+        const mapped = mapIncoming(client);
+        setData({ ...defaultData, ...mapped });
+        applyCustomizations(client);
+        setLoading(false);
+        setLoadingStage("complete");
+      } catch (e) {
+        if (cancelled) return;
+        console.warn("[ELK] Client fetch failed:", e);
+        setErrorMessage("No encontramos este cliente");
+        setLoading(false);
+        setLoadingStage("error");
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [clientParam, idParam, applyCustomizations]);
+
+  // ── Polling by record id (legacy) ──
   useEffect(() => {
     if (!idParam) {
+      if (clientParam) return; // handled by client fetch effect
       if (dParam) {
         try {
           const json = atob(dParam);
@@ -528,7 +637,6 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
       clearInterval(countdownInterval);
       clearInterval(pollInterval);
       clearTimeout(timeoutTimer);
-      logIncomingResponse(brandDna);
       const mapped = mapIncoming(brandDna);
       setData((prev) => ({ ...prev, ...mapped }));
       applyCustomizations(brandDna);
@@ -544,7 +652,6 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
         const response = await fetch(url, { mode: "cors" });
         if (!response.ok) return;
         const brandDna = (await response.json()) as IncomingData;
-        console.log("[ELK] Poll response:", brandDna?.brandName);
         if (brandDna?.brandName && !brandDna._partial && brandDna._status !== "processing" && brandDna.status !== "processing") {
           finishSuccess(brandDna);
         }
@@ -564,7 +671,7 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
       clearInterval(pollInterval);
       clearTimeout(timeoutTimer);
     };
-  }, [idParam, dParam]);
+  }, [idParam, dParam, clientParam, applyCustomizations]);
 
   return (
     <BrandDataContext.Provider
@@ -574,6 +681,7 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
         loadingStage,
         countdown,
         recordId,
+        errorMessage,
         selectedObjectives,
         setSelectedObjectives,
         selectedAddons,

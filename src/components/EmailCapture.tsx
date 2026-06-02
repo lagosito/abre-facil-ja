@@ -29,6 +29,7 @@ const EmailCapture = () => {
     try {
       const payload = {
         email: trimmed,
+        brandDnaUrl: typeof window !== "undefined" ? window.location.href : "",
         brandName: brandName ?? "",
         tagline: brandEssence ?? "",
         colors: (colors ?? []).map((c) => c.hex).join(","),

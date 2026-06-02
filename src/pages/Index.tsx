@@ -17,9 +17,28 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 import { BrandDataProvider, useBrandData } from "@/context/BrandDataContext";
 
 const PageContent = () => {
-  const { loading, loadingStage } = useBrandData();
+  const { loading, loadingStage, errorMessage } = useBrandData();
 
   if (loading) return <LoadingSpinner />;
+
+  if (loadingStage === "error") {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-background text-center">
+        <h1 className="font-serif italic text-4xl mb-3">{errorMessage ?? "No encontramos este cliente"}</h1>
+        <p className="text-muted-foreground mb-8 max-w-md">
+          Verifica el nombre del cliente en la URL o vuelve a la página principal.
+        </p>
+        <a
+          href="/"
+          className="bg-primary text-primary-foreground px-5 py-2.5 rounded-xl text-sm font-bold hover:brightness-90 transition-all"
+        >
+          Volver al inicio
+        </a>
+      </div>
+    );
+  }
+
+
 
   return (
     <>
