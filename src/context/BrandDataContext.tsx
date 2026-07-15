@@ -516,6 +516,7 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
   const [data, setData] = useState<BrandData>(defaultData);
   const [loading, setLoading] = useState(initialLoading);
   const [loadingStage, setLoadingStage] = useState<LoadingStage>(initialLoading ? "waiting" : "complete");
+  const [isEnriching, setIsEnriching] = useState(false);
   const [countdown, setCountdown] = useState(idParam ? COUNTDOWN_SECONDS : 0);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [selectedObjectives, setSelectedObjectives] = useState<string[]>([]);
