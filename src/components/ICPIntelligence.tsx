@@ -127,7 +127,7 @@ const SkeletonCard = ({ className = "" }: { className?: string }) => (
 );
 
 const ICPIntelligence = () => {
-  const { website, lookalikes: brandLookalikes } = useBrandData();
+  const { website, lookalikes: brandLookalikes, isEnriching } = useBrandData();
   const [data, setData] = useState<ICPResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -277,7 +277,7 @@ const ICPIntelligence = () => {
           )}
 
           {/* 3D — Where to find them */}
-          {(channels.length > 0 || lookalikes.length > 0) && (
+          {(channels.length > 0 || lookalikes.length > 0 || isEnriching) && (
             <div className="animate-fade-up space-y-6">
               <h3 className="font-serif text-2xl">Where to find them</h3>
 
@@ -299,7 +299,7 @@ const ICPIntelligence = () => {
                 </div>
               )}
 
-              {lookalikes.length > 0 && (
+              {lookalikes.length > 0 ? (
                 <div>
                   <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-muted-foreground mb-3">
                     Brands like yours
@@ -329,7 +329,23 @@ const ICPIntelligence = () => {
                     })}
                   </div>
                 </div>
-              )}
+              ) : isEnriching ? (
+                <div>
+                  <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-muted-foreground mb-3">
+                    Brands like yours
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5">
+                    {[0, 1, 2, 3].map((i) => (
+                      <div key={i} className="bg-card rounded-lg p-4 animate-pulse">
+                        <div className="h-5 w-24 bg-muted rounded mb-2" />
+                        <div className="h-3 w-32 bg-muted rounded mb-3" />
+                        <div className="h-3 w-full bg-muted rounded mb-1.5" />
+                        <div className="h-3 w-4/5 bg-muted rounded" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
             </div>
           )}
 

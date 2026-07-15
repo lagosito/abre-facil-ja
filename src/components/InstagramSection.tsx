@@ -3,7 +3,7 @@ import SectionHeader from "./SectionHeader";
 import PremiumAddonCard from "./PremiumAddonCard";
 
 const InstagramSection = () => {
-  const { instagramHandle, instagramStats, growthProjection, contentInsights } = useBrandData();
+  const { instagramHandle, instagramStats, growthProjection, contentInsights, isEnriching } = useBrandData();
 
 
   return (
@@ -18,6 +18,21 @@ const InstagramSection = () => {
           {(() => {
             const hasStats = instagramStats.some((s) => s.val && s.val.trim() !== "");
             if (!hasStats) {
+              if (isEnriching) {
+                return (
+                  <div className="bg-card rounded-lg p-6 animate-pulse">
+                    <div className="h-3 w-32 bg-muted rounded mb-4" />
+                    <div className="flex gap-7 flex-wrap">
+                      {[0, 1, 2, 3].map((i) => (
+                        <div key={i}>
+                          <div className="h-7 w-16 bg-muted rounded mb-2" />
+                          <div className="h-2.5 w-12 bg-muted rounded" />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              }
               return (
                 <div className="bg-card rounded-lg p-6 animate-fade-up hover:-translate-y-0.5 hover:shadow-lg transition-all">
                   <div className="font-serif italic text-xl text-muted-foreground">Sadly, we couldn't find your Instagram.</div>
@@ -136,6 +151,16 @@ const InstagramSection = () => {
             <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-muted-foreground mb-5">Your Growth with El Kiosk</div>
             {growthProjection ? (
               <GrowthChart data={growthProjection} />
+            ) : isEnriching ? (
+              <div className="flex items-end justify-between gap-3 h-[180px] animate-pulse">
+                {[25, 50, 75, 100].map((h) => (
+                  <div key={h} className="flex-1 flex flex-col items-center gap-1.5 h-full justify-end">
+                    <div className="h-3 w-10 bg-muted rounded mb-1" />
+                    <div className="w-full bg-muted rounded-t-md" style={{ height: `${h}%` }} />
+                    <div className="h-2 w-12 bg-muted rounded mt-1" />
+                  </div>
+                ))}
+              </div>
             ) : (
               <p className="text-sm text-muted-foreground italic">Connect your Instagram to unlock growth projections.</p>
             )}

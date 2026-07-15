@@ -442,6 +442,7 @@ interface BrandDataContextValue {
   data: BrandData;
   loading: boolean;
   loadingStage: LoadingStage;
+  isEnriching: boolean;
   countdown: number;
   recordId: string | null;
   errorMessage: string | null;
@@ -461,6 +462,7 @@ const BrandDataContext = createContext<BrandDataContextValue>({
   data: defaultData,
   loading: false,
   loadingStage: "complete",
+  isEnriching: false,
   countdown: 0,
   recordId: null,
   errorMessage: null,
@@ -482,6 +484,7 @@ export const useBrandData = () => {
     ...ctx.data,
     loading: ctx.loading,
     loadingStage: ctx.loadingStage,
+    isEnriching: ctx.isEnriching,
     countdown: ctx.countdown,
     recordId: ctx.recordId,
     errorMessage: ctx.errorMessage,
@@ -513,6 +516,7 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
   const [data, setData] = useState<BrandData>(defaultData);
   const [loading, setLoading] = useState(initialLoading);
   const [loadingStage, setLoadingStage] = useState<LoadingStage>(initialLoading ? "waiting" : "complete");
+  const [isEnriching, setIsEnriching] = useState(false);
   const [countdown, setCountdown] = useState(idParam ? COUNTDOWN_SECONDS : 0);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [selectedObjectives, setSelectedObjectives] = useState<string[]>([]);
@@ -670,6 +674,19 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
       setCountdown(0);
       setLoading(false);
       setLoadingStage("complete");
+      setIsEnriching(false);
+      hasRendered = true;
+    };
+
+    // First render from a partial "enriching" payload; keep polling for the rest.
+    const partialRender = (brandDna: IncomingData) => {
+      const mapped = mapIncoming(brandDna);
+      setData((prev) => ({ ...prev, ...mapped }));
+      applyCustomizations(brandDna);
+      setLoading(false);
+      setLoadingStage("complete");
+      setIsEnriching(true);
+      hasRendered = true;
     };
 
     const failWithError = (reason: string, message: string) => {
@@ -680,6 +697,11 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
       if (timeoutTimer) clearTimeout(timeoutTimer);
       document.removeEventListener("visibilitychange", onVisibility);
       console.warn("[ELK] Report load failed:", reason);
+      if (hasRendered) {
+        // Already rendered — keep what's shown, silently stop polling.
+        setIsEnriching(false);
+        return;
+      }
       setErrorMessage(message);
       setCountdown(0);
       setLoading(false);
@@ -690,6 +712,7 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
     let nextDelay = POLL_START_MS;
     let consecutiveErrors = 0;
     let paused = false;
+    let hasRendered = false;
 
     const scheduleNext = (delay: number) => {
       if (stopped) return;
@@ -699,7 +722,6 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
     const runPoll = async () => {
       if (stopped) return;
       if (paused) {
-        // Wait for visibility to resume
         pollTimer = null;
         return;
       }
@@ -714,14 +736,27 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
           }
         } else {
           const brandDna = (await response.json()) as IncomingData;
-          const isProcessing =
+          const status = brandDna?._status;
+          const isAnalyzing =
             brandDna?._partial ||
-            brandDna?._status === "processing" ||
-            brandDna?._status === "analyzing" ||
+            status === "processing" ||
+            status === "analyzing" ||
             brandDna?.status === "processing";
-          if (brandDna?.brandName && !isProcessing) {
-            finishSuccess(brandDna);
-            return;
+
+          if (!isAnalyzing && brandDna?.brandName) {
+            if (!status) {
+              // Complete payload — no _status field.
+              finishSuccess(brandDna);
+              return;
+            }
+            // "enriching" or any other non-analyzing status: render now, keep polling.
+            if (!hasRendered) partialRender(brandDna);
+            else {
+              // Refresh mapped fields as they may have expanded.
+              const mapped = mapIncoming(brandDna);
+              setData((prev) => ({ ...prev, ...mapped }));
+              applyCustomizations(brandDna);
+            }
           }
           consecutiveErrors = 0;
         }
@@ -779,6 +814,7 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
         data,
         loading,
         loadingStage,
+        isEnriching,
         countdown,
         recordId,
         errorMessage,
