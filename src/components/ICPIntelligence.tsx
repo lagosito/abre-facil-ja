@@ -27,21 +27,13 @@ interface Persona {
   role?: string;
   department?: string;
 }
-interface Lookalike {
-  company?: string;
-  company_name?: string;
-  url?: string;
-  why?: string;
-  why_similar?: string;
-}
 interface ICPResponse {
   brand_dna?: BrandDNA;
   personas?: Persona[];
   buyer_personas?: Persona[];
-  lookalikes?: Lookalike[];
 }
 
-const CACHE_PREFIX = "icp_v4:";
+const CACHE_PREFIX = "icp_v5:";
 
 const FALLBACK_EMOJIS = ["✨", "🌱", "⚡", "💼"];
 const FALLBACK_LABELS = ["The quality seeker", "The conscious buyer", "The decisive shopper"];
