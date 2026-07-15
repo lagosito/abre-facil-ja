@@ -814,6 +814,7 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
         data,
         loading,
         loadingStage,
+        isEnriching,
         countdown,
         recordId,
         errorMessage,
