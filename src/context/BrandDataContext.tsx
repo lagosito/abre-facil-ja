@@ -442,6 +442,7 @@ interface BrandDataContextValue {
   data: BrandData;
   loading: boolean;
   loadingStage: LoadingStage;
+  isEnriching: boolean;
   countdown: number;
   recordId: string | null;
   errorMessage: string | null;
@@ -461,6 +462,7 @@ const BrandDataContext = createContext<BrandDataContextValue>({
   data: defaultData,
   loading: false,
   loadingStage: "complete",
+  isEnriching: false,
   countdown: 0,
   recordId: null,
   errorMessage: null,
@@ -482,6 +484,7 @@ export const useBrandData = () => {
     ...ctx.data,
     loading: ctx.loading,
     loadingStage: ctx.loadingStage,
+    isEnriching: ctx.isEnriching,
     countdown: ctx.countdown,
     recordId: ctx.recordId,
     errorMessage: ctx.errorMessage,
