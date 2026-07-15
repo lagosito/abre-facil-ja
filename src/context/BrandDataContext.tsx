@@ -498,7 +498,11 @@ export const useBrandData = () => {
   };
 };
 
-const COUNTDOWN_SECONDS = 60;
+const COUNTDOWN_SECONDS = 180;
+const POLL_MAX_MS = 180_000; // 3 minutes
+const POLL_START_MS = 5_000;
+const POLL_MAX_INTERVAL_MS = 60_000;
+const POLL_MAX_CONSECUTIVE_ERRORS = 2;
 
 export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
   const [searchParams] = useSearchParams();
@@ -657,8 +661,9 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
     const finishSuccess = (brandDna: IncomingData) => {
       stopped = true;
       clearInterval(countdownInterval);
-      clearInterval(pollInterval);
+      if (pollTimer) clearTimeout(pollTimer);
       if (timeoutTimer) clearTimeout(timeoutTimer);
+      document.removeEventListener("visibilitychange", onVisibility);
       const mapped = mapIncoming(brandDna);
       setData((prev) => ({ ...prev, ...mapped }));
       applyCustomizations(brandDna);
@@ -667,46 +672,104 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
       setLoadingStage("complete");
     };
 
-    const failWithError = (reason: string) => {
+    const failWithError = (reason: string, message: string) => {
       if (stopped) return;
       stopped = true;
       clearInterval(countdownInterval);
-      clearInterval(pollInterval);
+      if (pollTimer) clearTimeout(pollTimer);
       if (timeoutTimer) clearTimeout(timeoutTimer);
+      document.removeEventListener("visibilitychange", onVisibility);
       console.warn("[ELK] Report load failed:", reason);
-      setErrorMessage("No pudimos cargar este reporte");
+      setErrorMessage(message);
       setCountdown(0);
       setLoading(false);
       setLoadingStage("error");
     };
 
-    const poll = async () => {
+    let pollTimer: ReturnType<typeof setTimeout> | null = null;
+    let nextDelay = POLL_START_MS;
+    let consecutiveErrors = 0;
+    let paused = false;
+
+    const scheduleNext = (delay: number) => {
       if (stopped) return;
+      pollTimer = setTimeout(runPoll, delay);
+    };
+
+    const runPoll = async () => {
+      if (stopped) return;
+      if (paused) {
+        // Wait for visibility to resume
+        pollTimer = null;
+        return;
+      }
       const url = `https://lagosito.app.n8n.cloud/webhook/elk-get-dna?id=${encodeURIComponent(idParam)}`;
       try {
         const response = await fetch(url, { mode: "cors" });
-        if (!response.ok) return;
-        const brandDna = (await response.json()) as IncomingData;
-        if (brandDna?.brandName && !brandDna._partial && brandDna._status !== "processing" && brandDna.status !== "processing") {
-          finishSuccess(brandDna);
+        if (!response.ok) {
+          consecutiveErrors += 1;
+          if (consecutiveErrors >= POLL_MAX_CONSECUTIVE_ERRORS) {
+            failWithError(`http_${response.status}`, "No pudimos cargar este reporte");
+            return;
+          }
+        } else {
+          const brandDna = (await response.json()) as IncomingData;
+          const isProcessing =
+            brandDna?._partial ||
+            brandDna?._status === "processing" ||
+            brandDna?._status === "analyzing" ||
+            brandDna?.status === "processing";
+          if (brandDna?.brandName && !isProcessing) {
+            finishSuccess(brandDna);
+            return;
+          }
+          consecutiveErrors = 0;
         }
       } catch (e) {
         console.warn("[ELK] Poll error:", e);
+        consecutiveErrors += 1;
+        if (consecutiveErrors >= POLL_MAX_CONSECUTIVE_ERRORS) {
+          failWithError("network", "No pudimos cargar este reporte");
+          return;
+        }
       }
+      if (stopped) return;
+      // Exponential backoff: 5s → 10s → 20s → 40s → 60s (cap)
+      const delay = nextDelay;
+      nextDelay = Math.min(nextDelay * 2, POLL_MAX_INTERVAL_MS);
+      scheduleNext(delay);
     };
 
-    const pollInterval = setInterval(poll, 5000);
-    poll();
+    const onVisibility = () => {
+      if (document.visibilityState === "hidden") {
+        paused = true;
+        if (pollTimer) {
+          clearTimeout(pollTimer);
+          pollTimer = null;
+        }
+      } else if (paused) {
+        paused = false;
+        if (!stopped && !pollTimer) {
+          // Resume immediately
+          runPoll();
+        }
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+
+    // Kick off the first poll immediately
+    runPoll();
 
     const timeoutTimer: ReturnType<typeof setTimeout> = setTimeout(() => {
-      failWithError("timeout");
-    }, (COUNTDOWN_SECONDS + 2) * 1000);
+      failWithError("timeout", "This report is taking longer than expected");
+    }, POLL_MAX_MS);
 
     return () => {
       stopped = true;
       clearInterval(countdownInterval);
-      clearInterval(pollInterval);
+      if (pollTimer) clearTimeout(pollTimer);
       clearTimeout(timeoutTimer);
+      document.removeEventListener("visibilitychange", onVisibility);
     };
   }, [idParam, dParam, clientParam, applyCustomizations]);
 
