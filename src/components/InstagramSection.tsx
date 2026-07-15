@@ -18,6 +18,21 @@ const InstagramSection = () => {
           {(() => {
             const hasStats = instagramStats.some((s) => s.val && s.val.trim() !== "");
             if (!hasStats) {
+              if (isEnriching) {
+                return (
+                  <div className="bg-card rounded-lg p-6 animate-pulse">
+                    <div className="h-3 w-32 bg-muted rounded mb-4" />
+                    <div className="flex gap-7 flex-wrap">
+                      {[0, 1, 2, 3].map((i) => (
+                        <div key={i}>
+                          <div className="h-7 w-16 bg-muted rounded mb-2" />
+                          <div className="h-2.5 w-12 bg-muted rounded" />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              }
               return (
                 <div className="bg-card rounded-lg p-6 animate-fade-up hover:-translate-y-0.5 hover:shadow-lg transition-all">
                   <div className="font-serif italic text-xl text-muted-foreground">Sadly, we couldn't find your Instagram.</div>
