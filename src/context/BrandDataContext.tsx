@@ -504,7 +504,7 @@ export const useBrandData = () => {
 const COUNTDOWN_SECONDS = 180;
 const POLL_MAX_MS = 180_000; // 3 minutes
 const POLL_START_MS = 5_000;
-const POLL_MAX_INTERVAL_MS = 60_000;
+const POLL_MAX_INTERVAL_MS = 8_000;
 const POLL_MAX_CONSECUTIVE_ERRORS = 2;
 
 export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
@@ -769,7 +769,7 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
         }
       }
       if (stopped) return;
-      // Exponential backoff: 5s → 10s → 20s → 40s → 60s (cap)
+      // Exponential backoff: 5s → 8s → 8s → 8s (cap)
       const delay = nextDelay;
       nextDelay = Math.min(nextDelay * 2, POLL_MAX_INTERVAL_MS);
       scheduleNext(delay);
