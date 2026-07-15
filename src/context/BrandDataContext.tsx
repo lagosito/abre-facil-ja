@@ -504,7 +504,7 @@ export const useBrandData = () => {
 const COUNTDOWN_SECONDS = 180;
 const POLL_MAX_MS = 180_000; // 3 minutes
 const POLL_START_MS = 5_000;
-const POLL_MAX_INTERVAL_MS = 60_000;
+const POLL_MAX_INTERVAL_MS = 8_000;
 const POLL_MAX_CONSECUTIVE_ERRORS = 2;
 
 export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
