@@ -658,13 +658,26 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
       stopped = true;
       clearInterval(countdownInterval);
       clearInterval(pollInterval);
-      clearTimeout(timeoutTimer);
+      if (timeoutTimer) clearTimeout(timeoutTimer);
       const mapped = mapIncoming(brandDna);
       setData((prev) => ({ ...prev, ...mapped }));
       applyCustomizations(brandDna);
       setCountdown(0);
       setLoading(false);
       setLoadingStage("complete");
+    };
+
+    const failWithError = (reason: string) => {
+      if (stopped) return;
+      stopped = true;
+      clearInterval(countdownInterval);
+      clearInterval(pollInterval);
+      if (timeoutTimer) clearTimeout(timeoutTimer);
+      console.warn("[ELK] Report load failed:", reason);
+      setErrorMessage("No pudimos cargar este reporte");
+      setCountdown(0);
+      setLoading(false);
+      setLoadingStage("error");
     };
 
     const poll = async () => {
@@ -685,7 +698,9 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
     const pollInterval = setInterval(poll, 5000);
     poll();
 
-    const timeoutTimer: ReturnType<typeof setTimeout> | null = null;
+    const timeoutTimer: ReturnType<typeof setTimeout> = setTimeout(() => {
+      failWithError("timeout");
+    }, (COUNTDOWN_SECONDS + 2) * 1000);
 
     return () => {
       stopped = true;
