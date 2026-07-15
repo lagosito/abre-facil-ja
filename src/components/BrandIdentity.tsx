@@ -62,12 +62,13 @@ const BrandIdentity = () => {
     setSwatches((s) => s.map((sw, idx) => (idx === i ? { ...sw, hex } : sw)));
   };
 
-  const EditBtn = ({ onClick }: { onClick: () => void }) => (
+  const EditBtn = ({ onClick, label = "Edit" }: { onClick: () => void; label?: string }) => (
     <button
       onClick={(e) => { e.stopPropagation(); onClick(); }}
+      aria-label={label}
       className="absolute bottom-3.5 right-3.5 z-10 bg-surface border border-border rounded-[10px] p-1.5 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all text-muted-foreground"
     >
-      <Pencil className="w-3.5 h-3.5" />
+      <Pencil className="w-3.5 h-3.5" aria-hidden="true" />
     </button>
   );
 
@@ -145,7 +146,7 @@ const BrandIdentity = () => {
         {/* Colors Card */}
         <div className="col-span-12 md:col-span-4 bg-card rounded-lg p-6 relative animate-fade-up [animation-delay:0.13s] hover:-translate-y-0.5 hover:shadow-lg transition-all">
           <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-muted-foreground mb-3.5">Color Palette</div>
-          <EditBtn onClick={() => setShowColors(!showColors)} />
+          <EditBtn onClick={() => setShowColors(!showColors)} label="Edit color palette" />
           <div className="flex gap-2 mt-3">
             {swatches.map((s, i) => (
               <div
@@ -161,7 +162,7 @@ const BrandIdentity = () => {
 
         {/* Type Card */}
         <div className="col-span-12 md:col-span-4 bg-card rounded-lg p-6 flex items-center justify-center gap-5 relative animate-fade-up [animation-delay:0.17s] hover:-translate-y-0.5 hover:shadow-lg transition-all">
-          <EditBtn onClick={() => setShowFonts(!showFonts)} />
+          <EditBtn onClick={() => setShowFonts(!showFonts)} label="Edit typography" />
           <div className="text-center">
             <div className="font-serif italic text-[68px] leading-none">Aa</div>
             <div className="text-[10px] text-muted-foreground mt-1.5">{data.fonts.display}<br />Italic</div>
@@ -176,7 +177,7 @@ const BrandIdentity = () => {
         {/* Tags Card */}
         <div className="col-span-12 md:col-span-4 bg-card rounded-lg p-6 relative animate-fade-up [animation-delay:0.21s] hover:-translate-y-0.5 hover:shadow-lg transition-all">
           <div className="text-[10px] uppercase tracking-[0.1em] font-bold text-muted-foreground mb-3.5">Brand Profile</div>
-          <EditBtn onClick={() => setShowTags(!showTags)} />
+          <EditBtn onClick={() => setShowTags(!showTags)} label="Edit brand values and tone" />
 
           <div className="mb-3.5">
             <div className="text-[10px] uppercase tracking-[0.08em] font-bold text-muted-foreground mb-1.5">Values</div>
@@ -216,7 +217,7 @@ const BrandIdentity = () => {
             {swatches.map((s, i) => (
               <div key={i} className="flex-1 flex flex-col items-center gap-2">
                 <div className="w-full h-16 rounded-xl overflow-hidden relative border-2 border-border hover:border-primary transition-colors cursor-pointer" style={{ background: s.hex }}>
-                  <input type="color" value={s.hex} onChange={(e) => updateSwatch(i, e.target.value)} className="absolute inset-[-8px] w-[calc(100%+16px)] h-[calc(100%+16px)] border-none cursor-pointer" />
+                  <input type="color" aria-label={`Brand color ${i + 1}`} value={s.hex} onChange={(e) => updateSwatch(i, e.target.value)} className="absolute inset-[-8px] w-[calc(100%+16px)] h-[calc(100%+16px)] border-none cursor-pointer" />
                 </div>
                 <span className="font-mono text-[10px] text-muted-foreground">{s.hex.toUpperCase()}</span>
               </div>

@@ -67,7 +67,7 @@ const PageContent = () => {
   return (
     <>
       <Navbar />
-      <div className="max-w-[1100px] mx-auto px-6 md:px-12 pb-28">
+      <main className="max-w-[1100px] mx-auto px-6 md:px-12 pb-28">
         <Hero />
         <BrandIdentity />
         <BrandBriefing />
@@ -83,7 +83,7 @@ const PageContent = () => {
         </div>
         <AddonsSection />
         <WhatHappensNext />
-      </div>
+      </main>
       <EmailCapture />
     </>
   );
