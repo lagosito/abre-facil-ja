@@ -43,6 +43,12 @@ export interface ContentInsights {
   aboveBenchmark: boolean;
 }
 
+export interface Lookalike {
+  company_name: string;
+  url: string;
+  why_similar: string;
+}
+
 export interface Objective {
   icon: string;
   label: string;
@@ -94,6 +100,7 @@ export interface BrandData {
   calendarExplain: string;
   packages: PackageData[];
   recommendedExplain: string;
+  lookalikes: Lookalike[];
 }
 
 interface IncomingData {
@@ -151,6 +158,7 @@ interface IncomingData {
   Customizations?: Record<string, unknown> | string;
   _partial?: boolean;
   _status?: string;
+  lookalikes?: unknown;
 }
 
 export type LoadingStage = "waiting" | "complete" | "error";
@@ -274,6 +282,7 @@ const defaultData: BrandData = {
     },
   ],
   recommendedExplain: "Basierend auf deinen Zielen, deinem aktuellen Stand und deiner Branche empfehlen wir dir das Essential-Paket.",
+  lookalikes: [],
 };
 
 function mapIncoming(incoming: IncomingData): Partial<BrandData> {
@@ -335,6 +344,19 @@ function mapIncoming(incoming: IncomingData): Partial<BrandData> {
   if (incoming.contentOpportunities) mapped.contentOpportunities = incoming.contentOpportunities;
   if (incoming.positioning) mapped.positioning = incoming.positioning;
   if (incoming.platforms) mapped.platforms = incoming.platforms;
+
+  if (Array.isArray(incoming.lookalikes)) {
+    mapped.lookalikes = (incoming.lookalikes as unknown[])
+      .map((raw) => {
+        const l = (raw ?? {}) as Record<string, unknown>;
+        return {
+          company_name: String(l.company_name ?? l.company ?? "").trim(),
+          url: String(l.url ?? "").trim(),
+          why_similar: String(l.why_similar ?? l.why ?? "").trim(),
+        };
+      })
+      .filter((l) => l.company_name);
+  }
 
   return mapped;
 }
