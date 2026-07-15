@@ -769,7 +769,7 @@ export const BrandDataProvider = ({ children }: { children: ReactNode }) => {
         }
       }
       if (stopped) return;
-      // Exponential backoff: 5s → 10s → 20s → 40s → 60s (cap)
+      // Exponential backoff: 5s → 8s → 8s → 8s (cap)
       const delay = nextDelay;
       nextDelay = Math.min(nextDelay * 2, POLL_MAX_INTERVAL_MS);
       scheduleNext(delay);
