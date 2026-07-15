@@ -127,7 +127,7 @@ const SkeletonCard = ({ className = "" }: { className?: string }) => (
 );
 
 const ICPIntelligence = () => {
-  const { website, lookalikes: brandLookalikes } = useBrandData();
+  const { website, lookalikes: brandLookalikes, isEnriching } = useBrandData();
   const [data, setData] = useState<ICPResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
