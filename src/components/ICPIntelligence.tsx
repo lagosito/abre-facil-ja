@@ -306,8 +306,8 @@ const ICPIntelligence = () => {
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5">
                     {lookalikes.map((l, i) => {
-                      const name = l.company_name || l.company || "Brand";
-                      const why = l.why_similar || l.why || "";
+                      const name = l.company_name || "Brand";
+                      const why = l.why_similar || "";
                       return (
                         <div key={i} className="bg-card rounded-lg p-4 hover:-translate-y-0.5 transition-all">
                           <div className="font-serif text-lg mb-1">{name}</div>
