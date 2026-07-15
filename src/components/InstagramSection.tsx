@@ -3,7 +3,7 @@ import SectionHeader from "./SectionHeader";
 import PremiumAddonCard from "./PremiumAddonCard";
 
 const InstagramSection = () => {
-  const { instagramHandle, instagramStats, growthProjection, contentInsights } = useBrandData();
+  const { instagramHandle, instagramStats, growthProjection, contentInsights, isEnriching } = useBrandData();
 
 
   return (
