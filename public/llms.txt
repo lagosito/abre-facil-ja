@@ -1,0 +1,7 @@
+# El Kiosk
+
+> El Kiosk is an automated content engine that delivers on-brand monthly social content, captions, and creative for businesses — extracted directly from your website.
+
+## Pages
+
+- [Home](/): Overview of El Kiosk's automated monthly content service and brand DNA reports.
