@@ -127,7 +127,7 @@ const SkeletonCard = ({ className = "" }: { className?: string }) => (
 );
 
 const ICPIntelligence = () => {
-  const { website, data: brandData } = useBrandData();
+  const { website, lookalikes: brandLookalikes } = useBrandData();
   const [data, setData] = useState<ICPResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -181,7 +181,7 @@ const ICPIntelligence = () => {
   const dna = data?.brand_dna || {};
   const personas = (data?.personas || data?.buyer_personas || []).slice(0, 3);
   const metas = personas.map((p, i) => ({ persona: p, ...personaMeta(p, i) }));
-  const lookalikes = (brandData?.lookalikes || []).slice(0, 4);
+  const lookalikes = (brandLookalikes || []).slice(0, 4);
 
   const channels = Array.from(
     new Set(personas.flatMap((p) => p.preferred_channels || []).filter(Boolean)),
